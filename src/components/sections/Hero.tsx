@@ -1,16 +1,17 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Star, Users, Clock, Settings, Radio } from "lucide-react";
+import { Play, Star, Users, Clock, Settings, Radio, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-music.jpg";
 import LiveCounter from "./LiveCounter";
+
 const Hero = () => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) {
@@ -18,10 +19,12 @@ const Hero = () => {
         return;
       }
       try {
-        const {
-          data,
-          error
-        } = await supabase.from("admin_users").select("id").eq("user_id", user.id).single();
+        const { data, error } = await supabase
+          .from("admin_users")
+          .select("id")
+          .eq("user_id", user.id)
+          .single();
+
         if (!error && data) {
           setIsAdmin(true);
         } else {
@@ -32,13 +35,19 @@ const Hero = () => {
         setIsAdmin(false);
       }
     };
+
     checkAdminStatus();
   }, [user]);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-20">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img src={heroImage} alt="Custom Songs Background" className="w-full h-full object-cover opacity-30" />
+        <img
+          src={heroImage}
+          alt="Custom Songs Background"
+          className="w-full h-full object-cover opacity-30"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
       </div>
 
@@ -61,7 +70,9 @@ const Hero = () => {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 font-inter leading-relaxed">Zamar creates custom songs for every occasion – weddings, birthdays, churches, businesses – combining faith and technology to deliver powerful music that speaks.</p>
+        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 font-inter leading-relaxed">
+          Zamar creates custom songs for every occasion – weddings, birthdays, churches, businesses – combining faith and technology to deliver powerful music that speaks.
+        </p>
 
         {/* Stats Row */}
         <div className="flex flex-wrap justify-center items-center gap-6 mb-10 text-sm text-muted-foreground">
@@ -108,45 +119,69 @@ const Hero = () => {
           )}
         </div>
 
-        {/* Professional Referral Bonus Section */}
+        {/* Support Our Mission Section */}
         <div className="mb-12 px-4">
-          <div className="relative bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto shadow-xl">
+          <div className="relative bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 md:p-12 max-w-3xl mx-auto shadow-xl">
             {/* Decorative Elements */}
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/30 rounded-full animate-pulse" />
             <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-pulse animation-delay-1000" />
             
             {/* Content */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-6">
               {/* Icon and Main Title */}
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-xl">💰</span>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
+                  <Heart className="w-6 h-6 text-black" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-playfair font-semibold text-foreground">
-                  Earn Referral Bonuses
+                <h3 className="text-2xl md:text-3xl font-playfair font-semibold text-foreground">
+                  Support Our Mission
                 </h3>
               </div>
               
               {/* Subtitle */}
               <h4 className="text-lg md:text-xl text-primary font-medium">
-                Start Your Income Stream
+                Empowering Communities Through Music
               </h4>
               
               {/* Description */}
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-lg mx-auto">
-                Perfect for network marketers and influencers. Calculate your potential earnings 
-                and turn your network into a sustainable income source.
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                Your donations help us create meaningful music for communities, ministries, and churches worldwide. 
+                Every contribution supports our mission to bring hope, healing, and inspiration through custom songs 
+                that serve those who need them most.
               </p>
+
+              {/* Key Impact Points */}
+              <div className="grid md:grid-cols-3 gap-4 my-8 text-sm">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-primary font-bold">🎵</span>
+                  </div>
+                  <span className="text-muted-foreground">Free Songs for Ministries</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-primary font-bold">🌍</span>
+                  </div>
+                  <span className="text-muted-foreground">Global Translation Projects</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-primary font-bold">⛪</span>
+                  </div>
+                  <span className="text-muted-foreground">Community Outreach</span>
+                </div>
+              </div>
               
               {/* CTA Button */}
               <Button 
                 size="lg" 
-                className="mt-6 bg-gradient-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0"
+                className="bg-gradient-primary text-black font-semibold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 text-lg"
                 asChild
               >
-                <Link to="/referral">
-                  Calculate Your Earnings
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <Link to="/donate">
+                  <Heart className="w-5 h-5 mr-3" />
+                  Support the Mission
+                  <svg className="w-4 h-4 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </Link>
@@ -164,4 +199,5 @@ const Hero = () => {
     </section>
   );
 };
+
 export default Hero;
