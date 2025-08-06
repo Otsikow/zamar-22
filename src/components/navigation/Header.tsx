@@ -15,20 +15,27 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import logoImage from '@/assets/zamar-logo.png';
 
+interface Notification {
+  id: string;
+  user_id: string;
+  read: boolean;
+  created_at: string;
+}
+
 const Header = () => {
   const { user, loading, signOut } = useAuth();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
 
+    const checkAdminStatus = async () => {
       try {
         const { data, error } = await supabase
           .from('admin_users')
@@ -36,11 +43,7 @@ const Header = () => {
           .eq('user_id', user.id)
           .single();
 
-        if (!error && data) {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
+        setIsAdmin(!error && !!data);
       } catch (error) {
         console.error('Error checking admin status:', error);
         setIsAdmin(false);
@@ -51,19 +54,22 @@ const Header = () => {
   }, [user]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!user) return;
+    if (!user) {
+      setNotifications([]);
+      return;
+    }
 
+    const fetchNotifications = async () => {
       try {
         const { data, error } = await supabase
           .from('notifications')
-          .select('*')
+          .select('id, user_id, read, created_at')
           .eq('user_id', user.id)
           .eq('read', false)
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          setNotifications(data);
+          setNotifications(data as Notification[]);
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -89,7 +95,7 @@ const Header = () => {
     { href: '/about', label: 'About' },
   ];
 
-  const isActive = (path: string) => {
+  const isActive = (path: string): boolean => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
