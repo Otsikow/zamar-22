@@ -68,13 +68,15 @@ const App = () => (
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/testimonies" element={<Testimonies />} />
                     
+                    {/* Public Routes */}
+                    <Route path="/radio" element={<Radio />} />
+                    <Route path="/songs" element={<SongsLibrary />} />
+                    
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-                    <Route path="/radio" element={<Radio />} />
                     <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
-                    <Route path="/songs" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
                     <Route path="/songs/:id" element={<ProtectedRoute><SongDetail /></ProtectedRoute>} />
                     <Route path="/player/:id" element={<ProtectedRoute><SongPlayer /></ProtectedRoute>} />
                     <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
