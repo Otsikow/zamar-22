@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -258,8 +259,8 @@ export const FloatingChatButton = () => {
             </Button>
           </div>
 
-          {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
+          {/* Messages - Adjusted height to accommodate static input */}
+          <ScrollArea className="flex-1 p-4 h-64">
             <div className="space-y-3">
               {messages.length === 0 ? (
                 <div className="text-center text-muted-foreground text-sm py-8">
@@ -293,8 +294,8 @@ export const FloatingChatButton = () => {
             </div>
           </ScrollArea>
 
-          {/* Input */}
-          <div className="p-4 border-t">
+          {/* Input - Now always visible and static */}
+          <div className="p-4 border-t bg-background">
             <div className="flex space-x-2">
               <Input
                 value={newMessage}
@@ -303,6 +304,7 @@ export const FloatingChatButton = () => {
                 placeholder="Type your message..."
                 className="flex-1"
                 disabled={loading}
+                autoFocus
               />
               <Button 
                 onClick={sendMessage} 
