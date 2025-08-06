@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar } from "lucide-react";
+import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
@@ -251,7 +251,8 @@ const Library = () => {
 
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
+              <LibraryIcon className="w-10 h-10 md:w-12 md:h-12 text-primary" />
               My{" "}
               <span className="text-transparent bg-gradient-primary bg-clip-text">
                 Library
