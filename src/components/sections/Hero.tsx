@@ -53,7 +53,8 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 text-center max-w-5xl">
         {/* Main Headline */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6 leading-tight">
-          Your Story, Your Song{" "}
+          Your Story, Your Song
+          <br />
           <span className="text-transparent bg-gradient-primary bg-clip-text">
             Crafted with Purpose
           </span>
