@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Users, DollarSign, TrendingUp, ExternalLink, Gift, Target, Trophy } from 'lucide-react';
+import { Copy, Users, DollarSign, TrendingUp, ExternalLink, Gift, Target, Trophy, Calculator } from 'lucide-react';
 import SocialShare from '@/components/ui/social-share';
+import { useNavigate } from 'react-router-dom';
 
 interface ReferralData {
   referralCode: string;
@@ -26,6 +26,7 @@ interface ReferralStats {
 export const ReferralDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [data, setData] = useState<ReferralData>({
     referralCode: '',
     directReferrals: 0,
@@ -299,28 +300,40 @@ export const ReferralDashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Optimized with proper routing */}
       <Card className="border-primary/20">
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <Button asChild>
-              <a href="/referrals/dashboard">
-                <Trophy className="h-4 w-4 mr-2" />
-                View Full Dashboard
-              </a>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Button 
+              onClick={() => navigate('/referrals/dashboard')}
+              className="h-auto p-6 flex-col gap-3 bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Trophy className="h-6 w-6" />
+              <span className="font-semibold text-lg">View Full Dashboard</span>
+              <span className="text-sm opacity-90">Detailed analytics & reports</span>
             </Button>
-            <Button variant="outline" asChild>
-              <a href="/referrals/calculator">
-                <Target className="h-4 w-4 mr-2" />
-                Earnings Calculator
-              </a>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/referral')}
+              className="h-auto p-6 flex-col gap-3 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+            >
+              <Calculator className="h-6 w-6 text-primary" />
+              <span className="font-semibold text-lg text-primary">Earnings Calculator</span>
+              <span className="text-sm text-muted-foreground">Calculate potential earnings</span>
             </Button>
-            <Button variant="outline" onClick={copyReferralLink}>
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Link Again
+            
+            <Button 
+              variant="outline" 
+              onClick={copyReferralLink}
+              className="h-auto p-6 flex-col gap-3 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+            >
+              <Copy className="h-6 w-6 text-primary" />
+              <span className="font-semibold text-lg text-primary">Copy Link Again</span>
+              <span className="text-sm text-muted-foreground">Quick access to your link</span>
             </Button>
           </div>
         </CardContent>
