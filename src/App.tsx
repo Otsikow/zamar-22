@@ -109,7 +109,7 @@ const App = () => (
             </NowPlayingProvider>
           </AuthProvider>
         </BrowserRouter>
-      </div>
+      </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
