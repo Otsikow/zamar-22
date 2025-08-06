@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ interface ReferralStats {
 export const ReferralDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [data, setData] = useState<ReferralData>({
     referralCode: '',
     directReferrals: 0,
@@ -306,17 +307,13 @@ export const ReferralDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <Button asChild>
-              <a href="/referrals/dashboard">
-                <Trophy className="h-4 w-4 mr-2" />
-                View Full Dashboard
-              </a>
+            <Button onClick={() => navigate('/referrals/dashboard')}>
+              <Trophy className="h-4 w-4 mr-2" />
+              View Full Dashboard
             </Button>
-            <Button variant="outline" asChild>
-              <a href="/referrals/calculator">
-                <Target className="h-4 w-4 mr-2" />
-                Earnings Calculator
-              </a>
+            <Button variant="outline" onClick={() => navigate('/referrals/calculator')}>
+              <Target className="h-4 w-4 mr-2" />
+              Earnings Calculator
             </Button>
             <Button variant="outline" onClick={copyReferralLink}>
               <Copy className="h-4 w-4 mr-2" />
