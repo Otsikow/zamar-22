@@ -30,7 +30,7 @@ const MiniPlayer: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 bg-gradient-card border-t border-border backdrop-blur-md z-40 animate-fade-in">
+    <div className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border z-40 animate-fade-in">
       {/* Interactive Progress Slider */}
       <div className="px-0 py-0">
         <Slider

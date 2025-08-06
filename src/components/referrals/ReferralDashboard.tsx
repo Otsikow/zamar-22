@@ -311,7 +311,7 @@ export const ReferralDashboard = () => {
               <Trophy className="h-4 w-4 mr-2" />
               View Full Dashboard
             </Button>
-            <Button variant="outline" onClick={() => navigate('/referrals/calculator')}>
+            <Button variant="outline" onClick={() => navigate('/more')}>
               <Target className="h-4 w-4 mr-2" />
               Earnings Calculator
             </Button>
