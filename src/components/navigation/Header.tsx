@@ -56,20 +56,6 @@ const Header = () => {
     }
   };
 
-  const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/pricing', label: 'Pricing' },
-    { href: '/songs', label: 'Songs' },
-    { href: '/radio', label: 'Radio' },
-    { href: '/about', label: 'About' },
-  ];
-
-  const isActive = (path: string): boolean => {
-    if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
-    return false;
-  };
-
   // Show loading state while auth is initializing
   if (loading) {
     return (
@@ -96,23 +82,6 @@ const Header = () => {
             <img src={logoImage} alt="Zamar" className="w-8 h-8" />
             <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(link.href)
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
 
           {/* Right Side - Auth & Actions */}
           <div className="flex items-center space-x-4">
@@ -185,27 +154,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-border">
-            <nav className="flex flex-col space-y-2 mt-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={`px-2 py-1 text-sm font-medium transition-colors hover:text-primary ${
-                    isActive(link.href)
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
+        {/* Mobile Navigation - removed as navigation links are no longer needed */}
       </div>
     </header>
   );
