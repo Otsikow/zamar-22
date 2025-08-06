@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import zamarLogo from '@/assets/zamar-logo.png';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Play, Pause, Music2, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -138,7 +136,7 @@ const SongsLibrary = () => {
         artist: "Zamar Artists",
         duration: 180, // Mock duration
         url: song.audio_url || undefined,
-        cover: song.thumbnail_url || zamarLogo,
+        cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png", // Use new thumbnail
       };
       
       // Create queue from all filtered songs  
@@ -148,7 +146,7 @@ const SongsLibrary = () => {
         artist: "Zamar Artists",
         duration: 180,
         url: s.audio_url || undefined,
-        cover: s.thumbnail_url || zamarLogo,
+        cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png", // Use new thumbnail
       }));
       
       playSong(nowPlayingSong, queue);
@@ -260,12 +258,12 @@ const SongsLibrary = () => {
 
           {/* Songs Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {[...Array(12)].map((_, i) => (
                 <Card key={i} className="bg-gradient-card border-border animate-pulse">
                   <CardContent className="p-0">
                     <div className="aspect-square bg-accent rounded-t-lg mb-4"></div>
-                    <div className="p-4 space-y-2">
+                    <div className="p-3 space-y-2">
                       <div className="h-4 bg-accent rounded w-3/4"></div>
                       <div className="h-3 bg-accent rounded w-1/2"></div>
                     </div>
@@ -285,7 +283,7 @@ const SongsLibrary = () => {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {filteredSongs.map((song) => (
                 <Card 
                   key={song.id} 
@@ -296,9 +294,9 @@ const SongsLibrary = () => {
                     {/* Thumbnail */}
                      <div className="relative aspect-square rounded-t-lg overflow-hidden bg-accent">
                        <img 
-                         src={song.thumbnail_url || zamarLogo} 
+                         src="/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png"
                          alt={song.title}
-                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                         className="w-full h-full object-contain p-3 bg-gradient-to-br from-amber-50 to-amber-100 group-hover:scale-105 transition-transform duration-300"
                        />
                       
                       {/* Play/Pause Button Overlay */}
@@ -306,21 +304,21 @@ const SongsLibrary = () => {
                         <Button 
                           size="icon" 
                           variant="secondary" 
-                          className="rounded-full bg-primary/20 hover:bg-primary/30 border-primary/30"
+                          className="rounded-full bg-white/70 hover:bg-white/90 w-8 h-8 shadow-lg backdrop-blur-sm border border-white/20"
                           onClick={(e) => handlePlaySong(e, song)}
                         >
                           {state.currentSong?.id === song.id && state.isPlaying ? (
-                            <Pause className="w-5 h-5 text-primary fill-primary" />
+                            <Pause className="w-4 h-4 text-black" />
                           ) : (
-                            <Play className="w-5 h-5 text-primary fill-primary" />
+                            <Play className="w-4 h-4 text-black ml-0.5" />
                           )}
                         </Button>
                       </div>
                     </div>
 
                     {/* Song Info */}
-                    <div className="p-4">
-                      <h3 className="font-playfair font-semibold text-foreground mb-2 line-clamp-1">
+                    <div className="p-3">
+                      <h3 className="font-playfair font-semibold text-foreground mb-2 line-clamp-1 text-sm">
                         {song.title}
                       </h3>
                       
@@ -336,7 +334,7 @@ const SongsLibrary = () => {
                             {song.occasion}
                           </Badge>
                         )}
-                        {song.tags?.slice(0, 2).map((tag, index) => (
+                        {song.tags?.slice(0, 1).map((tag, index) => (
                           <Badge key={index} variant="outline" className="text-xs border-border text-muted-foreground">
                             {tag}
                           </Badge>
