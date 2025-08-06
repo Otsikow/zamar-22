@@ -10,8 +10,8 @@ import { ThemeProvider } from "next-themes";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
-import FloatingChatButton from "@/components/chat/FloatingChatButton";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Import all pages
 import Index from "./pages/Index";
