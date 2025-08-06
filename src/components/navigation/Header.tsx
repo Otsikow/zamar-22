@@ -75,7 +75,7 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/library" className="flex items-center">
                         <Library className="mr-2 h-4 w-4" />
-                        My Library
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
