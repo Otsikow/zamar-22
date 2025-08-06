@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 
 export interface Song {
@@ -50,6 +49,7 @@ export const useNowPlaying = () => {
 
 export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const timeUpdateIntervalRef = useRef<NodeJS.Timeout>();
   
   const [state, setState] = useState<NowPlayingState>({
     currentSong: null,
@@ -63,24 +63,45 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isQueueMode: false,
   });
 
+  // More frequent time updates for smoother UI
+  useEffect(() => {
+    if (state.isPlaying && audioRef.current) {
+      timeUpdateIntervalRef.current = setInterval(() => {
+        if (audioRef.current && !audioRef.current.paused) {
+          const currentTime = audioRef.current.currentTime;
+          setState(prev => ({
+            ...prev,
+            currentTime: currentTime
+          }));
+        }
+      }, 100); // Update every 100ms for smooth slider movement
+    } else {
+      if (timeUpdateIntervalRef.current) {
+        clearInterval(timeUpdateIntervalRef.current);
+      }
+    }
+
+    return () => {
+      if (timeUpdateIntervalRef.current) {
+        clearInterval(timeUpdateIntervalRef.current);
+      }
+    };
+  }, [state.isPlaying]);
+
   // Effect to handle audio element changes
   useEffect(() => {
     if (!audioRef.current) return;
 
     const audio = audioRef.current;
 
-    // Set up audio event listeners
-    const handleTimeUpdate = () => {
-      setState(prev => ({
-        ...prev,
-        currentTime: audio.currentTime,
-      }));
-    };
-
     const handleLoadedMetadata = () => {
+      console.log('✅ Audio metadata loaded, duration:', audio.duration);
       setState(prev => ({
         ...prev,
-        duration: Math.floor(audio.duration),
+        currentSong: prev.currentSong ? {
+          ...prev.currentSong,
+          duration: Math.floor(audio.duration)
+        } : null
       }));
     };
 
@@ -145,14 +166,12 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }));
     };
 
-    audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('play', handlePlay);
 
     return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('pause', handlePause);
@@ -170,7 +189,6 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
 
     const audio = audioRef.current;
-    console.log('🎵 Audio element ready state:', audio.readyState);
 
     // Only process playback changes if audio is ready and has correct source
     if (audio.src !== state.currentSong.url) {
@@ -215,9 +233,6 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return;
     }
     
-    console.log('🎵 Current audio src:', audio.src);
-    console.log('🎵 New song URL:', state.currentSong.url);
-    
     // Only reload if the source is actually different
     if (audio.src !== state.currentSong.url) {
       console.log('🎵 Loading new audio source...');
@@ -228,12 +243,12 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       
       audio.src = state.currentSong.url;
       audio.volume = state.volume;
+      audio.loop = state.isLooping;
       
       console.log('🎵 Audio src set, calling load()');
       
       // Wait for loadedmetadata before trying to play
       const handleLoadedMetadata = () => {
-        console.log('✅ Audio metadata loaded, duration:', audio.duration);
         const duration = audio.duration;
         
         // Only set duration if it's a valid number
@@ -243,7 +258,8 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentSong: prev.currentSong ? {
               ...prev.currentSong,
               duration: Math.floor(duration)
-            } : null
+            } : null,
+            currentTime: 0
           }));
           
           // Try to play immediately after metadata loads
@@ -275,27 +291,20 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       
       // Force load the audio
       audio.load();
-    } else {
-      console.log('✅ Audio source unchanged, skipping reload');
     }
   }, [state.currentSong?.url]);
 
   // Separate effect to handle volume changes without reloading audio
   useEffect(() => {
     if (!audioRef.current) return;
-    
     audioRef.current.volume = state.volume;
   }, [state.volume]);
 
-  // Effect to seek audio when currentTime is set externally
+  // Separate effect to handle loop changes
   useEffect(() => {
     if (!audioRef.current) return;
-    
-    const audio = audioRef.current;
-    if (Math.abs(audio.currentTime - state.currentTime) > 1) {
-      audio.currentTime = state.currentTime;
-    }
-  }, [state.currentTime]);
+    audioRef.current.loop = state.isLooping;
+  }, [state.isLooping]);
 
   const playSong = useCallback((song: Song, queue: Song[] = []) => {
     if (!song || typeof song !== 'object') {
@@ -317,7 +326,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setState(prev => ({
       ...prev,
       currentSong: song,
-      isPlaying: false, // Start with false, will be set to true after audio loads
+      isPlaying: false,
       queue: newQueue,
       currentIndex: index >= 0 ? index : 0,
       currentTime: 0,
@@ -431,7 +440,6 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const toggleShuffle = useCallback(() => {
     setState(prev => {
       if (!prev.isShuffling && prev.queue.length > 0) {
-        // Enable shuffle: randomize queue but keep current song
         const currentSong = prev.currentSong;
         const shuffledQueue = shuffleArray(prev.queue);
         const newCurrentIndex = currentSong ? shuffledQueue.findIndex(s => s.id === currentSong.id) : 0;
@@ -443,7 +451,6 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           currentIndex: newCurrentIndex,
         };
       } else {
-        // Disable shuffle: keep current song position but don't reshuffle
         return {
           ...prev,
           isShuffling: false,
@@ -506,20 +513,15 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           preload="metadata"
           crossOrigin="anonymous"
           style={{ display: 'none' }}
-          loop={state.isLooping}
           onError={(e) => {
             const error = e.currentTarget.error;
-            if (error && error.code !== 4) { // Ignore MEDIA_ELEMENT_ERROR: Empty src attribute
+            if (error && error.code !== 4) {
               console.error('❌ Audio element error:', error);
               console.error('❌ Error code:', error.code);
               console.error('❌ Error message:', error.message);
             }
             setState(prev => ({ ...prev, isPlaying: false }));
           }}
-          onLoadStart={() => {}}
-          onCanPlay={() => {}}
-          onCanPlayThrough={() => {}}
-          onLoadedData={() => {}}
         />
       )}
       {children}

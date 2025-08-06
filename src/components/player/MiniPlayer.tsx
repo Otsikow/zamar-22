@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Play, Pause, SkipForward, SkipBack, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,15 +9,7 @@ import zamarLogo from '@/assets/zamar-logo.png';
 
 const MiniPlayer: React.FC = () => {
   const { state, togglePlayPause, nextSong, previousSong, seekTo } = useNowPlaying();
-  const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
-
-  // Update progress based on real audio data
-  useEffect(() => {
-    if (state.currentSong && state.currentSong.duration > 0) {
-      setProgress((state.currentTime / state.currentSong.duration) * 100);
-    }
-  }, [state.currentTime, state.currentSong]);
 
   if (!state.currentSong) return null;
 
@@ -27,7 +20,6 @@ const MiniPlayer: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  
   const handleProgressChange = (value: number[]) => {
     seekTo(value[0]);
   };
@@ -38,8 +30,8 @@ const MiniPlayer: React.FC = () => {
 
   return (
     <div className="fixed bottom-16 left-0 right-0 bg-gradient-card border-t border-border backdrop-blur-md z-40 animate-fade-in">
-      {/* Interactive Progress Slider */}
-      <div className="px-0 py-0">
+      {/* Interactive Progress Slider - force re-render with key */}
+      <div className="px-0 py-0" key={Math.floor(state.currentTime * 10)}>
         <Slider
           value={[state.currentTime || 0]}
           max={Math.max(state.currentSong?.duration || 100, 1)}
@@ -71,8 +63,8 @@ const MiniPlayer: React.FC = () => {
           </div>
         </div>
 
-        {/* Time Display */}
-        <div className="text-xs text-muted-foreground hidden sm:block">
+        {/* Time Display - force re-render */}
+        <div className="text-xs text-muted-foreground hidden sm:block" key={Math.floor(state.currentTime)}>
           {formatTime(state.currentTime)} / {formatTime(state.currentSong.duration)}
         </div>
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,11 +56,6 @@ const SongPlayer = () => {
   const duration = state.currentSong?.duration || 0;
   const volume = Math.round(state.volume * 100);
 
-  // Add effect to log time updates for debugging
-  useEffect(() => {
-    console.log('🕐 SongPlayer currentTime updated:', currentTime, 'isPlaying:', isPlaying);
-  }, [currentTime, isPlaying]);
-
   useEffect(() => {
     if (id) {
       fetchSong();
@@ -97,8 +91,8 @@ const SongPlayer = () => {
       if (songData) {
         await supabase.from("song_plays").insert({
           song_id: id,
-          user_id: null, // Can be updated with auth user if needed
-          country: null // Can be detected with IP geolocation
+          user_id: null,
+          country: null
         });
       }
 
@@ -125,16 +119,14 @@ const SongPlayer = () => {
     }
 
     if (state.currentSong?.id === song.id) {
-      // If this song is currently playing, toggle play/pause
       togglePlayPause();
     } else {
-      // If this is a different song, start playing it
       console.log('Playing song with URL:', song.audio_url);
       const nowPlayingSong = {
         id: song.id,
         title: song.title,
         artist: "Zamar Artists",
-        duration: 240, // We'll get real duration from metadata
+        duration: 240,
         url: song.audio_url,
         cover: song.thumbnail_url || undefined,
       };
@@ -149,7 +141,6 @@ const SongPlayer = () => {
   };
 
   const handleVolumeChange = (value: number[]) => {
-    // Prevent volume changes from affecting playback state
     const newVolume = value[0] / 100;
     setVolume(newVolume);
   };
@@ -160,9 +151,6 @@ const SongPlayer = () => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
-
-  // Add a key to force re-render when currentTime changes significantly
-  const progressKey = Math.floor(currentTime);
 
   if (loading) {
     return (
@@ -224,8 +212,8 @@ const SongPlayer = () => {
                 <WaveformVisualization className="w-full h-full" />
               </div>
 
-              {/* Progress Bar with forced re-render */}
-              <div className="space-y-2" key={progressKey}>
+              {/* Progress Bar - force re-render with key based on currentTime */}
+              <div className="space-y-2" key={Math.floor(currentTime * 10)}>
                 <Slider
                   value={[currentTime]}
                   max={Math.max(duration, 1)}
@@ -288,7 +276,6 @@ const SongPlayer = () => {
             <div className="text-sm text-muted-foreground">Follow along and sing it back!</div>
           </div>
 
-          {/* Tabs for Content */}
           <Tabs defaultValue="lyrics" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
@@ -310,12 +297,10 @@ const SongPlayer = () => {
                     />
                   )}
                   
-                   {/* Fallback to regular lyrics if no synced lyrics */}
                    <div className="p-6">
                      {lyrics ? (
                        <div className="whitespace-pre-line text-foreground leading-relaxed">
                          {(() => {
-                           // Remove scripture inspiration line from lyrics display
                            const lyricsText = lyrics.text || "Lyrics not available";
                            const cleanedLyrics = lyricsText.replace(/Scripture Inspiration:[^\n]*\n\n?/, '');
                            return cleanedLyrics;
@@ -362,7 +347,6 @@ const SongPlayer = () => {
                 </CardHeader>
                 <CardContent>
                   {(() => {
-                    // Extract scripture inspiration from lyrics text
                     const scriptureMatch = lyrics?.text?.match(/Scripture Inspiration:\s*([^–\n]+)\s*–\s*([^"\n]+)/);
                     if (scriptureMatch) {
                       const reference = scriptureMatch[1].trim();
