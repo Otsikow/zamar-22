@@ -107,7 +107,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <Button variant="outline" asChild className="w-full">
-                <Link to="/profile">View Analytics</Link>
+                <Link to="/analytics">View Analytics</Link>
               </Button>
             </CardContent>
           </Card>

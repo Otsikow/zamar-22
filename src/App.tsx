@@ -33,6 +33,7 @@ import ReferralDashboard from "./pages/ReferralDashboard";
 import AdminReferralPayoutDashboard from "./pages/AdminReferralPayoutDashboard";
 import Terms from "./pages/Terms";
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import BottomNav from "@/components/navigation/BottomNav";
 import Header from "@/components/navigation/Header";
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/about" element={<AboutUs />} />
               <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
               <Route path="/playlist/manage" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
               <Route path="/testimonies" element={<Testimonies />} />
