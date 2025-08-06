@@ -1,103 +1,235 @@
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Music, Menu, X, User, LogOut, Settings, Library } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { NotificationBell } from "@/components/ui/notification-bell";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Bell, User, LogOut, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import logoImage from '@/assets/zamar-logo.png';
 
 const Header = () => {
-  const { user, signOut } = useAuth();
-  const { isAdmin } = useIsAdmin();
+  const { user, loading, signOut } = useAuth();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  // Don't render anything while auth is loading
+  if (loading) {
+    return (
+      <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center space-x-2">
+              <img src={logoImage} alt="Zamar" className="w-8 h-8" />
+              <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!error && data) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('read', false)
+          .order('created_at', { ascending: false });
+
+        if (!error && data) {
+          setNotifications(data);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, [user]);
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const navLinks = [
-    { href: "/songs", label: "Songs" },
-    { href: "/radio", label: "Radio" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/testimonies", label: "Testimonies" },
-    { href: "/donate", label: "Donate" },
+    { href: '/', label: 'Home' },
+    { href: '/pricing', label: 'Pricing' },
+    { href: '/songs', label: 'Songs' },
+    { href: '/radio', label: 'Radio' },
+    { href: '/about', label: 'About' },
   ];
 
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/20 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20">
+    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/307092cb-e511-4af2-8a94-9dbca5d404f2.png" 
-                alt="Zamar Logo" 
-                className="h-10 w-auto group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={logoImage} alt="Zamar" className="w-8 h-8" />
+            <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
           </Link>
 
-          {/* Authentication Buttons Only */}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive(link.href)
+                    ? 'text-primary'
+                    : 'text-muted-foreground'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right Side - Auth & Actions */}
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <NotificationBell />
-                <Button variant="outline" asChild className="hidden sm:flex">
-                  <Link to="/dashboard">Dashboard</Link>
+                {/* Notifications */}
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/admin/notifications" className="relative">
+                    <Bell className="h-4 w-4" />
+                    {notifications.length > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
+                        {notifications.length}
+                      </Badge>
+                    )}
+                  </Link>
                 </Button>
+
+                {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email} />
-                        <AvatarFallback>
-                          {user.email?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                    <Button variant="ghost" size="sm">
+                      <User className="h-4 w-4 mr-2" />
+                      Account
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <div className="flex items-center justify-start gap-2 p-2">
-                      <div className="flex flex-col space-y-1 leading-none">
-                        <p className="font-medium">{user.user_metadata?.first_name || user.email}</p>
-                        <p className="w-[200px] truncate text-sm text-muted-foreground">
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                      <Link to="/request" className="flex items-center">
-                        <Music className="mr-2 h-4 w-4" />
-                        Create Song
+                      <Link to="/profile">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/library">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Library
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Admin
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
+                    <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      Sign out
+                      Sign Out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
-              <>
-                <Button variant="outline" asChild>
-                  <Link to="/auth">Sign In</Link>
-                </Button>
-                <Button variant="hero" asChild className="hidden sm:flex">
-                  <Link to="/request">Create Song</Link>
-                </Button>
-              </>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
             )}
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-border">
+            <nav className="flex flex-col space-y-2 mt-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`px-2 py-1 text-sm font-medium transition-colors hover:text-primary ${
+                    isActive(link.href)
+                      ? 'text-primary'
+                      : 'text-muted-foreground'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
