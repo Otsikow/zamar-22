@@ -72,7 +72,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const handleTimeUpdate = () => {
       setState(prev => ({
         ...prev,
-        currentTime: Math.floor(audio.currentTime),
+        currentTime: audio.currentTime,
       }));
     };
 
