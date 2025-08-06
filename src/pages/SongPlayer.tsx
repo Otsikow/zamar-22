@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, Minimize2, Heart, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
+import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, Heart, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 
@@ -50,11 +51,16 @@ const SongPlayer = () => {
     return () => window.removeEventListener('seekToTime', handleSeekToTime as EventListener);
   }, [seekTo]);
 
-  // Get current state from global context
+  // Get current state from global context - ensure we're getting live updates
   const isPlaying = state.currentSong?.id === song?.id && state.isPlaying;
-  const currentTime = state.currentTime;
+  const currentTime = state.currentTime || 0;
   const duration = state.currentSong?.duration || 0;
   const volume = Math.round(state.volume * 100);
+
+  // Add effect to log time updates for debugging
+  useEffect(() => {
+    console.log('🕐 SongPlayer currentTime updated:', currentTime, 'isPlaying:', isPlaying);
+  }, [currentTime, isPlaying]);
 
   useEffect(() => {
     if (id) {
@@ -137,7 +143,9 @@ const SongPlayer = () => {
   };
 
   const handleProgressChange = (value: number[]) => {
-    seekTo(value[0]);
+    const newTime = value[0];
+    console.log('🎯 Seeking to time:', newTime);
+    seekTo(newTime);
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -152,6 +160,9 @@ const SongPlayer = () => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
+
+  // Add a key to force re-render when currentTime changes significantly
+  const progressKey = Math.floor(currentTime);
 
   if (loading) {
     return (
@@ -213,19 +224,19 @@ const SongPlayer = () => {
                 <WaveformVisualization className="w-full h-full" />
               </div>
 
-              {/* Progress Bar */}
-              <div className="space-y-2">
+              {/* Progress Bar with forced re-render */}
+              <div className="space-y-2" key={progressKey}>
                 <Slider
-                  value={[currentTime || 0]}
-                  max={Math.max(duration || 100, 1)}
+                  value={[currentTime]}
+                  max={Math.max(duration, 1)}
                   step={0.1}
                   onValueChange={handleProgressChange}
                   className="w-full"
                   disabled={!song?.audio_url}
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{formatTime(currentTime || 0)}</span>
-                  <span>{formatTime(duration || 0)}</span>
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
                 </div>
               </div>
 
