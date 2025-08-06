@@ -348,7 +348,17 @@ const Library = () => {
                               </Link>
                             </Button>
                             {purchase.songs.audio_url && (
-                              <Button size="sm">
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  const link = document.createElement('a');
+                                  link.href = purchase.songs.audio_url!;
+                                  link.download = `${purchase.songs.title}.mp3`;
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                }}
+                              >
                                 <Download className="w-4 h-4 mr-2" />
                                 Download
                               </Button>
@@ -442,18 +452,18 @@ const Library = () => {
                             <Button 
                               size="sm" 
                               variant="outline" 
-                              asChild
                               className="flex-1 min-w-0"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = song.lyrics_url!;
+                                link.download = `${song.song_title}-lyrics.txt`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }}
                             >
-                              <a 
-                                href={song.lyrics_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                download
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                📄 Download Lyrics
-                              </a>
+                              <Download className="w-4 h-4 mr-2" />
+                              📄 Download Lyrics
                             </Button>
                           )}
                           
@@ -461,16 +471,18 @@ const Library = () => {
                             <Button 
                               size="sm" 
                               variant="outline"
-                              asChild
                               className="flex-1 min-w-0"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = song.audio_url!;
+                                link.download = `${song.song_title}.mp3`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }}
                             >
-                              <a 
-                                href={song.audio_url} 
-                                download={`${song.song_title}.mp3`}
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                Download Song
-                              </a>
+                              <Download className="w-4 h-4 mr-2" />
+                              Download Song
                             </Button>
                           )}
                         </div>
