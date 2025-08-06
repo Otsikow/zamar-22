@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 
 export interface Song {
@@ -86,7 +87,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const handleEnded = () => {
       setState(prev => {
         if (prev.isLooping) {
-          // Loop the current song
+          // Loop the current song - restart immediately
           if (audioRef.current) {
             audioRef.current.currentTime = 0;
             audioRef.current.play().catch(console.error);
@@ -128,14 +129,34 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       });
     };
 
+    // Handle audio pause events (like when audio stops loading)
+    const handlePause = () => {
+      setState(prev => ({
+        ...prev,
+        isPlaying: false,
+      }));
+    };
+
+    // Handle audio play events
+    const handlePlay = () => {
+      setState(prev => ({
+        ...prev,
+        isPlaying: true,
+      }));
+    };
+
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('play', handlePlay);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('play', handlePlay);
     };
   }, []);
 
@@ -311,9 +332,15 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const seekTo = useCallback((time: number) => {
+    if (!audioRef.current) return;
+    
+    const audio = audioRef.current;
+    const clampedTime = Math.max(0, Math.min(time, audio.duration || 0));
+    
+    audio.currentTime = clampedTime;
     setState(prev => ({
       ...prev,
-      currentTime: time,
+      currentTime: clampedTime,
     }));
   }, []);
 
@@ -366,10 +393,15 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const toggleLoop = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      isLooping: !prev.isLooping,
-    }));
+    console.log('🔄 Toggle loop called');
+    setState(prev => {
+      const newLoopState = !prev.isLooping;
+      console.log('🔄 Loop state changing from', prev.isLooping, 'to', newLoopState);
+      return {
+        ...prev,
+        isLooping: newLoopState,
+      };
+    });
   }, []);
 
   const shuffleArray = useCallback((array: Song[]) => {
@@ -474,6 +506,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           preload="metadata"
           crossOrigin="anonymous"
           style={{ display: 'none' }}
+          loop={state.isLooping}
           onError={(e) => {
             const error = e.currentTarget.error;
             if (error && error.code !== 4) { // Ignore MEDIA_ELEMENT_ERROR: Empty src attribute
