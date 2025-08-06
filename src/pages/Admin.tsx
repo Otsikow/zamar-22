@@ -21,6 +21,7 @@ import RequestReviewPanel from "@/components/admin/RequestReviewPanel";
 import TestimonyModerationPanel from "@/components/admin/TestimonyModerationPanel";
 import { ReferralAnalytics } from "@/components/admin/ReferralAnalytics";
 import CustomSongUpload from "@/components/admin/CustomSongUpload";
+import SongAnalytics from "@/components/admin/SongAnalytics";
 
 interface CustomSongRequest {
   id: string;
@@ -535,10 +536,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-10 gap-1 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-1 h-auto p-1">
             <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
             <TabsTrigger value="custom-upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
             <TabsTrigger value="songs" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
+            <TabsTrigger value="song-insights" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Song Insights</TabsTrigger>
             <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
             <TabsTrigger value="chat" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Chat</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Analytics</TabsTrigger>
@@ -829,6 +831,11 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Song Insights & Analytics */}
+          <TabsContent value="song-insights">
+            <SongAnalytics />
           </TabsContent>
 
           {/* Review Custom Song Requests */}
