@@ -1,5 +1,5 @@
 
-import { Heart, Cross } from "lucide-react";
+import { Heart, Cross, Info, Music, DollarSign, Plus, Users, HelpCircle, FileText, Mail, HeartHandshake } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -30,27 +30,32 @@ const Footer = () => {
             <h3 className="font-playfair font-semibold text-foreground mb-4">Quick Links</h3>
             <ul className="space-y-2 font-inter">
               <li>
-                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <Info className="w-4 h-4" />
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/songs" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/songs" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <Music className="w-4 h-4" />
                   Song Library
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/pricing" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/request" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/request" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
                   Create Song
                 </Link>
               </li>
               <li>
-                <Link to="/testimonies" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/testimonies" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <Users className="w-4 h-4" />
                   Testimonies
                 </Link>
               </li>
@@ -62,22 +67,26 @@ const Footer = () => {
             <h3 className="font-playfair font-semibold text-foreground mb-4">Support</h3>
             <ul className="space-y-2 font-inter">
               <li>
-                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/faq" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4" />
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <a href="mailto:hello@zamar.com" className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="mailto:hello@zamar.com" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
                   Contact Us
                 </a>
               </li>
               <li>
-                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <HeartHandshake className="w-4 h-4" />
                   Support Our Mission
                 </Link>
               </li>

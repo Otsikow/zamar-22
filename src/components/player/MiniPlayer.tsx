@@ -21,6 +21,7 @@ const MiniPlayer: React.FC = () => {
   };
 
   const handleProgressChange = (value: number[]) => {
+    console.log('🎯 MiniPlayer seeking to:', value[0]);
     seekTo(value[0]);
   };
 
@@ -30,8 +31,8 @@ const MiniPlayer: React.FC = () => {
 
   return (
     <div className="fixed bottom-16 left-0 right-0 bg-gradient-card border-t border-border backdrop-blur-md z-40 animate-fade-in">
-      {/* Interactive Progress Slider - force re-render with key */}
-      <div className="px-0 py-0" key={Math.floor(state.currentTime * 10)}>
+      {/* Interactive Progress Slider */}
+      <div className="px-0 py-0">
         <Slider
           value={[state.currentTime || 0]}
           max={Math.max(state.currentSong?.duration || 100, 1)}
@@ -63,8 +64,8 @@ const MiniPlayer: React.FC = () => {
           </div>
         </div>
 
-        {/* Time Display - force re-render */}
-        <div className="text-xs text-muted-foreground hidden sm:block" key={Math.floor(state.currentTime)}>
+        {/* Time Display */}
+        <div className="text-xs text-muted-foreground hidden sm:block">
           {formatTime(state.currentTime)} / {formatTime(state.currentSong.duration)}
         </div>
 
