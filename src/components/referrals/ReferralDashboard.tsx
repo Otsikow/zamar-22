@@ -307,11 +307,11 @@ export const ReferralDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <Button onClick={() => navigate('/referrals/dashboard')}>
+            <Button onClick={() => navigate('/dashboard')}>
               <Trophy className="h-4 w-4 mr-2" />
               View Full Dashboard
             </Button>
-            <Button variant="outline" onClick={() => navigate('/more')}>
+            <Button variant="outline" onClick={() => navigate('/referrals/calculator')}>
               <Target className="h-4 w-4 mr-2" />
               Earnings Calculator
             </Button>
