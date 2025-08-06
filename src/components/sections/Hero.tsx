@@ -146,7 +146,7 @@ const Hero = () => {
             <div className="text-center space-y-6">
               <div className="flex items-center justify-center mb-6">
                 <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
-                  <Heart className="w-8 h-8 text-black" />
+                  <Heart className="w-8 h-8 text-primary-foreground" />
                 </div>
               </div>
               
@@ -188,7 +188,7 @@ const Hero = () => {
               
               <Button 
                 size="lg" 
-                className="bg-gradient-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
+                className="bg-gradient-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
                 asChild
               >
                 <Link to="/donate">
@@ -204,8 +204,8 @@ const Hero = () => {
             <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="text-center space-y-6">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg">
-                    <DollarSign className="w-8 h-8 text-black" />
+                  <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-lg border border-primary/30">
+                    <DollarSign className="w-8 h-8 text-primary" />
                   </div>
                 </div>
                 
@@ -214,7 +214,7 @@ const Hero = () => {
                     Earn Referral Bonus
                   </h3>
                   
-                  <h4 className="text-lg text-accent font-semibold">
+                  <h4 className="text-lg text-primary font-semibold">
                     Share & Earn Commissions
                   </h4>
                   
@@ -226,40 +226,40 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <TrendingUp className="w-6 h-6 text-accent" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
+                      <TrendingUp className="w-6 h-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-accent">15%</div>
+                      <div className="text-2xl font-bold text-primary">15%</div>
                       <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Users className="w-6 h-6 text-accent" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
+                      <Users className="w-6 h-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-accent">10%</div>
+                      <div className="text-2xl font-bold text-primary">10%</div>
                       <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
                     <div className="flex items-center justify-between gap-3">
                       <code className="text-sm font-mono text-foreground/80 truncate">
                         zamarsongs.com/auth?ref={referralCode}
                       </code>
-                      <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0">
-                        <Copy className="w-4 h-4" />
+                      <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0 border-primary/30 text-primary hover:bg-primary/10">
+                        <Copy className="w-4 h-4 text-primary" />
                       </Button>
                     </div>
                   </div>
                   
                   <Button 
                     size="lg" 
-                    className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
+                    className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full hover:bg-primary/90"
                     asChild
                   >
                     <Link to="/referrals">
@@ -277,8 +277,8 @@ const Hero = () => {
             <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="text-center space-y-6">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg">
-                    <DollarSign className="w-8 h-8 text-black" />
+                  <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-lg border border-primary/30">
+                    <DollarSign className="w-8 h-8 text-primary" />
                   </div>
                 </div>
                 
@@ -287,7 +287,7 @@ const Hero = () => {
                     Earn Referral Bonus
                   </h3>
                   
-                  <h4 className="text-lg text-accent font-semibold">
+                  <h4 className="text-lg text-primary font-semibold">
                     Join & Start Earning
                   </h4>
                   
@@ -299,20 +299,20 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <TrendingUp className="w-6 h-6 text-accent" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
+                      <TrendingUp className="w-6 h-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-accent">15%</div>
+                      <div className="text-2xl font-bold text-primary">15%</div>
                       <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Users className="w-6 h-6 text-accent" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
+                      <Users className="w-6 h-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-accent">10%</div>
+                      <div className="text-2xl font-bold text-primary">10%</div>
                       <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ const Hero = () => {
                 
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
+                  className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full hover:bg-primary/90"
                   asChild
                 >
                   <Link to="/auth">
