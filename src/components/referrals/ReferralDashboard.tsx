@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Users, DollarSign, TrendingUp, ExternalLink } from 'lucide-react';
+import { Copy, Users, DollarSign, TrendingUp, ExternalLink, Gift, Target, Trophy } from 'lucide-react';
 import SocialShare from '@/components/ui/social-share';
 
 interface ReferralData {
@@ -13,6 +14,13 @@ interface ReferralData {
   directReferrals: number;
   indirectReferrals: number;
   totalEarnings: number;
+}
+
+interface ReferralStats {
+  totalReferrals: number;
+  totalEarned: number;
+  paidEarnings: number;
+  pendingPayout: number;
 }
 
 export const ReferralDashboard = () => {
@@ -24,11 +32,18 @@ export const ReferralDashboard = () => {
     indirectReferrals: 0,
     totalEarnings: 0
   });
+  const [stats, setStats] = useState<ReferralStats>({
+    totalReferrals: 0,
+    totalEarned: 0,
+    paidEarnings: 0,
+    pendingPayout: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
       generateReferralCode();
+      fetchReferralStats();
     }
   }, [user]);
 
@@ -51,6 +66,49 @@ export const ReferralDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to generate referral code",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchReferralStats = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch user's referral statistics
+      const { data: statsData, error: statsError } = await supabase
+        .rpc('get_user_referral_stats', { target_user_id: user.id });
+      
+      if (statsError) throw statsError;
+
+      const userStats = statsData?.[0] || {
+        total_referrals: 0,
+        active_referrals: 0,
+        inactive_referrals: 0,
+        total_earned: 0,
+        paid_earnings: 0,
+        pending_earnings: 0
+      };
+
+      setStats({
+        totalReferrals: Number(userStats.total_referrals),
+        totalEarned: Number(userStats.total_earned),
+        paidEarnings: Number(userStats.paid_earnings),
+        pendingPayout: Number(userStats.pending_earnings)
+      });
+
+      setData(prev => ({
+        ...prev,
+        directReferrals: Number(userStats.active_referrals),
+        indirectReferrals: Number(userStats.inactive_referrals),
+        totalEarnings: Number(userStats.total_earned)
+      }));
+
+    } catch (error) {
+      console.error('Error fetching referral stats:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load referral data",
         variant: "destructive"
       });
     } finally {
@@ -84,6 +142,19 @@ export const ReferralDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Welcome Banner */}
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-primary text-2xl">
+            <Gift className="h-6 w-6" />
+            Welcome to Your Referral Dashboard!
+          </CardTitle>
+          <CardDescription className="text-lg">
+            Earn commissions by sharing Zamar with others. Start earning today with our multi-level referral system!
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
       {/* Referral Link Section */}
       <Card className="border-primary/20">
         <CardHeader>
@@ -92,7 +163,7 @@ export const ReferralDashboard = () => {
             Your Referral Link
           </CardTitle>
           <CardDescription>
-            Share this link to earn commissions when supporters upgrade or purchase custom song through your referrals
+            Share this link to earn commissions when supporters upgrade or purchase custom songs through your referrals
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,57 +202,153 @@ export const ReferralDashboard = () => {
       </Card>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="border-primary/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Direct Referrals</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Referrals</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <Users className="h-8 w-8 text-primary" />
-              <span className="text-3xl font-bold text-primary">{data.directReferrals}</span>
+              <span className="text-3xl font-bold text-primary">{stats.totalReferrals}</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Level 1 referrals</p>
+            <p className="text-xs text-muted-foreground mt-2">All referrals</p>
           </CardContent>
         </Card>
 
         <Card className="border-primary/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Indirect Referrals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-8 w-8 text-accent" />
-              <span className="text-3xl font-bold text-foreground">{data.indirectReferrals}</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">Level 2 referrals</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-primary/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earned</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <DollarSign className="h-8 w-8 text-success" />
-              <span className="text-3xl font-bold text-success">£{data.totalEarnings.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-success">£{stats.totalEarned.toFixed(2)}</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">All-time commissions</p>
+            <p className="text-xs text-muted-foreground mt-2">All-time earnings</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Paid Out</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Trophy className="h-8 w-8 text-primary" />
+              <span className="text-3xl font-bold text-primary">£{stats.paidEarnings.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">Successfully paid</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Payout</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Target className="h-8 w-8 text-warning" />
+              <span className="text-3xl font-bold text-warning">£{stats.pendingPayout.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">Awaiting payment</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Coming Soon Notice */}
+      {/* How It Works */}
       <Card className="border-primary/20">
         <CardHeader>
-          <CardTitle>Referral System - Coming Soon!</CardTitle>
-          <CardDescription>The full referral tracking system is being implemented</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            How Your Referral System Works
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <p className="mb-4">Your referral link is ready, but tracking and rewards are currently being set up.</p>
-            <p className="text-sm">Once complete, you'll see your referrals and earnings here!</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 border border-primary/20 rounded-lg">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-primary font-bold text-xl">1</span>
+              </div>
+              <h3 className="font-semibold mb-2">Share Your Link</h3>
+              <p className="text-sm text-muted-foreground">
+                Share your unique referral link with friends, family, or on social media
+              </p>
+            </div>
+            
+            <div className="text-center p-4 border border-primary/20 rounded-lg">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-primary font-bold text-xl">2</span>
+              </div>
+              <h3 className="font-semibold mb-2">They Sign Up & Upgrade</h3>
+              <p className="text-sm text-muted-foreground">
+                When someone uses your link to sign up and makes a purchase ≥£25
+              </p>
+            </div>
+            
+            <div className="text-center p-4 border border-primary/20 rounded-lg">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-primary font-bold text-xl">3</span>
+              </div>
+              <h3 className="font-semibold mb-2">You Earn Commissions</h3>
+              <p className="text-sm text-muted-foreground">
+                Get 15% on direct referrals and 10% on their referrals too!
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card className="border-primary/20">
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4">
+            <Button asChild>
+              <a href="/referrals/dashboard">
+                <Trophy className="h-4 w-4 mr-2" />
+                View Full Dashboard
+              </a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/referrals/calculator">
+                <Target className="h-4 w-4 mr-2" />
+                Earnings Calculator
+              </a>
+            </Button>
+            <Button variant="outline" onClick={copyReferralLink}>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Link Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Active System Notice */}
+      <Card className="border-success/20 bg-success/5">
+        <CardHeader>
+          <CardTitle className="text-success">✅ Referral System - Fully Active!</CardTitle>
+          <CardDescription>Your referral tracking and earnings are now live and automated</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4">
+              <div className="text-2xl mb-2">🔗</div>
+              <h4 className="font-semibold text-sm mb-1">Link Ready</h4>
+              <p className="text-xs text-muted-foreground">Your referral link is active and tracking</p>
+            </div>
+            <div className="text-center p-4">
+              <div className="text-2xl mb-2">💰</div>
+              <h4 className="font-semibold text-sm mb-1">Auto Earnings</h4>
+              <p className="text-xs text-muted-foreground">Commissions calculated automatically</p>
+            </div>
+            <div className="text-center p-4">
+              <div className="text-2xl mb-2">📊</div>
+              <h4 className="font-semibold text-sm mb-1">Real-time Stats</h4>
+              <p className="text-xs text-muted-foreground">Track your progress in real-time</p>
+            </div>
           </div>
         </CardContent>
       </Card>
