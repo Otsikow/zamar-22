@@ -74,6 +74,7 @@ const App = () => (
                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
                     <Route path="/radio" element={<Radio />} />
                     <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
+                    <Route path="/songs" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
                     <Route path="/songs/:id" element={<ProtectedRoute><SongDetail /></ProtectedRoute>} />
                     <Route path="/player/:id" element={<ProtectedRoute><SongPlayer /></ProtectedRoute>} />
                     <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
