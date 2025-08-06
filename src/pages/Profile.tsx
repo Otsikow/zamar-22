@@ -147,7 +147,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-32"> {/* Added bottom padding for mini player + nav */}
+    <div className="min-h-screen bg-background text-foreground pb-32 pt-24"> {/* Added top padding for header + bottom padding for mini player + nav */}
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
