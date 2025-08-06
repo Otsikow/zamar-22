@@ -142,57 +142,57 @@ const Hero = () => {
         {/* Two Column Layout for Cards */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
           {/* Support Our Mission Section */}
-          <div className="relative bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 md:p-8 shadow-xl">
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/30 rounded-full animate-pulse" />
-            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-pulse animation-delay-1000" />
-            
-            <div className="text-center space-y-4">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center shadow-lg">
-                  <Heart className="w-5 h-5 text-black" />
+          <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="text-center space-y-6">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
+                  <Heart className="w-8 h-8 text-black" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-playfair font-semibold text-foreground">
-                  Support Our Mission
-                </h3>
               </div>
               
-              <h4 className="text-base md:text-lg text-primary font-medium">
-                Empowering Communities Through Music
-              </h4>
-              
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Help us create meaningful music for communities, ministries, and churches worldwide. 
-                Every contribution supports hope, healing, and inspiration through custom songs.
-              </p>
+              <div className="space-y-4">
+                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                  Support Our Mission
+                </h3>
+                
+                <h4 className="text-lg text-primary font-semibold">
+                  Empowering Communities Through Music
+                </h4>
+                
+                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                  Help us create meaningful music for communities, ministries, and churches worldwide. 
+                  Every contribution supports hope, healing, and inspiration through custom songs.
+                </p>
+              </div>
 
-              <div className="grid grid-cols-3 gap-3 my-6 text-xs">
-                <div className="flex flex-col items-center gap-1">
-                  <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-                    <span className="text-primary text-sm">🎵</span>
+              <div className="grid grid-cols-3 gap-6 py-6">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-primary text-xl">🎵</span>
                   </div>
-                  <span className="text-muted-foreground text-center">Free Songs</span>
+                  <span className="text-sm text-muted-foreground font-medium">Free Songs</span>
                 </div>
-                <div className="flex flex-col items-center gap-1">
-                  <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-                    <span className="text-primary text-sm">🌍</span>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-primary text-xl">🌍</span>
                   </div>
-                  <span className="text-muted-foreground text-center">Global Reach</span>
+                  <span className="text-sm text-muted-foreground font-medium">Global Reach</span>
                 </div>
-                <div className="flex flex-col items-center gap-1">
-                  <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
-                    <span className="text-primary text-sm">⛪</span>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-primary text-xl">⛪</span>
                   </div>
-                  <span className="text-muted-foreground text-center">Community</span>
+                  <span className="text-sm text-muted-foreground font-medium">Community</span>
                 </div>
               </div>
               
               <Button 
                 size="lg" 
-                className="bg-gradient-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0"
+                className="bg-gradient-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
                 asChild
               >
                 <Link to="/donate">
-                  <Heart className="w-4 h-4 mr-2" />
+                  <Heart className="w-5 h-5 mr-2" />
                   Donate Now
                 </Link>
               </Button>
@@ -201,114 +201,130 @@ const Hero = () => {
 
           {/* Referral Bonus Section */}
           {user && (
-            <div className="relative bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 backdrop-blur-sm border border-accent/20 rounded-2xl p-6 md:p-8 shadow-xl">
-              <div className="absolute -top-2 -left-2 w-4 h-4 bg-accent/30 rounded-full animate-pulse animation-delay-500" />
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-accent/20 rounded-full animate-pulse animation-delay-1500" />
-              
-              <div className="text-center space-y-4">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-accent to-accent/80 rounded-full flex items-center justify-center shadow-lg">
-                    <DollarSign className="w-5 h-5 text-black" />
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-center space-y-6">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg">
+                    <DollarSign className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-playfair font-semibold text-foreground">
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-playfair font-bold text-foreground">
                     Earn Referral Bonus
                   </h3>
-                </div>
-                
-                <h4 className="text-base md:text-lg text-accent font-medium">
-                  Share & Earn Commissions
-                </h4>
-                
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Invite friends to Zamar and earn 15% commission on their purchases. 
-                  Share the gift of custom music while building your income.
-                </p>
-
-                <div className="grid grid-cols-2 gap-3 my-6 text-xs">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
-                      <TrendingUp className="w-3 h-3 text-accent" />
-                    </div>
-                    <span className="text-muted-foreground text-center">15% Direct</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
-                      <Users className="w-3 h-3 text-accent" />
-                    </div>
-                    <span className="text-muted-foreground text-center">10% Indirect</span>
-                  </div>
+                  
+                  <h4 className="text-lg text-accent font-semibold">
+                    Share & Earn Commissions
+                  </h4>
+                  
+                  <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                    Invite friends to Zamar and earn commission on their purchases. 
+                    Share the gift of custom music while building your income.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg text-xs">
-                  <code className="flex-1 font-mono truncate">
-                    zamarsongs.com/auth?ref={referralCode}
-                  </code>
-                  <Button onClick={copyReferralLink} size="sm" variant="outline" className="px-2 py-1">
-                    <Copy className="w-3 h-3" />
+                <div className="grid grid-cols-2 gap-6 py-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <TrendingUp className="w-6 h-6 text-accent" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-accent">15%</div>
+                      <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-accent" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-accent">10%</div>
+                      <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+                    <div className="flex items-center justify-between gap-3">
+                      <code className="text-sm font-mono text-foreground/80 truncate">
+                        zamarsongs.com/auth?ref={referralCode}
+                      </code>
+                      <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0">
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
+                    asChild
+                  >
+                    <Link to="/referrals">
+                      <ExternalLink className="w-5 h-5 mr-2" />
+                      View Dashboard
+                    </Link>
                   </Button>
                 </div>
-                
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0"
-                  asChild
-                >
-                  <Link to="/referrals">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Dashboard
-                  </Link>
-                </Button>
               </div>
             </div>
           )}
 
           {/* Guest Referral Section */}
           {!user && (
-            <div className="relative bg-gradient-to-r from-accent/10 via-accent/5 to-accent/10 backdrop-blur-sm border border-accent/20 rounded-2xl p-6 md:p-8 shadow-xl">
-              <div className="absolute -top-2 -left-2 w-4 h-4 bg-accent/30 rounded-full animate-pulse animation-delay-500" />
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-accent/20 rounded-full animate-pulse animation-delay-1500" />
-              
-              <div className="text-center space-y-4">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-accent to-accent/80 rounded-full flex items-center justify-center shadow-lg">
-                    <DollarSign className="w-5 h-5 text-black" />
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="text-center space-y-6">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg">
+                    <DollarSign className="w-8 h-8 text-black" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-playfair font-semibold text-foreground">
-                    Earn Referral Bonus
-                  </h3>
                 </div>
                 
-                <h4 className="text-base md:text-lg text-accent font-medium">
-                  Join & Start Earning
-                </h4>
-                
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Create an account to get your referral link and start earning 15% commission 
-                  on every friend who purchases custom songs through your link.
-                </p>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-playfair font-bold text-foreground">
+                    Earn Referral Bonus
+                  </h3>
+                  
+                  <h4 className="text-lg text-accent font-semibold">
+                    Join & Start Earning
+                  </h4>
+                  
+                  <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                    Create an account to get your referral link and start earning commission 
+                    on every friend who purchases custom songs through your link.
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-2 gap-3 my-6 text-xs">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
-                      <TrendingUp className="w-3 h-3 text-accent" />
+                <div className="grid grid-cols-2 gap-6 py-6">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <TrendingUp className="w-6 h-6 text-accent" />
                     </div>
-                    <span className="text-muted-foreground text-center">15% Direct</span>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-accent">15%</div>
+                      <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
-                      <Users className="w-3 h-3 text-accent" />
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-accent" />
                     </div>
-                    <span className="text-muted-foreground text-center">10% Indirect</span>
+                    <div className="space-y-1">
+                      <div className="text-2xl font-bold text-accent">10%</div>
+                      <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
+                    </div>
                   </div>
                 </div>
                 
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0"
+                  className="bg-gradient-to-r from-accent to-accent/80 text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
                   asChild
                 >
                   <Link to="/auth">
-                    <ExternalLink className="w-4 h-4 mr-2" />
+                    <ExternalLink className="w-5 h-5 mr-2" />
                     Join & Earn
                   </Link>
                 </Button>
