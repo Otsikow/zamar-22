@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Star, Users, Clock, Settings } from "lucide-react";
+import { Play, Star, Users, Clock, Settings, Radio } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,6 +89,12 @@ const Hero = () => {
             <Link to="/songs">
               <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               See Examples
+            </Link>
+          </Button>
+          <Button size="lg" variant="outline" className="text-lg px-8 py-4 min-w-[200px] group" asChild>
+            <Link to="/radio">
+              <Radio className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+              Radio
             </Link>
           </Button>
           {isAdmin && (
