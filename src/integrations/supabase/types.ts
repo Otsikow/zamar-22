@@ -761,7 +761,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      donation_analytics: {
+        Row: {
+          amount: number | null
+          campaign: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          id: string | null
+          last_name: string | null
+          month: number | null
+          month_year: string | null
+          status: string | null
+          stripe_payment_id: string | null
+          type: string | null
+          updated_at: string | null
+          user_id: string | null
+          year: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_manual_referral_reward: {
@@ -793,10 +812,39 @@ export type Database = {
           referred_email: string
         }[]
       }
+      get_donation_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_donations: number
+          monthly_donors: number
+          one_time_donations: number
+          total_amount: number
+        }[]
+      }
+      get_donations_by_campaign: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          campaign_name: string
+          total_amount: number
+          donation_count: number
+        }[]
+      }
       get_monthly_referral_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
           total: number
+        }[]
+      }
+      get_recent_donations: {
+        Args: { limit_count?: number }
+        Returns: {
+          id: string
+          amount: number
+          donor_name: string
+          donor_email: string
+          campaign: string
+          type: string
+          created_at: string
         }[]
       }
       get_referral_count: {
