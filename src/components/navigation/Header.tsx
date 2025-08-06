@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Bell, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
@@ -122,8 +122,8 @@ const Header = () => {
                     {isAdmin && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Admin
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          Dashboard
                         </Link>
                       </DropdownMenuItem>
                     )}
