@@ -761,26 +761,7 @@ export type Database = {
       }
     }
     Views: {
-      donation_analytics: {
-        Row: {
-          amount: number | null
-          campaign: string | null
-          created_at: string | null
-          email: string | null
-          first_name: string | null
-          id: string | null
-          last_name: string | null
-          month: number | null
-          month_year: string | null
-          status: string | null
-          stripe_payment_id: string | null
-          type: string | null
-          updated_at: string | null
-          user_id: string | null
-          year: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       add_manual_referral_reward: {
