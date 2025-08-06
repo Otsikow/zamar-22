@@ -22,22 +22,6 @@ const Header = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Don't render anything while auth is loading
-  if (loading) {
-    return (
-      <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <img src={logoImage} alt="Zamar" className="w-8 h-8" />
-              <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-    );
-  }
-
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) {
@@ -110,6 +94,23 @@ const Header = () => {
     if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
+
+  // Show loading state while auth is initializing
+  if (loading) {
+    return (
+      <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center space-x-2">
+              <img src={logoImage} alt="Zamar" className="w-8 h-8" />
+              <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
+            </Link>
+            <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border z-50">
