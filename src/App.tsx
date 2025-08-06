@@ -6,91 +6,111 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
+import { ThemeProvider } from "next-themes";
+import Header from "@/components/navigation/Header";
+import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
+import FloatingChatButton from "@/components/chat/FloatingChatButton";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Import all pages
 import Index from "./pages/Index";
-import Pricing from "./pages/Pricing";
-import RequestSong from "./pages/RequestSong";
-import SongsLibrary from "./pages/SongsLibrary";
-import SongDetail from "./pages/SongDetail";
-import SongPlayer from "./pages/SongPlayer";
-import Radio from "./pages/Radio";
-import ThankYou from "./pages/ThankYou";
-import AboutUs from "./pages/AboutUs";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Library from "./pages/Library";
+import Radio from "./pages/Radio";
+import RequestSong from "./pages/RequestSong";
+import SongPlayer from "./pages/SongPlayer";
+import SongDetail from "./pages/SongDetail";
+import SongsLibrary from "./pages/SongsLibrary";
 import CreatePlaylist from "./pages/CreatePlaylist";
 import ManagePlaylists from "./pages/ManagePlaylists";
-import Testimonies from "./pages/Testimonies";
-import Donate from "./pages/Donate";
-import More from "./pages/More";
-import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-import Auth from "./pages/Auth";
+import More from "./pages/More";
 import Admin from "./pages/Admin";
-import AdminChatInbox from "./pages/AdminChatInbox";
-import NotificationCenter from "./pages/NotificationCenter";
-import NotFound from "./pages/NotFound";
-import ReferralCalculator from "./pages/ReferralCalculator";
-import ReferralDashboard from "./pages/ReferralDashboard";
-import AdminReferralPayoutDashboard from "./pages/AdminReferralPayoutDashboard";
-import Terms from "./pages/Terms";
-import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import BottomNav from "@/components/navigation/BottomNav";
-import Header from "@/components/navigation/Header";
-import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
+import AdminChatInbox from "./pages/AdminChatInbox";
+import AdminDonationAnalytics from "./pages/AdminDonationAnalytics";
+import AdminReferralPayoutDashboard from "./pages/AdminReferralPayoutDashboard";
+import NotificationCenter from "./pages/NotificationCenter";
+import Terms from "./pages/Terms";
+import AboutUs from "./pages/AboutUs";
+import Pricing from "./pages/Pricing";
+import Donate from "./pages/Donate";
+import ThankYou from "./pages/ThankYou";
+import Testimonies from "./pages/Testimonies";
+import ReferralDashboard from "./pages/ReferralDashboard";
+import ReferralCalculator from "./pages/ReferralCalculator";
+import { ReferralDashboard as ReferralDashboardComponent } from "./components/referrals/ReferralDashboard";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <NowPlayingProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Header />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/request" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
-              <Route path="/songs" element={<SongsLibrary />} />
-              <Route path="/songs/:id" element={<SongDetail />} />
-              <Route path="/player/:id" element={<SongPlayer />} />
-              <Route path="/radio" element={<Radio />} />
-              <Route path="/thank-you" element={<ThankYou />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-              <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
-              <Route path="/playlist/manage" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
-              <Route path="/testimonies" element={<Testimonies />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/more" element={<More />} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-              <Route path="/admin/chat" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
-              <Route path="/admin/chat-inbox" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
-              <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
-              <Route path="/referral" element={<ReferralCalculator />} />
-              <Route path="/referrals" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
-              <Route path="/referral-dashboard" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
-              <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
-              <Route path="/terms" element={<Terms />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <MiniPlayer />
-            <BottomNav />
-            <FloatingChatButton />
-          </BrowserRouter>
-        </TooltipProvider>
-      </NowPlayingProvider>
-    </AuthProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <NowPlayingProvider>
+              <div className="flex flex-col min-h-screen bg-background">
+                <Header />
+                
+                <main className="flex-1 pt-16 pb-20">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/testimonies" element={<Testimonies />} />
+                    
+                    {/* Protected Routes */}
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
+                    <Route path="/radio" element={<ProtectedRoute><Radio /></ProtectedRoute>} />
+                    <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
+                    <Route path="/songs/:id" element={<ProtectedRoute><SongDetail /></ProtectedRoute>} />
+                    <Route path="/player/:id" element={<ProtectedRoute><SongPlayer /></ProtectedRoute>} />
+                    <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
+                    <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
+                    <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
+                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                    <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
+                    <Route path="/donate" element={<ProtectedRoute><Donate /></ProtectedRoute>} />
+                    <Route path="/thank-you" element={<ProtectedRoute><ThankYou /></ProtectedRoute>} />
+                    
+                    {/* Referral Routes */}
+                    <Route path="/referrals" element={<ProtectedRoute><ReferralDashboardComponent /></ProtectedRoute>} />
+                    <Route path="/referrals/dashboard" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+                    <Route path="/referral-calculator" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
+                    
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                    <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                    <Route path="/admin/chat-inbox" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
+                    <Route path="/admin/donations" element={<ProtectedRoute><AdminDonationAnalytics /></ProtectedRoute>} />
+                    <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
+                    <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
+                    
+                    {/* 404 Route */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+
+                <BottomNav />
+                <MiniPlayer />
+                <FloatingChatButton />
+              </div>
+            </NowPlayingProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
