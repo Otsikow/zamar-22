@@ -219,12 +219,13 @@ const RequestSong = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="gospel">Gospel</SelectItem>
                             <SelectItem value="afrobeats">Afrobeats</SelectItem>
-                            <SelectItem value="rnb">R&B</SelectItem>
                             <SelectItem value="classical">Classical</SelectItem>
+                            <SelectItem value="gospel">Gospel</SelectItem>
+                            <SelectItem value="gospel-reggae">Gospel Reggae</SelectItem>
                             <SelectItem value="rap">Rap</SelectItem>
                             <SelectItem value="reggae">Reggae</SelectItem>
+                            <SelectItem value="rnb">R&B</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>

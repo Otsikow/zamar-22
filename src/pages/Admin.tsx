@@ -581,19 +581,20 @@ const Admin = () => {
                           <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
                         <SelectContent className="bg-background border-border z-50">
-                          <SelectItem value="worship">Worship</SelectItem>
-                          <SelectItem value="praise">Praise</SelectItem>
-                          <SelectItem value="gospel">Gospel</SelectItem>
-                          <SelectItem value="contemporary">Contemporary Christian</SelectItem>
-                          <SelectItem value="traditional">Traditional Hymns</SelectItem>
                           <SelectItem value="african-worship">African Worship</SelectItem>
                           <SelectItem value="afrobeats">Afrobeats</SelectItem>
-                          <SelectItem value="spiritual">Spiritual</SelectItem>
-                          <SelectItem value="youth-worship">Youth Worship</SelectItem>
-                          <SelectItem value="prayer">Prayer Songs</SelectItem>
                           <SelectItem value="christmas">Christmas</SelectItem>
+                          <SelectItem value="contemporary">Contemporary Christian</SelectItem>
                           <SelectItem value="easter">Easter</SelectItem>
+                          <SelectItem value="gospel">Gospel</SelectItem>
+                          <SelectItem value="gospel-reggae">Gospel Reggae</SelectItem>
                           <SelectItem value="instrumental">Instrumental</SelectItem>
+                          <SelectItem value="praise">Praise</SelectItem>
+                          <SelectItem value="prayer">Prayer Songs</SelectItem>
+                          <SelectItem value="spiritual">Spiritual</SelectItem>
+                          <SelectItem value="traditional">Traditional Hymns</SelectItem>
+                          <SelectItem value="worship">Worship</SelectItem>
+                          <SelectItem value="youth-worship">Youth Worship</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
