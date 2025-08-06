@@ -49,7 +49,7 @@ const Header = () => {
               <>
                 <NotificationBell />
                 <Button variant="outline" asChild className="hidden sm:flex">
-                  <Link to="/library">Library</Link>
+                  <Link to="/dashboard">Dashboard</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -73,7 +73,7 @@ const Header = () => {
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/library" className="flex items-center">
+                      <Link to="/dashboard" className="flex items-center">
                         <Library className="mr-2 h-4 w-4" />
                         Dashboard
                       </Link>
