@@ -10,7 +10,8 @@ const Radio = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header Section */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-2">
+            <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-2 flex items-center justify-center gap-3">
+              <RadioIcon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
               Zamar Radio
             </h1>
             <p className="text-sm md:text-base text-muted-foreground">

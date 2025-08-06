@@ -142,7 +142,8 @@ const Testimonies = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
+              <Quote className="w-10 h-10 md:w-12 md:h-12 text-primary" />
               <span className="text-transparent bg-gradient-primary bg-clip-text">
                 Testimonies
               </span>

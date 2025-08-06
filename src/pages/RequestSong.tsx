@@ -150,7 +150,8 @@ const RequestSong = () => {
 
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
+              <Upload className="w-10 h-10 md:w-12 md:h-12 text-primary" />
               Custom Song{" "}
               <span className="text-transparent bg-gradient-primary bg-clip-text">
                 Request
@@ -165,7 +166,8 @@ const RequestSong = () => {
           {/* Request Form */}
           <Card className="bg-gradient-card border-border mb-8">
             <CardHeader>
-              <CardTitle className="text-2xl font-playfair text-foreground">
+              <CardTitle className="text-2xl font-playfair text-foreground flex items-center gap-2">
+                <Upload className="w-6 h-6 text-primary" />
                 Your Song Details
               </CardTitle>
             </CardHeader>

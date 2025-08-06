@@ -113,7 +113,8 @@ const Donate = () => {
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-primary bg-clip-text mb-6">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-primary bg-clip-text mb-6 flex items-center justify-center gap-3">
+              <Heart className="w-10 h-10 md:w-12 md:h-12 text-primary" />
               Support the Mission
             </h1>
             
