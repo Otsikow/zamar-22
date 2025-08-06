@@ -1,13 +1,16 @@
-import { Music, Heart, Cross } from "lucide-react";
+
+import { Heart, Cross } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Footer = () => {
-  return <footer className="bg-card border-t border-border">
+  return (
+    <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-12 pb-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <Music className="h-8 w-8 text-primary" />
+              <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
               <span className="text-2xl font-playfair font-bold text-foreground">
                 Zamar
               </span>
@@ -97,6 +100,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;

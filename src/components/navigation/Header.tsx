@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import logoImage from '@/assets/zamar-logo.png';
 
 const Header = () => {
   const { user, loading, signOut } = useAuth();
@@ -63,7 +62,7 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src={logoImage} alt="Zamar" className="w-8 h-8" />
+              <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
               <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
             </Link>
             <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
@@ -79,7 +78,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logoImage} alt="Zamar" className="w-8 h-8" />
+            <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
             <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
           </Link>
 
