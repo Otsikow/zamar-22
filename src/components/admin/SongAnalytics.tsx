@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Music, Calendar, TrendingUp, BarChart3, PieChart, Plus, Play, Download, Globe, Users } from "lucide-react";
+import { Music, Calendar, TrendingUp, BarChart3, PieChart, Plus, Play, Download, Globe, Users, FileText, Clock, CheckCircle, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface Song {
   id: string;
@@ -28,6 +29,28 @@ interface SongPlay {
   };
 }
 
+interface CustomSongRequest {
+  id: string;
+  status: string;
+  tier: string;
+  created_at: string;
+  occasion: string;
+  style_genre: string;
+}
+
+interface RequestStats {
+  total: number;
+  pending: number;
+  completed: number;
+  inProgress: number;
+  rejected: number;
+  byMonth: Record<string, number>;
+  byTier: Record<string, number>;
+  recentActivity: Array<{ date: string; count: number }>;
+  weeklyTrend: Array<{ week: string; count: number }>;
+  monthlyTrend: Array<{ month: string; count: number }>;
+}
+
 interface SongStats {
   total: number;
   featured: number;
@@ -45,6 +68,7 @@ interface SongAnalyticsProps {
 const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProps) => {
   const { toast } = useToast();
   const [songs, setSongs] = useState<Song[]>([]);
+  const [requests, setRequests] = useState<CustomSongRequest[]>([]);
   const [stats, setStats] = useState<SongStats>({
     total: 0,
     featured: 0,
@@ -53,11 +77,24 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
     byMonth: {},
     recentActivity: []
   });
+  const [requestStats, setRequestStats] = useState<RequestStats>({
+    total: 0,
+    pending: 0,
+    completed: 0,
+    inProgress: 0,
+    rejected: 0,
+    byMonth: {},
+    byTier: {},
+    recentActivity: [],
+    weeklyTrend: [],
+    monthlyTrend: []
+  });
   const [timeRange, setTimeRange] = useState("30"); // days
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSongs();
+    fetchRequests();
   }, []);
 
   useEffect(() => {
@@ -65,6 +102,12 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
       calculateStats();
     }
   }, [songs, timeRange]);
+
+  useEffect(() => {
+    if (requests.length > 0) {
+      calculateRequestStats();
+    }
+  }, [requests, timeRange]);
 
   const fetchSongs = async () => {
     try {
@@ -84,6 +127,25 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRequests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("custom_song_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setRequests(data || []);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch request data",
+        variant: "destructive",
+      });
     }
   };
 
@@ -141,6 +203,91 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
       byOccasion,
       byMonth,
       recentActivity
+    });
+  };
+
+  const calculateRequestStats = () => {
+    const now = new Date();
+    const daysAgo = parseInt(timeRange);
+    const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+
+    // Calculate basic stats
+    const total = requests.length;
+    const pending = requests.filter(r => r.status === 'pending').length;
+    const completed = requests.filter(r => r.status === 'completed').length;
+    const inProgress = requests.filter(r => r.status === 'in_progress').length;
+    const rejected = requests.filter(r => r.status === 'rejected').length;
+
+    // Calculate tier distribution
+    const byTier = requests.reduce((acc, request) => {
+      const tier = request.tier || "Basic";
+      acc[tier] = (acc[tier] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Calculate monthly growth
+    const byMonth = requests.reduce((acc, request) => {
+      const date = new Date(request.created_at);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      acc[monthKey] = (acc[monthKey] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Calculate daily activity for selected time range
+    const recentActivity: Array<{ date: string; count: number }> = [];
+    for (let i = daysAgo - 1; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateKey = date.toISOString().split('T')[0];
+      const count = requests.filter(request => 
+        request.created_at.split('T')[0] === dateKey
+      ).length;
+      recentActivity.push({ date: dateKey, count });
+    }
+
+    // Calculate weekly trend (last 12 weeks)
+    const weeklyTrend: Array<{ week: string; count: number }> = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      const weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
+      const weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+      const weekKey = `${weekStart.getMonth() + 1}/${weekStart.getDate()}`;
+      
+      const count = requests.filter(request => {
+        const requestDate = new Date(request.created_at);
+        return requestDate >= weekStart && requestDate <= weekEnd;
+      }).length;
+      
+      weeklyTrend.push({ week: weekKey, count });
+    }
+
+    // Calculate monthly trend (last 12 months)
+    const monthlyTrend: Array<{ month: string; count: number }> = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+      const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      
+      const count = requests.filter(request => {
+        const requestDate = new Date(request.created_at);
+        return requestDate >= monthStart && requestDate <= monthEnd;
+      }).length;
+      
+      monthlyTrend.push({ month: monthKey, count });
+    }
+
+    setRequestStats({
+      total,
+      pending,
+      completed,
+      inProgress,
+      rejected,
+      byMonth,
+      byTier,
+      recentActivity,
+      weeklyTrend,
+      monthlyTrend
     });
   };
 
@@ -212,6 +359,55 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
 
   return (
     <div className="space-y-6">
+      {/* Song Request Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-card border-primary/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-primary">Total Requests</CardTitle>
+            <FileText className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{requestStats.total}</div>
+            <p className="text-xs text-muted-foreground">All time requests</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-card border-primary/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-primary">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{requestStats.pending}</div>
+            <p className="text-xs text-muted-foreground">Awaiting review</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-card border-primary/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-primary">Completed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{requestStats.completed}</div>
+            <p className="text-xs text-muted-foreground">
+              {requestStats.total > 0 ? ((requestStats.completed / requestStats.total) * 100).toFixed(1) : 0}% completion rate
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-card border-primary/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-primary">In Progress</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{requestStats.inProgress}</div>
+            <p className="text-xs text-muted-foreground">Being processed</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Real-Time Performance Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gradient-card border-primary/20">
@@ -395,6 +591,89 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
         </div>
 
         <TabsContent value="distribution" className="space-y-4">
+          {/* Request Trend Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Weekly Request Trend */}
+            <Card className="bg-gradient-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <TrendingUp className="h-5 w-5" />
+                  Weekly Request Trend
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={requestStats.weeklyTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="week" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--background))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px"
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="count" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Monthly Request Trend */}
+            <Card className="bg-gradient-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <BarChart3 className="h-5 w-5" />
+                  Monthly Request Trend
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={requestStats.monthlyTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="month" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--background))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px"
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="count" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Genre Distribution */}
             <Card className="bg-gradient-card border-border">
