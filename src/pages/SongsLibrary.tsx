@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,8 @@ const SongsLibrary = () => {
   const [selectedGenre, setSelectedGenre] = useState<string>("all");
   const [selectedOccasion, setSelectedOccasion] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [availableGenres, setAvailableGenres] = useState<string[]>([]);
+  const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
 
   // Fetch songs from Supabase
   useEffect(() => {
@@ -45,8 +48,27 @@ const SongsLibrary = () => {
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setSongs(data || []);
-        setFilteredSongs(data || []);
+        
+        const songsData = data || [];
+        setSongs(songsData);
+        setFilteredSongs(songsData);
+        
+        // Extract unique genres and occasions from the actual data
+        const genres = [...new Set(songsData
+          .map(song => song.genre)
+          .filter(genre => genre && genre.trim() !== "")
+          .map(genre => genre!.trim())
+        )].sort();
+        
+        const occasions = [...new Set(songsData
+          .map(song => song.occasion)
+          .filter(occasion => occasion && occasion.trim() !== "")
+          .map(occasion => occasion!.trim())
+        )].sort();
+        
+        setAvailableGenres(genres);
+        setAvailableOccasions(occasions);
+        
       } catch (error: any) {
         toast({
           title: "Error",
@@ -62,12 +84,9 @@ const SongsLibrary = () => {
     fetchSongs();
   }, [toast]);
 
-  // Use only database songs
-  const displaySongs = songs;
-
   // Filter songs based on search term and filters
   useEffect(() => {
-    let filtered = displaySongs;
+    let filtered = songs;
 
     // Search by title and tags
     if (searchTerm) {
@@ -79,22 +98,24 @@ const SongsLibrary = () => {
       );
     }
 
-    // Filter by genre
+    // Filter by genre (case-insensitive and handle empty values)
     if (selectedGenre !== "all") {
-      filtered = filtered.filter(song => 
-        song.genre?.toLowerCase() === selectedGenre.toLowerCase()
-      );
+      filtered = filtered.filter(song => {
+        if (!song.genre || song.genre.trim() === "") return false;
+        return song.genre.toLowerCase().trim() === selectedGenre.toLowerCase();
+      });
     }
 
-    // Filter by occasion
+    // Filter by occasion (case-insensitive and handle empty values)
     if (selectedOccasion !== "all") {
-      filtered = filtered.filter(song => 
-        song.occasion?.toLowerCase() === selectedOccasion.toLowerCase()
-      );
+      filtered = filtered.filter(song => {
+        if (!song.occasion || song.occasion.trim() === "") return false;
+        return song.occasion.toLowerCase().trim() === selectedOccasion.toLowerCase();
+      });
     }
 
     setFilteredSongs(filtered);
-  }, [displaySongs, searchTerm, selectedGenre, selectedOccasion]);
+  }, [songs, searchTerm, selectedGenre, selectedOccasion]);
 
   const handleSongClick = (songId: string) => {
     navigate(`/songs/${songId}`);
@@ -139,7 +160,6 @@ const SongsLibrary = () => {
     setSelectedGenre("all");
     setSelectedOccasion("all");
   };
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -206,13 +226,11 @@ const SongsLibrary = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Genres</SelectItem>
-                    <SelectItem value="afrobeats">Afrobeats</SelectItem>
-                    <SelectItem value="classical">Classical</SelectItem>
-                    <SelectItem value="gospel">Gospel</SelectItem>
-                    <SelectItem value="gospel-reggae">Gospel Reggae</SelectItem>
-                    <SelectItem value="rnb">R&B</SelectItem>
-                    <SelectItem value="rap">Rap</SelectItem>
-                    <SelectItem value="reggae">Reggae</SelectItem>
+                    {availableGenres.map((genre) => (
+                      <SelectItem key={genre} value={genre.toLowerCase()}>
+                        {genre}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -222,11 +240,11 @@ const SongsLibrary = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Occasions</SelectItem>
-                    <SelectItem value="birthday">Birthday</SelectItem>
-                    <SelectItem value="wedding">Wedding</SelectItem>
-                    <SelectItem value="funeral">Funeral</SelectItem>
-                    <SelectItem value="church">Church</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
+                    {availableOccasions.map((occasion) => (
+                      <SelectItem key={occasion} value={occasion.toLowerCase()}>
+                        {occasion}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -308,12 +326,12 @@ const SongsLibrary = () => {
                       
                       {/* Tags */}
                       <div className="flex flex-wrap gap-1 mb-2">
-                        {song.genre && (
+                        {song.genre && song.genre.trim() !== "" && (
                           <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                             {song.genre}
                           </Badge>
                         )}
-                        {song.occasion && (
+                        {song.occasion && song.occasion.trim() !== "" && (
                           <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                             {song.occasion}
                           </Badge>
