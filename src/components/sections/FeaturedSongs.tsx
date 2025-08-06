@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +21,6 @@ const FeaturedSongs = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const { playSong, togglePlayPause, state } = useNowPlaying();
-
 
   useEffect(() => {
     const fetchFeaturedSongs = async () => {
@@ -63,7 +63,7 @@ const FeaturedSongs = () => {
       artist: song.genre,
       duration: 180, // Default duration, will be updated when audio loads
       url: song.audio_url || "", // Use audio URL from database
-      cover: song.thumbnail_url || "/lovable-uploads/307092cb-e511-4af2-8a94-9dbca5d404f2.png"
+      cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png" // Use new thumbnail for all songs
     };
     
     console.log('🎵 Calling playSong with URL:', songWithAudio.url);
@@ -105,21 +105,13 @@ const FeaturedSongs = () => {
             <Card key={song.id} className="group bg-card border-border hover:shadow-elegant transition-all duration-300 hover:scale-105 cursor-pointer"
                   onClick={() => handlePlaySong(song)}>
               <div className="relative aspect-square bg-muted rounded-t-lg overflow-hidden">
-                {song.thumbnail_url ? (
-                  <img 
-                    src={song.thumbnail_url} 
-                    alt={song.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <img 
-                    src="/lovable-uploads/307092cb-e511-4af2-8a94-9dbca5d404f2.png" 
-                    alt="Zamar Logo"
-                    className="w-full h-full object-contain p-4 bg-gradient-primary opacity-90"
-                  />
-                )}
+                <img 
+                  src="/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png" 
+                  alt={song.title}
+                  className="w-full h-full object-contain p-4 bg-gradient-to-br from-amber-50 to-amber-100"
+                />
                 
-                {/* Smaller play/pause button for compact cards */}
+                {/* Play/pause button overlay */}
                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
                   <Button 
                     size="icon" 
