@@ -142,15 +142,15 @@ const Hero = () => {
         {/* Two Column Layout for Cards */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
           {/* Support Our Mission Section */}
-          <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-            <div className="text-center space-y-6">
+          <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+            <div className="text-center space-y-6 flex-grow">
               <div className="flex items-center justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
-                  <Heart className="w-8 h-8 text-primary-foreground" />
+                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                  <Heart className="w-8 h-8 text-black" />
                 </div>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-4 flex-grow">
                 <h3 className="text-2xl font-playfair font-bold text-foreground">
                   Support Our Mission
                 </h3>
@@ -167,49 +167,49 @@ const Hero = () => {
 
               <div className="grid grid-cols-3 gap-6 py-6">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-primary text-xl">🎵</span>
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-black text-xl">🎵</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">Free Songs</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-primary text-xl">🌍</span>
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-black text-xl">🌍</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">Global Reach</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-primary text-xl">⛪</span>
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-black text-xl">⛪</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">Community</span>
                 </div>
               </div>
-              
-              <Button 
-                size="lg" 
-                className="bg-gradient-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full"
-                asChild
-              >
-                <Link to="/donate">
-                  <Heart className="w-5 h-5 mr-2" />
-                  Donate Now
-                </Link>
-              </Button>
             </div>
+            
+            <Button 
+              size="lg" 
+              className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+              asChild
+            >
+              <Link to="/donate">
+                <Heart className="w-5 h-5 mr-2" />
+                Donate Now
+              </Link>
+            </Button>
           </div>
 
           {/* Referral Bonus Section */}
           {user && (
-            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="text-center space-y-6">
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+              <div className="text-center space-y-6 flex-grow">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-lg border border-primary/30">
-                    <DollarSign className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                    <DollarSign className="w-8 h-8 text-black" />
                   </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-4 flex-grow">
                   <h3 className="text-2xl font-playfair font-bold text-foreground">
                     Earn Referral Bonus
                   </h3>
@@ -226,8 +226,8 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
-                      <TrendingUp className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                      <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">15%</div>
@@ -235,8 +235,8 @@ const Hero = () => {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
-                      <Users className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">10%</div>
@@ -256,33 +256,33 @@ const Hero = () => {
                       </Button>
                     </div>
                   </div>
-                  
-                  <Button 
-                    size="lg" 
-                    className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full hover:bg-primary/90"
-                    asChild
-                  >
-                    <Link to="/referrals">
-                      <ExternalLink className="w-5 h-5 mr-2" />
-                      View Dashboard
-                    </Link>
-                  </Button>
                 </div>
               </div>
+              
+              <Button 
+                size="lg" 
+                className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+                asChild
+              >
+                <Link to="/referrals">
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  View Dashboard
+                </Link>
+              </Button>
             </div>
           )}
 
           {/* Guest Referral Section */}
           {!user && (
-            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="text-center space-y-6">
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+              <div className="text-center space-y-6 flex-grow">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-lg border border-primary/30">
-                    <DollarSign className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                    <DollarSign className="w-8 h-8 text-black" />
                   </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-4 flex-grow">
                   <h3 className="text-2xl font-playfair font-bold text-foreground">
                     Earn Referral Bonus
                   </h3>
@@ -299,8 +299,8 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
-                      <TrendingUp className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                      <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">15%</div>
@@ -308,8 +308,8 @@ const Hero = () => {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-primary/20">
-                      <Users className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">10%</div>
@@ -317,18 +317,18 @@ const Hero = () => {
                     </div>
                   </div>
                 </div>
-                
-                <Button 
-                  size="lg" 
-                  className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full hover:bg-primary/90"
-                  asChild
-                >
-                  <Link to="/auth">
-                    <ExternalLink className="w-5 h-5 mr-2" />
-                    Join & Earn
-                  </Link>
-                </Button>
               </div>
+              
+              <Button 
+                size="lg" 
+                className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+                asChild
+              >
+                <Link to="/auth">
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Join & Earn
+                </Link>
+              </Button>
             </div>
           )}
         </div>
