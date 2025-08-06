@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zamar - Custom Songs for Every Occasion</title>
+    <meta name="description" content="Custom Songs for Weddings, Birthdays, Churches, Campaigns & Businesses - Faith-Based Platform" />
+    <meta name="author" content="Zamar" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#FFD700" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+
+    <meta property="og:title" content="Zamar - Custom Songs for Every Occasion" />
+    <meta property="og:description" content="Custom Songs for Weddings, Birthdays, Churches, Campaigns & Businesses - Faith-Based Platform" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered:', registration);
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                console.log('New service worker available');
+              });
+            })
+            .catch(registrationError => console.log('SW registration failed:', registrationError));
+        });
+      }
+
+      // PWA install prompt - limit frequency
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        const lastPrompted = localStorage.getItem('pwa-install-prompted');
+        const now = Date.now();
+        const dayInMs = 24 * 60 * 60 * 1000;
+        
+        // Only prompt if never prompted before or if it's been more than 7 days
+        if (!lastPrompted || (now - parseInt(lastPrompted)) > (7 * dayInMs)) {
+          console.log('PWA install prompt triggered');
+          e.preventDefault();
+          deferredPrompt = e;
+          localStorage.setItem('pwa-install-prompted', now.toString());
+          // You can show a custom install button here
+        } else {
+          e.preventDefault(); // Still prevent the default prompt
+        }
+      });
+    </script>
+  </body>
+</html>

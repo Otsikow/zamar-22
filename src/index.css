@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Zamar Design System - Faith-Based Custom Song Platform
+All colors MUST be HSL. Dark theme with elegant gold accents.
+*/
+
+@layer base {
+  :root {
+    /* Core Brand Colors */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    
+    /* Card & Component Backgrounds */
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 100%;
+    
+    /* Popover & Overlays */
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 100%;
+    
+    /* Primary Amber Brand */
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --primary-glow: 45 100% 65%;
+    
+    /* Secondary Neutral */
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 90%;
+    
+    /* Muted Text & Elements */
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 73%;
+    
+    /* Accent Amber Variations */
+    --accent: 0 0% 10%;
+    --accent-foreground: 45 100% 50%;
+    
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 98%;
+    
+    /* UI Elements */
+    --border: 0 0% 20%;
+    --input: 0 0% 12%;
+    --ring: 45 100% 50%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 100% 55%));
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 3%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 6%), hsl(0 0% 4%));
+    
+    /* Shadows */
+    --shadow-gold: 0 10px 30px -10px hsl(45 100% 50% / 0.3);
+    --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.5);
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Remove dark mode overrides - we're dark by default */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+}
