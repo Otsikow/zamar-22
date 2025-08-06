@@ -207,8 +207,8 @@ const SongPlayer = () => {
               <CardTitle className="text-primary">Audio Player</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Waveform Visualization */}
-              <div className="bg-muted/20 h-24 rounded-lg border border-primary/20 overflow-hidden">
+              {/* Enhanced Waveform Visualization - Much Taller */}
+              <div className="bg-muted/20 h-32 md:h-40 rounded-lg border border-primary/20 overflow-hidden">
                 <WaveformVisualization className="w-full h-full" />
               </div>
 
