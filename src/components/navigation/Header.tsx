@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Bell, User, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,61 +16,29 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import logoImage from '@/assets/zamar-logo.png';
 
-interface Notification {
-  id: string;
-  user_id: string;
-  read: boolean;
-  created_at: string;
-}
-
 const Header = () => {
   const { user, loading, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (!user) {
-      setIsAdmin(false);
-      return;
-    }
-
-    const checkAdminStatus = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('admin_users')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        setIsAdmin(!error && !!data);
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) {
-      setNotifications([]);
+      setUnreadCount(0);
       return;
     }
 
     const fetchNotifications = async () => {
       try {
-        const { data, error } = await supabase
+        const { count, error } = await supabase
           .from('notifications')
-          .select('id, user_id, read, created_at')
+          .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
-          .eq('read', false)
-          .order('created_at', { ascending: false });
+          .eq('is_read', false);
 
-        if (!error && data) {
-          setNotifications(data as Notification[]);
+        if (!error && count !== null) {
+          setUnreadCount(count);
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -153,9 +122,9 @@ const Header = () => {
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/admin/notifications" className="relative">
                     <Bell className="h-4 w-4" />
-                    {notifications.length > 0 && (
+                    {unreadCount > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs">
-                        {notifications.length}
+                        {unreadCount}
                       </Badge>
                     )}
                   </Link>
