@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { useSettings } from './SettingsContext';
 
 export interface Song {
   id: string;
@@ -49,6 +50,7 @@ export const useNowPlaying = () => {
 };
 
 export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { settings } = useSettings();
   const audioRef = useRef<HTMLAudioElement>(null);
   const timeUpdateIntervalRef = useRef<NodeJS.Timeout>();
   
@@ -56,13 +58,21 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     currentSong: null,
     isPlaying: false,
     currentTime: 0,
-    volume: 1,
+    volume: settings.volume / 100, // Convert from percentage to 0-1 range
     queue: [],
     currentIndex: -1,
     isLooping: false,
     isShuffling: false,
     isQueueMode: false,
   });
+
+  // Sync settings volume with audio state on settings change
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      volume: settings.volume / 100,
+    }));
+  }, [settings.volume]);
 
   // More frequent time updates for smoother UI
   useEffect(() => {
@@ -110,6 +120,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const handleEnded = () => {
       console.log('🎵 Song ended, handling queue advance...');
+      console.log('🎵 Auto-play setting:', settings.autoPlay);
       console.log('🎵 Audio duration reported:', audioRef.current?.duration);
       console.log('🎵 Audio currentTime when ended:', audioRef.current?.currentTime);
       setState(prev => {
@@ -118,11 +129,12 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           isLooping: prev.isLooping,
           currentIndex: prev.currentIndex,
           queueLength: prev.queue.length,
-          currentSong: prev.currentSong?.title
+          currentSong: prev.currentSong?.title,
+          autoPlayEnabled: settings.autoPlay
         });
         
         if (prev.isLooping) {
-          // Loop the current song - restart immediately
+          // Loop the current song - restart immediately (loop always works regardless of auto-play)
           console.log('🎵 Looping current song');
           if (audioRef.current) {
             audioRef.current.currentTime = 0;
@@ -133,11 +145,11 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentTime: 0,
             isPlaying: true,
           };
-        } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex < prev.queue.length - 1) {
-          // Auto-advance to next song in queue mode
+        } else if (settings.autoPlay && prev.queue.length > 0 && prev.currentIndex < prev.queue.length - 1) {
+          // Auto-advance to next song only if auto-play is enabled
           const nextIndex = prev.currentIndex + 1;
           const nextSong = prev.queue[nextIndex];
-          console.log('🎵 Auto-advancing to next song:', nextSong?.title || 'Unknown');
+          console.log('🎵 Auto-advancing to next song (auto-play enabled):', nextSong?.title || 'Unknown');
           return {
             ...prev,
             currentSong: nextSong,
@@ -145,10 +157,10 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentTime: 0,
             isPlaying: true, // Keep playing
           };
-        } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
-          // At end of queue - loop back to beginning for continuous playback
+        } else if (prev.isQueueMode && settings.autoPlay && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
+          // At end of queue - loop back to beginning for continuous playback (only if auto-play enabled)
           const firstSong = prev.queue[0];
-          console.log('🎵 End of queue reached, looping back to first song:', firstSong?.title || 'Unknown');
+          console.log('🎵 End of queue reached, looping back to first song (auto-play enabled):', firstSong?.title || 'Unknown');
           return {
             ...prev,
             currentSong: firstSong,
@@ -157,8 +169,8 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             isPlaying: true, // Keep playing for continuous radio
           };
         } else {
-          // Song ended, show stopped state
-          console.log('🎵 Song ended, stopping playback');
+          // Song ended, show stopped state (auto-play disabled or no queue)
+          console.log('🎵 Song ended, stopping playback (auto-play disabled or no next song)');
           return {
             ...prev,
             isPlaying: false,
@@ -195,7 +207,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('play', handlePlay);
     };
-  }, []);
+  }, [settings.autoPlay]);
 
   // Effect to sync audio playback with state
   useEffect(() => {
@@ -284,7 +296,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setTimeout(() => {
             setState(currentState => {
               if (currentState.isQueueMode || currentState.isPlaying) {
-                console.log('🎵 Attempting auto-play after metadata load for queue mode...');
+                console.log('🎵 Attempting auto-play after metadata load...');
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                   playPromise

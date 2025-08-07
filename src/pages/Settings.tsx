@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -8,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import BackButton from '@/components/ui/back-button';
+import { useSettings } from '@/contexts/SettingsContext';
+import { useNowPlaying } from '@/contexts/NowPlayingContext';
 import { 
   Volume2, 
   Bell, 
@@ -16,78 +17,50 @@ import {
   Trash2,
   Info,
   Moon,
-  Smartphone
+  Smartphone,
+  Play
 } from 'lucide-react';
-
-interface SettingsData {
-  notifications: boolean;
-  autoPlay: boolean;
-  highQuality: boolean;
-  downloadOverWifiOnly: boolean;
-  volume: number;
-  audioQuality: string;
-  theme: string;
-}
 
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [settings, setSettings] = useState<SettingsData>({
-    notifications: true,
-    autoPlay: false,
-    highQuality: true,
-    downloadOverWifiOnly: true,
-    volume: 80,
-    audioQuality: 'high',
-    theme: 'dark'
-  });
+  const { settings, updateSetting, resetSettings, clearCache } = useSettings();
+  const { setVolume } = useNowPlaying();
 
-  useEffect(() => {
-    // Load settings from localStorage
-    const savedSettings = localStorage.getItem('zamar_settings');
-    if (savedSettings) {
-      setSettings({ ...settings, ...JSON.parse(savedSettings) });
-    }
-  }, []);
+  // Update audio volume when setting changes
+  const handleVolumeChange = (volume: number) => {
+    updateSetting('volume', volume);
+    setVolume(volume / 100); // Convert percentage to 0-1 range
+    toast({
+      title: "Volume updated",
+      description: `Volume set to ${volume}%`
+    });
+  };
 
-  const updateSetting = (key: keyof SettingsData, value: any) => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
-    localStorage.setItem('zamar_settings', JSON.stringify(newSettings));
-    
+  const handleSettingChange = (key: keyof typeof settings, value: any) => {
+    updateSetting(key, value);
     toast({
       title: "Settings updated",
       description: "Your preferences have been saved."
     });
   };
 
-  const clearCache = () => {
-    if (confirm('This will clear all cached data. Are you sure?')) {
-      localStorage.removeItem('zamar_cache');
+  const handleResetSettings = () => {
+    if (confirm('This will reset all settings to default. Are you sure?')) {
+      resetSettings();
       toast({
-        title: "Cache cleared",
-        description: "All cached data has been removed."
+        title: "Settings reset",
+        description: "All settings have been restored to default."
       });
     }
   };
 
-  const resetSettings = () => {
-    if (confirm('This will reset all settings to default. Are you sure?')) {
-      const defaultSettings: SettingsData = {
-        notifications: true,
-        autoPlay: false,
-        highQuality: true,
-        downloadOverWifiOnly: true,
-        volume: 80,
-        audioQuality: 'high',
-        theme: 'dark'
-      };
-      setSettings(defaultSettings);
-      localStorage.setItem('zamar_settings', JSON.stringify(defaultSettings));
-      
+  const handleClearCache = () => {
+    if (confirm('This will clear all cached data. Are you sure?')) {
+      clearCache();
       toast({
-        title: "Settings reset",
-        description: "All settings have been restored to default."
+        title: "Cache cleared",
+        description: "All cached data has been removed."
       });
     }
   };
@@ -118,7 +91,7 @@ const Settings = () => {
                 <Label>Default Volume: {settings.volume}%</Label>
                 <Slider
                   value={[settings.volume]}
-                  onValueChange={(value) => updateSetting('volume', value[0])}
+                  onValueChange={(value) => handleVolumeChange(value[0])}
                   max={100}
                   step={5}
                   className="w-full"
@@ -129,7 +102,7 @@ const Settings = () => {
                 <Label>Audio Quality</Label>
                 <Select
                   value={settings.audioQuality}
-                  onValueChange={(value) => updateSetting('audioQuality', value)}
+                  onValueChange={(value) => handleSettingChange('audioQuality', value)}
                 >
                   <SelectTrigger className="border-primary/30 focus:border-primary">
                     <SelectValue />
@@ -152,7 +125,7 @@ const Settings = () => {
                 </div>
                 <Switch
                   checked={settings.autoPlay}
-                  onCheckedChange={(checked) => updateSetting('autoPlay', checked)}
+                  onCheckedChange={(checked) => handleSettingChange('autoPlay', checked)}
                 />
               </div>
 
@@ -165,7 +138,7 @@ const Settings = () => {
                 </div>
                 <Switch
                   checked={settings.highQuality}
-                  onCheckedChange={(checked) => updateSetting('highQuality', checked)}
+                  onCheckedChange={(checked) => handleSettingChange('highQuality', checked)}
                 />
               </div>
             </CardContent>
@@ -189,7 +162,7 @@ const Settings = () => {
                 </div>
                 <Switch
                   checked={settings.notifications}
-                  onCheckedChange={(checked) => updateSetting('notifications', checked)}
+                  onCheckedChange={(checked) => handleSettingChange('notifications', checked)}
                 />
               </div>
 
@@ -197,7 +170,7 @@ const Settings = () => {
                 <Label>Theme</Label>
                 <Select
                   value={settings.theme}
-                  onValueChange={(value) => updateSetting('theme', value)}
+                  onValueChange={(value) => handleSettingChange('theme', value)}
                 >
                   <SelectTrigger className="border-primary/30 focus:border-primary">
                     <SelectValue />
@@ -230,7 +203,7 @@ const Settings = () => {
                 </div>
                 <Switch
                   checked={settings.downloadOverWifiOnly}
-                  onCheckedChange={(checked) => updateSetting('downloadOverWifiOnly', checked)}
+                  onCheckedChange={(checked) => handleSettingChange('downloadOverWifiOnly', checked)}
                 />
               </div>
             </CardContent>
@@ -273,14 +246,14 @@ const Settings = () => {
             <CardContent className="p-6 space-y-4">
               <Button
                 variant="outline"
-                onClick={clearCache}
+                onClick={handleClearCache}
                 className="w-full justify-start border-primary/30 hover:bg-primary/10"
               >
                 Clear Cache
               </Button>
               <Button
                 variant="outline"
-                onClick={resetSettings}
+                onClick={handleResetSettings}
                 className="w-full justify-start border-destructive/30 text-destructive hover:bg-destructive/10"
               >
                 Reset All Settings
