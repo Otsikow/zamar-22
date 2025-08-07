@@ -23,7 +23,7 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Cross className="w-4 h-4 text-primary" />
-              <span>{t('footer.faith_values', 'Faith-based platform • Christian values')}</span>
+              <span>{t('footer.faith_values', 'Built on faith, powered by technology')}</span>
             </div>
           </div>
 
