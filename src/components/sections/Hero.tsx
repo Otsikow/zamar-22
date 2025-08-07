@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Star, Users, Clock, Settings, Radio, Heart, ExternalLink, Copy, DollarSign, TrendingUp, Calculator } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-music.jpg";
 import LiveCounter from "./LiveCounter";
@@ -10,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Hero = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
   const [referralCode, setReferralCode] = useState('');
@@ -81,31 +83,31 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 text-center max-w-6xl">
         {/* Main Headline */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6 leading-tight">
-          Your Story, Your Song
+          {t('hero.title_line1', 'Your Story, Your Song')}
           <br />
           <span className="text-transparent bg-gradient-primary bg-clip-text">
-            Crafted with Purpose
+            {t('hero.title_line2', 'Crafted with Purpose')}
           </span>
         </h1>
 
         {/* Subheadline */}
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 font-inter leading-relaxed">
-          Zamar creates custom songs for every occasion – weddings, birthdays, churches, businesses – combining faith and technology to deliver powerful music that speaks.
+          {t('hero.subtitle', 'Zamar creates custom songs for every occasion – weddings, birthdays, churches, businesses – combining faith and technology to deliver powerful music that speaks.')}
         </p>
 
         {/* Stats Row */}
         <div className="flex flex-wrap justify-center items-center gap-6 mb-10 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-primary" />
-            <span>500+ Happy Clients</span>
+            <span>{t('hero.stat1', '500+ Happy Clients')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
-            <span>24-48hr Delivery</span>
+            <span>{t('hero.stat2', '24-48hr Delivery')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-primary" />
-            <span>Faith-Based Platform</span>
+            <span>{t('hero.stat3', 'Faith-Based Platform')}</span>
           </div>
         </div>
 
@@ -113,26 +115,26 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           <Button size="lg" variant="hero" className="text-lg px-8 py-4 min-w-[200px]" asChild>
             <Link to="/pricing">
-              Create Your Song
+              {t('hero.create_song', 'Create Your Song')}
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="text-lg px-8 py-4 min-w-[200px] group" asChild>
             <Link to="/songs">
               <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-              See Examples
+              {t('hero.see_examples', 'See Examples')}
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="text-lg px-8 py-4 min-w-[200px] group" asChild>
             <Link to="/radio">
               <Radio className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-              Radio
+              {t('hero.radio', 'Radio')}
             </Link>
           </Button>
           {isAdmin && (
             <Button size="lg" variant="secondary" className="text-lg px-8 py-4 min-w-[200px] bg-primary/20 border-primary/30 text-primary hover:bg-primary/30" asChild>
-              <Link to="/admin">
+             <Link to="/admin">
                 <Settings className="w-5 h-5 mr-2" />
-                Dashboard
+                {t('nav.dashboard', 'Dashboard')}
               </Link>
             </Button>
           )}
