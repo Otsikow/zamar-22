@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
 import { TranslationProvider } from "@/contexts/TranslationContext";
-import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
@@ -61,12 +60,11 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <TranslationProvider>
-              <SettingsProvider>
-                <NowPlayingProvider>
+              <NowPlayingProvider>
                 <div className="flex flex-col min-h-screen bg-background">
                 <Header />
                 
-                <main className="flex-1 pb-20">
+                <main className="flex-1 pt-16 pb-20">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
@@ -123,8 +121,7 @@ const App = () => (
                 <MiniPlayer />
                 <FloatingChatButton />
                 </div>
-                </NowPlayingProvider>
-              </SettingsProvider>
+              </NowPlayingProvider>
             </TranslationProvider>
           </AuthProvider>
         </BrowserRouter>
