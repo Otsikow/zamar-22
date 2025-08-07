@@ -1,0 +1,62 @@
+-- Add missing Hero section translations
+INSERT INTO app_translations (language, key, value) VALUES
+
+-- English translations
+('en', 'hero.support_mission', 'Support Our Mission'),
+('en', 'hero.empowering_communities', 'Empowering Communities Through Music'),
+('en', 'hero.free_songs', 'Free Songs'),
+('en', 'hero.global_reach', 'Global Reach'),
+('en', 'hero.community', 'Community'),
+('en', 'hero.donate_now', 'Donate Now'),
+('en', 'hero.referral_bonus', 'Referral Bonus'),
+('en', 'hero.join_earn', 'Join & Earn'),
+('en', 'hero.refer_friend_earn', 'Refer a friend and earn 15% of their first donation!'),
+('en', 'hero.second_level_earning', 'Plus 10% from their referrals too.'),
+('en', 'hero.copy_referral_link', 'Copy Referral Link'),
+('en', 'hero.create_account_start', 'Create an account to start earning from referrals'),
+('en', 'hero.get_started', 'Get Started'),
+
+-- German translations
+('de', 'hero.support_mission', 'Unterstütze unsere Mission'),
+('de', 'hero.empowering_communities', 'Gemeinschaften durch Musik stärken'),
+('de', 'hero.free_songs', 'Kostenlose Lieder'),
+('de', 'hero.global_reach', 'Globale Reichweite'),
+('de', 'hero.community', 'Gemeinschaft'),
+('de', 'hero.donate_now', 'Jetzt spenden'),
+('de', 'hero.referral_bonus', 'Empfehlungsbonus'),
+('de', 'hero.join_earn', 'Mitmachen & verdienen'),
+('de', 'hero.refer_friend_earn', 'Empfehle einen Freund und verdiene 15% seiner ersten Spende!'),
+('de', 'hero.second_level_earning', 'Plus 10% von deren Empfehlungen auch.'),
+('de', 'hero.copy_referral_link', 'Empfehlungslink kopieren'),
+('de', 'hero.create_account_start', 'Erstelle ein Konto, um mit Empfehlungen zu verdienen'),
+('de', 'hero.get_started', 'Loslegen'),
+
+-- French translations
+('fr', 'hero.support_mission', 'Soutenez notre mission'),
+('fr', 'hero.empowering_communities', 'Autonomiser les communautés par la musique'),
+('fr', 'hero.free_songs', 'Chansons gratuites'),
+('fr', 'hero.global_reach', 'Portée mondiale'),
+('fr', 'hero.community', 'Communauté'),
+('fr', 'hero.donate_now', 'Faire un don'),
+('fr', 'hero.referral_bonus', 'Bonus de parrainage'),
+('fr', 'hero.join_earn', 'Rejoindre et gagner'),
+('fr', 'hero.refer_friend_earn', 'Parrainez un ami et gagnez 15% de son premier don!'),
+('fr', 'hero.second_level_earning', 'Plus 10% de leurs parrainages aussi.'),
+('fr', 'hero.copy_referral_link', 'Copier le lien de parrainage'),
+('fr', 'hero.create_account_start', 'Créez un compte pour commencer à gagner des parrainages'),
+('fr', 'hero.get_started', 'Commencer'),
+
+-- Spanish translations
+('es', 'hero.support_mission', 'Apoya nuestra misión'),
+('es', 'hero.empowering_communities', 'Empoderando comunidades a través de la música'),
+('es', 'hero.free_songs', 'Canciones gratis'),
+('es', 'hero.global_reach', 'Alcance global'),
+('es', 'hero.community', 'Comunidad'),
+('es', 'hero.donate_now', 'Donar ahora'),
+('es', 'hero.referral_bonus', 'Bono por referidos'),
+('es', 'hero.join_earn', 'Únete y gana'),
+('es', 'hero.refer_friend_earn', '¡Refiere a un amigo y gana el 15% de su primera donación!'),
+('es', 'hero.second_level_earning', 'Más el 10% de sus referidos también.'),
+('es', 'hero.copy_referral_link', 'Copiar enlace de referido'),
+('es', 'hero.create_account_start', 'Crea una cuenta para empezar a ganar con referidos'),
+('es', 'hero.get_started', 'Empezar');
