@@ -614,6 +614,33 @@ export type Database = {
         }
         Relationships: []
       }
+      role_change_logs: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          new_role: string | null
+          old_role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_role?: string | null
+          old_role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_role?: string | null
+          old_role?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       song_plays: {
         Row: {
           country: string | null
