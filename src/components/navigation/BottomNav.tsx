@@ -1,15 +1,17 @@
 import { useLocation, Link } from 'react-router-dom';
 import { Home, Music, Radio, Folder, Menu } from 'lucide-react';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const BottomNav = () => {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const tabs = [
-    { label: "Home", icon: Home, link: "/" },
-    { label: "Songs", icon: Music, link: "/songs" },
-    { label: "Radio", icon: Radio, link: "/radio" },
-    { label: "Library", icon: Folder, link: "/library" },
-    { label: "Menu", icon: Menu, link: "/more" }
+    { label: t('nav.home', 'Home'), icon: Home, link: "/" },
+    { label: t('nav.songs', 'Songs'), icon: Music, link: "/songs" },
+    { label: t('nav.radio', 'Radio'), icon: Radio, link: "/radio" },
+    { label: t('nav.library', 'Library'), icon: Folder, link: "/library" },
+    { label: t('nav.menu', 'Menu'), icon: Menu, link: "/more" }
   ];
 
   return (

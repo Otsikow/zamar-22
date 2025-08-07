@@ -5,6 +5,8 @@ import { Menu, X, Bell, User, LogOut, Settings, LayoutDashboard } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { LanguageSelector } from '@/components/ui/language-selector';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 const Header = () => {
   const { user, loading, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { t } = useTranslation();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -79,11 +82,13 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
-            <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
+            <span className="text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
           </Link>
 
           {/* Right Side - Auth & Actions */}
           <div className="flex items-center space-x-4">
+            {/* Language Selector */}
+            <LanguageSelector />
             {user ? (
               <>
                 {/* Notifications */}
@@ -103,41 +108,41 @@ const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4 mr-2" />
-                      Account
+                      {t('nav.account', 'Account')}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
                       <Link to="/profile">
                         <User className="mr-2 h-4 w-4" />
-                        Profile
+                        {t('nav.profile', 'Profile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/library">
                         <Settings className="mr-2 h-4 w-4" />
-                        Library
+                        {t('nav.library', 'Library')}
                       </Link>
                     </DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin">
                           <LayoutDashboard className="mr-2 h-4 w-4" />
-                          Dashboard
+                          {t('nav.dashboard', 'Dashboard')}
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
+                      {t('auth.signout', 'Sign Out')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
               <Button variant="outline" size="sm" asChild>
-                <Link to="/auth">Sign In</Link>
+                <Link to="/auth">{t('auth.signin', 'Sign In')}</Link>
               </Button>
             )}
 

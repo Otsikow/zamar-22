@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
+import { TranslationProvider } from "@/contexts/TranslationContext";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
@@ -54,8 +55,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AuthProvider>
-            <NowPlayingProvider>
+          <TranslationProvider>
+            <AuthProvider>
+              <NowPlayingProvider>
               <div className="flex flex-col min-h-screen bg-background">
                 <Header />
                 
@@ -112,6 +114,7 @@ const App = () => (
               </div>
             </NowPlayingProvider>
           </AuthProvider>
+        </TranslationProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
