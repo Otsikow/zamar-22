@@ -108,8 +108,17 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const handleEnded = () => {
       console.log('🎵 Song ended, handling queue advance...');
       setState(prev => {
+        console.log('🎵 Current state during ended:', {
+          isQueueMode: prev.isQueueMode,
+          isLooping: prev.isLooping,
+          currentIndex: prev.currentIndex,
+          queueLength: prev.queue.length,
+          currentSong: prev.currentSong?.title
+        });
+        
         if (prev.isLooping) {
           // Loop the current song - restart immediately
+          console.log('🎵 Looping current song');
           if (audioRef.current) {
             audioRef.current.currentTime = 0;
             audioRef.current.play().catch(console.error);
@@ -123,7 +132,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           // Auto-advance to next song in queue mode
           const nextIndex = prev.currentIndex + 1;
           const nextSong = prev.queue[nextIndex];
-          console.log('🎵 Auto-advancing to next song:', nextSong.title);
+          console.log('🎵 Auto-advancing to next song:', nextSong?.title || 'Unknown');
           return {
             ...prev,
             currentSong: nextSong,
@@ -134,7 +143,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
           // At end of queue - loop back to beginning for continuous playback
           const firstSong = prev.queue[0];
-          console.log('🎵 End of queue reached, looping back to first song:', firstSong.title);
+          console.log('🎵 End of queue reached, looping back to first song:', firstSong?.title || 'Unknown');
           return {
             ...prev,
             currentSong: firstSong,

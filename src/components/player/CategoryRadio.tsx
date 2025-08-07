@@ -232,6 +232,21 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 >
                   <Shuffle className={`w-4 h-4 ${state.isShuffling ? 'text-primary' : ''}`} />
                 </Button>
+                <Button 
+                  onClick={() => {
+                    console.log('🧪 Manual test: simulating song ended event');
+                    const audio = document.querySelector('audio');
+                    if (audio) {
+                      audio.dispatchEvent(new Event('ended'));
+                    }
+                  }} 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-8 w-8 p-0 text-orange-500"
+                  title="Test next song (dev)"
+                >
+                  ⚡
+                </Button>
               </div>
             </div>
           </CardContent>
