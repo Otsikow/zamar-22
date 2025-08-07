@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, Send, User, Clock, ExternalLink } from 'lucide-react';
+import { MessageCircle, Send, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
 
 interface ChatRoom {
   id: string;
@@ -40,7 +39,6 @@ interface ChatMessage {
 
 export const LiveChats = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -236,32 +234,8 @@ export const LiveChats = () => {
 
   const totalUnreadCount = chatRooms.reduce((sum, room) => sum + room.unread_count, 0);
 
-  const openFullChatInbox = () => {
-    navigate('/admin/chat-inbox');
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Full Chat Inbox Button */}
-      <Card className="bg-[#1a1a1a] border-gray-800">
-        <CardContent className="p-6 text-center">
-          <div className="mb-4">
-            <MessageCircle className="h-12 w-12 mx-auto text-[#FFD700] mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Full Chat Inbox Available</h3>
-            <p className="text-gray-400 mb-4">
-              For a complete chat management experience, use our dedicated full-screen chat inbox.
-            </p>
-          </div>
-          <Button 
-            onClick={openFullChatInbox}
-            className="bg-[#FFD700] text-black hover:bg-[#FFD700]/90 font-semibold px-6 py-3 rounded-lg"
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Open Full Chat Inbox
-          </Button>
-        </CardContent>
-      </Card>
-
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
       {/* Chat Rooms List */}
       <Card className="lg:col-span-1">
         <CardHeader>
