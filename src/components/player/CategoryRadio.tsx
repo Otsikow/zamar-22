@@ -46,6 +46,13 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>("");
+  
+  // Reset current category when radio stops
+  useEffect(() => {
+    if (!state.isQueueMode) {
+      setCurrentCategory("");
+    }
+  }, [state.isQueueMode]);
 
   useEffect(() => {
     fetchCategories();
@@ -190,6 +197,11 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const currentSong = state.currentSong;
   const queueLength = state.queue.length;
   const currentPosition = state.currentIndex + 1;
+  
+  // Helper to check if a category is currently playing
+  const isCategoryPlaying = (category: string) => {
+    return state.isQueueMode && state.isPlaying && currentCategory === category;
+  };
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -276,10 +288,18 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <Button
                     onClick={playAllSongs}
                     disabled={loading}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-8 h-12"
+                    className={`rounded-xl px-8 h-12 ${
+                      isCategoryPlaying("All Songs") 
+                        ? "bg-green-500 hover:bg-green-600 text-white" 
+                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    }`}
                   >
-                    <Play className="w-5 h-5 mr-2" />
-                    Start All Songs Radio
+                    {isCategoryPlaying("All Songs") ? (
+                      <Pause className="w-5 h-5 mr-2" />
+                    ) : (
+                      <Play className="w-5 h-5 mr-2" />
+                    )}
+                    {isCategoryPlaying("All Songs") ? "Playing" : "Start All Songs Radio"}
                   </Button>
                 </div>
               </div>
@@ -302,10 +322,18 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                     <Button
                       onClick={() => playByCategory(genre, 'genre')}
                       disabled={loading}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 h-10"
+                      className={`rounded-xl px-6 h-10 ${
+                        isCategoryPlaying(genre)
+                          ? "bg-green-500 hover:bg-green-600 text-white"
+                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      }`}
                     >
-                      <Play className="w-4 h-4 mr-2" />
-                      Play
+                      {isCategoryPlaying(genre) ? (
+                        <Pause className="w-4 h-4 mr-2" />
+                      ) : (
+                        <Play className="w-4 h-4 mr-2" />
+                      )}
+                      {isCategoryPlaying(genre) ? "Playing" : "Play"}
                     </Button>
                   </div>
                 </CardContent>
@@ -329,10 +357,18 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                     <Button
                       onClick={() => playByCategory(occasion, 'occasion')}
                       disabled={loading}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 h-10"
+                      className={`rounded-xl px-6 h-10 ${
+                        isCategoryPlaying(occasion)
+                          ? "bg-green-500 hover:bg-green-600 text-white"
+                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      }`}
                     >
-                      <Play className="w-4 h-4 mr-2" />
-                      Play
+                      {isCategoryPlaying(occasion) ? (
+                        <Pause className="w-4 h-4 mr-2" />
+                      ) : (
+                        <Play className="w-4 h-4 mr-2" />
+                      )}
+                      {isCategoryPlaying(occasion) ? "Playing" : "Play"}
                     </Button>
                   </div>
                 </CardContent>
