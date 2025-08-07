@@ -39,6 +39,10 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
 
   const languages = ["English", "Spanish", "Twi"];
 
+  const handleFeaturedChange = (checked: boolean | "indeterminate") => {
+    setFeatured(checked === true);
+  };
+
   const handleSave = async () => {
     setIsLoading(true);
     try {
@@ -145,7 +149,7 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
           <Checkbox
             id="featured"
             checked={featured}
-            onCheckedChange={setFeatured}
+            onCheckedChange={handleFeaturedChange}
           />
           <Label htmlFor="featured" className="text-foreground">Featured Song</Label>
         </div>
