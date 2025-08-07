@@ -45,6 +45,8 @@ import ReferralDashboard from "./pages/ReferralDashboard";
 import ReferralCalculator from "./pages/ReferralCalculator";
 import PlaylistDetail from "./pages/PlaylistDetail";
 import { ReferralDashboard as ReferralDashboardComponent } from "./components/referrals/ReferralDashboard";
+import PublicPlaylists from "./pages/PublicPlaylists";
+import PublicPlaylistDetail from "./pages/PublicPlaylistDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -98,6 +100,8 @@ const App = () => (
                     <Route path="/referral-calculator" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     
                     {/* Playlist Routes */}
+                    <Route path="/playlists/public" element={<PublicPlaylists />} />
+                    <Route path="/playlists/:id/public" element={<PublicPlaylistDetail />} />
                     <Route path="/playlists/:id" element={<ProtectedRoute><PlaylistDetail /></ProtectedRoute>} />
                     
                     {/* Admin Routes */}
