@@ -9,12 +9,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Music, Mail, Lock, User, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 import { ReferralTracker } from '@/components/referrals/ReferralTracker';
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -163,7 +165,7 @@ const Auth = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to="/">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
+                {t('nav.back_home', 'Back to Home')}
               </Link>
             </Button>
           </div>
@@ -178,17 +180,17 @@ const Auth = () => {
                 </div>
               </div>
               <CardTitle className="text-2xl font-heading text-primary">
-                Welcome to Zamar
+                {t('auth.welcome', 'Welcome to Zamar')}
               </CardTitle>
               <p className="text-muted-foreground">
-                Sign in to your account or create a new one
+                {t('auth.subtitle', 'Sign in to your account or create a new one')}
               </p>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="login" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                  <TabsTrigger value="login">{t('auth.login', 'Login')}</TabsTrigger>
+                  <TabsTrigger value="signup">{t('auth.signup', 'Sign Up')}</TabsTrigger>
                 </TabsList>
 
                 {/* Error Alert */}
@@ -203,7 +205,7 @@ const Auth = () => {
                 <TabsContent value="login">
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div>
-                      <Label htmlFor="login-email">Email</Label>
+                      <Label htmlFor="login-email">{t('auth.email', 'Email')}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -218,7 +220,7 @@ const Auth = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="login-password">Password</Label>
+                      <Label htmlFor="login-password">{t('auth.password', 'Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -237,7 +239,7 @@ const Auth = () => {
                       className="w-full" 
                       disabled={loading}
                     >
-                      {loading ? "Signing in..." : "Sign In"}
+                      {loading ? t('auth.signing_in', 'Signing in...') : t('auth.signin', 'Sign In')}
                     </Button>
                   </form>
                 </TabsContent>
@@ -247,7 +249,7 @@ const Auth = () => {
                   <form onSubmit={handleSignup} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="signup-firstName">First Name</Label>
+                        <Label htmlFor="signup-firstName">{t('auth.first_name', 'First Name')}</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -262,7 +264,7 @@ const Auth = () => {
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="signup-lastName">Last Name</Label>
+                        <Label htmlFor="signup-lastName">{t('auth.last_name', 'Last Name')}</Label>
                         <Input
                           id="signup-lastName"
                           type="text"
@@ -274,7 +276,7 @@ const Auth = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-email">{t('auth.email', 'Email')}</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -289,7 +291,7 @@ const Auth = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="signup-password">Password</Label>
+                      <Label htmlFor="signup-password">{t('auth.password', 'Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -305,7 +307,7 @@ const Auth = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="signup-confirmPassword">Confirm Password</Label>
+                      <Label htmlFor="signup-confirmPassword">{t('auth.confirm_password', 'Confirm Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -325,7 +327,7 @@ const Auth = () => {
                       className="w-full" 
                       disabled={loading}
                     >
-                      {loading ? "Creating account..." : "Create Account"}
+                      {loading ? t('auth.creating_account', 'Creating account...') : t('auth.create_account', 'Create Account')}
                     </Button>
                   </form>
                 </TabsContent>

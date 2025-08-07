@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TranslationContextType {
   currentLanguage: string;
@@ -32,6 +33,7 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const loadTranslations = async (language: string) => {
     try {
@@ -70,6 +72,20 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
     console.log('Changing language to:', language);
     localStorage.setItem('appLanguage', language);
     setCurrentLanguage(language);
+    
+    // Save preferred language to user profile if authenticated
+    if (user) {
+      try {
+        await supabase
+          .from('profiles')
+          .update({ preferred_language: language })
+          .eq('id', user.id);
+        console.log('Saved preferred language to user profile:', language);
+      } catch (error) {
+        console.error('Failed to save preferred language to profile:', error);
+      }
+    }
+    
     await loadTranslations(language);
   };
 
@@ -84,11 +100,38 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
   };
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('appLanguage') || 'en';
-    console.log('Initializing translation system with language:', savedLanguage);
-    setCurrentLanguage(savedLanguage);
-    loadTranslations(savedLanguage);
-  }, []);
+    const initializeLanguage = async () => {
+      let initialLanguage = 'en';
+      
+      // Check if user is authenticated and has a preferred language
+      if (user) {
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('preferred_language')
+            .eq('id', user.id)
+            .single();
+          
+          if (profile?.preferred_language) {
+            initialLanguage = profile.preferred_language;
+          }
+        } catch (error) {
+          console.error('Failed to fetch user preferred language:', error);
+        }
+      }
+      
+      // Fallback to localStorage if no user preference
+      if (!user || initialLanguage === 'en') {
+        initialLanguage = localStorage.getItem('appLanguage') || 'en';
+      }
+      
+      console.log('Initializing translation system with language:', initialLanguage);
+      setCurrentLanguage(initialLanguage);
+      await loadTranslations(initialLanguage);
+    };
+
+    initializeLanguage();
+  }, [user]);
 
   const contextValue: TranslationContextType = {
     currentLanguage,
