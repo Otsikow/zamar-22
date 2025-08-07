@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -22,37 +23,38 @@ const More = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { t } = useTranslation();
   const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
       await signOut();
       toast({
-        title: "Logged out",
-        description: "You have been successfully logged out."
+        title: t("more.logout_success", "Logged out"),
+        description: t("more.logout_success_description", "You have been successfully logged out.")
       });
       navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
       toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
+        title: t("more.logout_error", "Error"),
+        description: t("more.logout_error_description", "Failed to log out. Please try again."),
         variant: "destructive"
       });
     }
   };
 
   const menuItems = [
-    { label: "My Account", icon: User, action: () => navigate('/profile') },
-    ...(isAdmin ? [{ label: "Dashboard", icon: LayoutDashboard, action: () => navigate('/admin') }] : []),
-    { label: "Create Playlist", icon: ListPlus, action: () => navigate('/playlist/create') },
-    { label: "Manage Playlists", icon: Settings, action: () => navigate('/playlist/manage') },
-    { label: "Pricing", icon: CreditCard, action: () => navigate('/pricing') },
-    { label: "Referral Calculator", icon: DollarSign, action: () => navigate('/referral') },
-    { label: "Testimonies", icon: MessageCircle, action: () => navigate('/testimonies') },
-    { label: "Donate", icon: Heart, action: () => navigate('/donate') },
-    { label: "Settings", icon: Sliders, action: () => navigate('/settings') },
-    { label: "Logout", icon: LogOut, action: handleLogout, variant: "destructive" as const }
+    { label: t("more.my_account", "My Account"), icon: User, action: () => navigate('/profile') },
+    ...(isAdmin ? [{ label: t("more.dashboard", "Dashboard"), icon: LayoutDashboard, action: () => navigate('/admin') }] : []),
+    { label: t("more.create_playlist", "Create Playlist"), icon: ListPlus, action: () => navigate('/playlist/create') },
+    { label: t("more.manage_playlists", "Manage Playlists"), icon: Settings, action: () => navigate('/playlist/manage') },
+    { label: t("more.pricing", "Pricing"), icon: CreditCard, action: () => navigate('/pricing') },
+    { label: t("more.referral_calculator", "Referral Calculator"), icon: DollarSign, action: () => navigate('/referral') },
+    { label: t("more.testimonies", "Testimonies"), icon: MessageCircle, action: () => navigate('/testimonies') },
+    { label: t("more.donate", "Donate"), icon: Heart, action: () => navigate('/donate') },
+    { label: t("more.settings", "Settings"), icon: Sliders, action: () => navigate('/settings') },
+    { label: t("more.logout", "Logout"), icon: LogOut, action: handleLogout, variant: "destructive" as const }
   ];
 
   return (
@@ -60,10 +62,10 @@ const More = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-heading text-primary mb-2">Menu</h1>
+          <h1 className="text-3xl font-heading text-primary mb-2">{t("more.menu", "Menu")}</h1>
           {user && (
             <p className="text-muted-foreground">
-              Welcome back, {user.email}
+              {t("more.welcome_back", "Welcome back, {email}").replace("{email}", user.email)}
             </p>
           )}
         </div>
@@ -116,10 +118,10 @@ const More = () => {
             <CardContent className="p-4">
               <h3 className="font-heading text-primary text-lg mb-2">Zamar</h3>
               <p className="text-sm text-muted-foreground">
-                Custom Songs for Every Occasion
+                {t("more.app_tagline", "Custom Songs for Every Occasion")}
               </p>
               <p className="text-xs text-muted-foreground mt-2">
-                Version 1.0.0
+                {t("more.version", "Version 1.0.0")}
               </p>
             </CardContent>
           </Card>
