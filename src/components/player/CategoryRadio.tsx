@@ -62,13 +62,15 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
 
       if (error) throw error;
 
-      const genres = [...new Set(songs?.map(song => song.genre).filter(Boolean))];
-      const occasions = [...new Set(songs?.map(song => song.occasion).filter(Boolean))];
-      const languages = [...new Set(songs?.map(song => song.language || 'English').filter(Boolean))];
-      
-      setAvailableGenres(genres);
-      setAvailableOccasions(occasions);
-      setAvailableLanguages(languages.sort());
+      if (songs) {
+        const genres = [...new Set(songs.map(song => song.genre).filter(Boolean))];
+        const occasions = [...new Set(songs.map(song => song.occasion).filter(Boolean))];
+        const languages = [...new Set(songs.map(song => song.language || 'English').filter(Boolean))];
+        
+        setAvailableGenres(genres);
+        setAvailableOccasions(occasions);
+        setAvailableLanguages(languages.sort());
+      }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }

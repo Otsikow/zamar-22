@@ -653,6 +653,7 @@ export type Database = {
           featured: boolean | null
           genre: string | null
           id: string
+          language: string | null
           occasion: string | null
           tags: string[] | null
           thumbnail_url: string | null
@@ -665,6 +666,7 @@ export type Database = {
           featured?: boolean | null
           genre?: string | null
           id?: string
+          language?: string | null
           occasion?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
@@ -677,6 +679,7 @@ export type Database = {
           featured?: boolean | null
           genre?: string | null
           id?: string
+          language?: string | null
           occasion?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
