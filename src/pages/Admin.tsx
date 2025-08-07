@@ -23,6 +23,7 @@ import { ReferralAnalytics } from "@/components/admin/ReferralAnalytics";
 import CustomSongUpload from "@/components/admin/CustomSongUpload";
 import SongAnalytics from "@/components/admin/SongAnalytics";
 import UserRoleManagement from "@/components/admin/UserRoleManagement";
+import RoleChangeHistory from "@/components/admin/RoleChangeHistory";
 
 interface CustomSongRequest {
   id: string;
@@ -539,7 +540,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-1 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-12 gap-1 h-auto p-1">
             <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
             <TabsTrigger value="custom-upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
             <TabsTrigger value="songs" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
@@ -550,6 +551,7 @@ const Admin = () => {
             <TabsTrigger value="donations" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
             <TabsTrigger value="testimonials" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
             <TabsTrigger value="users" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Roles</TabsTrigger>
+            <TabsTrigger value="role-history" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Role History</TabsTrigger>
             <TabsTrigger value="ads" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
             <TabsTrigger value="referrals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
           </TabsList>
@@ -1295,6 +1297,11 @@ const Admin = () => {
           {/* User Role Management */}
           <TabsContent value="users">
             <UserRoleManagement />
+          </TabsContent>
+
+          {/* Role Change History */}
+          <TabsContent value="role-history">
+            <RoleChangeHistory />
           </TabsContent>
 
           {/* Referrals Analytics */}
