@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
@@ -6,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { 
   Play, 
   Pause, 
@@ -15,7 +18,8 @@ import {
   Repeat,
   Radio,
   Music,
-  Heart
+  Heart,
+  Globe
 } from "lucide-react";
 
 interface Song {
@@ -27,6 +31,7 @@ interface Song {
   thumbnail_url: string;
   tags: string[];
   featured: boolean;
+  language?: string;
 }
 
 interface CategoryRadioProps {
@@ -39,6 +44,8 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   
   const [availableGenres, setAvailableGenres] = useState<string[]>([]);
   const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
   const [loading, setLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>("");
 
@@ -50,19 +57,28 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
     try {
       const { data: songs, error } = await supabase
         .from("songs")
-        .select("genre, occasion")
+        .select("genre, occasion, language")
         .not("audio_url", "is", null);
 
       if (error) throw error;
 
       const genres = [...new Set(songs?.map(song => song.genre).filter(Boolean))];
       const occasions = [...new Set(songs?.map(song => song.occasion).filter(Boolean))];
+      const languages = [...new Set(songs?.map(song => song.language || 'English').filter(Boolean))];
       
       setAvailableGenres(genres);
       setAvailableOccasions(occasions);
+      setAvailableLanguages(languages.sort());
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
+  };
+
+  const buildLanguageFilter = () => {
+    if (selectedLanguage === "all") {
+      return {};
+    }
+    return { language: selectedLanguage };
   };
 
   const playByCategory = async (category: string, type: 'genre' | 'occasion') => {
@@ -70,19 +86,27 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
       setLoading(true);
       setCurrentCategory(category);
 
-      const { data: songs, error } = await supabase
+      const languageFilter = buildLanguageFilter();
+      let query = supabase
         .from("songs")
         .select("*")
         .eq(type, category)
         .not("audio_url", "is", null)
         .order("created_at", { ascending: false });
 
+      // Apply language filter if specific language is selected
+      if (languageFilter.language) {
+        query = query.eq("language", languageFilter.language);
+      }
+
+      const { data: songs, error } = await query;
+
       if (error) throw error;
 
       if (!songs || songs.length === 0) {
         toast({
           title: "No Songs Found",
-          description: `No songs available in ${category}`,
+          description: `No songs available in ${category}${selectedLanguage !== "all" ? ` (${selectedLanguage})` : ""}`,
           variant: "destructive",
         });
         return;
@@ -104,7 +128,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
 
       toast({
         title: "Radio Started",
-        description: `Playing ${songs.length} songs from ${category}`,
+        description: `Playing ${songs.length} songs from ${category}${selectedLanguage !== "all" ? ` in ${selectedLanguage}` : ""}`,
       });
 
     } catch (error) {
@@ -124,18 +148,26 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
       setLoading(true);
       setCurrentCategory("All Songs");
 
-      const { data: songs, error } = await supabase
+      const languageFilter = buildLanguageFilter();
+      let query = supabase
         .from("songs")
         .select("*")
         .not("audio_url", "is", null)
         .order("created_at", { ascending: false });
+
+      // Apply language filter if specific language is selected
+      if (languageFilter.language) {
+        query = query.eq("language", languageFilter.language);
+      }
+
+      const { data: songs, error } = await query;
 
       if (error) throw error;
 
       if (!songs || songs.length === 0) {
         toast({
           title: "No Songs Found",
-          description: "No songs available",
+          description: `No songs available${selectedLanguage !== "all" ? ` in ${selectedLanguage}` : ""}`,
           variant: "destructive",
         });
         return;
@@ -155,7 +187,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
 
       toast({
         title: "All Songs Radio",
-        description: `Playing all ${songs.length} songs`,
+        description: `Playing all ${songs.length} songs${selectedLanguage !== "all" ? ` in ${selectedLanguage}` : ""}`,
       });
 
     } catch (error) {
@@ -177,6 +209,33 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
 
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Language Selection */}
+      <Card className="bg-card/50 border-border/50 rounded-2xl">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <Globe className="w-5 h-5 text-primary" />
+            <div className="flex-1">
+              <Label htmlFor="language-select" className="text-sm font-medium">
+                Language Filter
+              </Label>
+              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Languages</SelectItem>
+                  {availableLanguages.map((language) => (
+                    <SelectItem key={language} value={language}>
+                      {language}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Current Playing */}
       {state.isQueueMode && currentSong && (
         <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 rounded-2xl">
@@ -192,6 +251,11 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <Badge variant="outline" className="text-xs bg-background/50">
                     {currentCategory}
                   </Badge>
+                  {selectedLanguage !== "all" && (
+                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary">
+                      {selectedLanguage}
+                    </Badge>
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {currentPosition} of {queueLength}
                   </span>
@@ -240,6 +304,11 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <h3 className="text-lg font-bold mb-2">All Songs Radio</h3>
                   <p className="text-muted-foreground text-sm mb-4">
                     Play all available songs in continuous mode
+                    {selectedLanguage !== "all" && (
+                      <span className="block mt-1 text-primary font-medium">
+                        Filtered by: {selectedLanguage}
+                      </span>
+                    )}
                   </p>
                   <Button
                     onClick={playAllSongs}
@@ -263,7 +332,12 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="font-bold text-lg">{genre}</h3>
-                      <p className="text-muted-foreground text-sm">Genre Radio</p>
+                      <p className="text-muted-foreground text-sm">
+                        Genre Radio
+                        {selectedLanguage !== "all" && (
+                          <span className="text-primary ml-1">• {selectedLanguage}</span>
+                        )}
+                      </p>
                     </div>
                     <Button
                       onClick={() => playByCategory(genre, 'genre')}
@@ -288,7 +362,12 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="font-bold text-lg">{occasion}</h3>
-                      <p className="text-muted-foreground text-sm">Occasion Radio</p>
+                      <p className="text-muted-foreground text-sm">
+                        Occasion Radio
+                        {selectedLanguage !== "all" && (
+                          <span className="text-primary ml-1">• {selectedLanguage}</span>
+                        )}
+                      </p>
                     </div>
                     <Button
                       onClick={() => playByCategory(occasion, 'occasion')}
@@ -315,6 +394,9 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 <p className="font-medium text-sm">Radio Active</p>
                 <p className="text-xs text-muted-foreground">
                   {queueLength} songs • {state.isShuffling ? 'Shuffled' : 'In order'}
+                  {selectedLanguage !== "all" && (
+                    <span className="text-primary ml-1">• {selectedLanguage}</span>
+                  )}
                 </p>
               </div>
               <Button
