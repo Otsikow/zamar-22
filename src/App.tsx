@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
 import { TranslationProvider } from "@/contexts/TranslationContext";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
@@ -53,7 +53,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <ThemeProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />

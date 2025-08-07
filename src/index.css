@@ -2,98 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Zamar Design System - Faith-Based Custom Song Platform
-All colors MUST be HSL. Dark theme with elegant gold accents.
-*/
+/* Design tokens – Light by default */
+:root {
+  /* base */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%; /* slate-900 */
 
-@layer base {
-  :root {
-    /* Core Brand Colors */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    
-    /* Card & Component Backgrounds */
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 100%;
-    
-    /* Popover & Overlays */
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 100%;
-    
-    /* Primary Amber Brand */
-    --primary: 45 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --primary-glow: 45 100% 65%;
-    
-    /* Secondary Neutral */
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 90%;
-    
-    /* Muted Text & Elements */
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 73%;
-    
-    /* Accent Amber Variations */
-    --accent: 0 0% 10%;
-    --accent-foreground: 45 100% 50%;
-    
-    /* Status Colors */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
-    
-    /* UI Elements */
-    --border: 0 0% 20%;
-    --input: 0 0% 12%;
-    --ring: 45 100% 50%;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 100% 55%));
-    --gradient-hero: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 3%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 6%), hsl(0 0% 4%));
-    
-    /* Shadows */
-    --shadow-gold: 0 10px 30px -10px hsl(45 100% 50% / 0.3);
-    --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.5);
-    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
-    
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  /* surfaces */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
 
-    --radius: 0.75rem;
+  /* brand accent: amber/gold */
+  --primary: 45 93% 47%;             /* amber-500 */
+  --primary-foreground: 0 0% 10%;
 
-    --sidebar-background: 0 0% 98%;
+  /* neutrals */
+  --secondary: 210 14% 97%;          /* gray-50 */
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 16% 96%;
+  --muted-foreground: 215 20% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+  /* UI */
+  --accent: 45 93% 47%;
+  --accent-foreground: 0 0% 8%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
 
-    --sidebar-primary: 240 5.9% 10%;
+  /* lines/rings/inputs */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 45 93% 47%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 55%));
+  --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 98%));
+  --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 16% 98%));
 
-    --sidebar-accent: 240 4.8% 95.9%;
+  /* Shadows */
+  --shadow-gold: 0 10px 30px -10px hsl(45 93% 47% / 0.3);
+  --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.1);
+  --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.05);
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+  /* Animations */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --sidebar-border: 220 13% 91%;
+  --radius: 0.75rem;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  /* Remove dark mode overrides - we're dark by default */
+  /* Sidebar */
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
+/* Dark theme (activated by .dark on <html>) */
+.dark {
+  --background: 225 12% 7%;          /* near-black */
+  --foreground: 0 0% 98%;
+
+  --card: 225 10% 10%;
+  --card-foreground: 0 0% 98%;
+  --popover: 225 10% 10%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 45 93% 47%;             /* keep gold */
+  --primary-foreground: 0 0% 8%;
+
+  --secondary: 225 10% 13%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 225 10% 13%;
+  --muted-foreground: 220 14% 75%;
+
+  --accent: 45 93% 47%;
+  --accent-foreground: 0 0% 8%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 98%;
+
+  --border: 225 10% 18%;
+  --input: 225 10% 18%;
+  --ring: 45 93% 47%;
+
+  /* Dark Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 55%));
+  --gradient-hero: linear-gradient(180deg, hsl(225 12% 7%), hsl(225 10% 10%));
+  --gradient-card: linear-gradient(145deg, hsl(225 10% 10%), hsl(225 10% 8%));
+
+  /* Dark Shadows */
+  --shadow-gold: 0 10px 30px -10px hsl(45 93% 47% / 0.3);
+  --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.5);
+  --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.4);
+
+  /* Dark Sidebar */
+  --sidebar-background: 225 10% 8%;
+  --sidebar-foreground: 0 0% 90%;
+  --sidebar-primary: 45 93% 47%;
+  --sidebar-primary-foreground: 0 0% 8%;
+  --sidebar-accent: 225 10% 12%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 225 10% 15%;
+  --sidebar-ring: 45 93% 47%;
+}
+
+/* Make the whole app auto-theme without touching every component */
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-inter;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-playfair;
-  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-inter; }
+  h1, h2, h3, h4, h5, h6 { @apply font-playfair; }
 }

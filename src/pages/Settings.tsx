@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import BackButton from '@/components/ui/back-button';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   Volume2, 
   Bell, 
@@ -26,8 +27,24 @@ interface SettingsData {
   downloadOverWifiOnly: boolean;
   volume: number;
   audioQuality: string;
-  theme: string;
 }
+
+const ThemeSelector = () => {
+  const { theme, setTheme } = useTheme();
+  
+  return (
+    <Select value={theme} onValueChange={setTheme}>
+      <SelectTrigger className="border-primary/30 focus:border-primary">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="system">Auto (System)</SelectItem>
+        <SelectItem value="light">Light</SelectItem>
+        <SelectItem value="dark">Dark</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+};
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -38,8 +55,7 @@ const Settings = () => {
     highQuality: true,
     downloadOverWifiOnly: true,
     volume: 80,
-    audioQuality: 'high',
-    theme: 'dark'
+    audioQuality: 'high'
   });
 
   useEffect(() => {
@@ -79,8 +95,7 @@ const Settings = () => {
         highQuality: true,
         downloadOverWifiOnly: true,
         volume: 80,
-        audioQuality: 'high',
-        theme: 'dark'
+        audioQuality: 'high'
       };
       setSettings(defaultSettings);
       localStorage.setItem('zamar_settings', JSON.stringify(defaultSettings));
@@ -195,19 +210,7 @@ const Settings = () => {
 
               <div className="space-y-4">
                 <Label>Theme</Label>
-                <Select
-                  value={settings.theme}
-                  onValueChange={(value) => updateSetting('theme', value)}
-                >
-                  <SelectTrigger className="border-primary/30 focus:border-primary">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="auto">Auto (System)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <ThemeSelector />
               </div>
             </CardContent>
           </Card>
