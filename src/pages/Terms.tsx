@@ -30,7 +30,7 @@ const Terms = () => {
           {/* Content */}
           <div className="space-y-6">
             <p className="text-sm text-muted-foreground mb-6">
-              {t('terms.effective_date', 'Effective Date: December 1, 2024')}
+              {t('terms.effective_date', 'Effective Date: December 1, 2025')}
             </p>
 
             <Card>

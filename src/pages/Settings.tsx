@@ -304,7 +304,7 @@ const Settings = () => {
               </div>
               <div className="pt-4 border-t border-primary/10">
                 <p className="text-xs text-muted-foreground">
-                  © 2024 Zamar. All rights reserved.
+                  © 2025 Zamar. All rights reserved.
                 </p>
               </div>
             </CardContent>
