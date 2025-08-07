@@ -153,16 +153,15 @@ const Hero = () => {
               
               <div className="space-y-4 flex-grow">
                 <h3 className="text-2xl font-playfair font-bold text-foreground">
-                  Support Our Mission
+                  {t('hero.support_mission', 'Support Our Mission')}
                 </h3>
                 
                 <h4 className="text-lg text-primary font-semibold">
-                  Empowering Communities Through Music
+                  {t('hero.empowering_communities', 'Empowering Communities Through Music')}
                 </h4>
                 
                 <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
-                  Help us create meaningful music for communities, ministries, and churches worldwide. 
-                  Every contribution supports hope, healing, and inspiration through custom songs.
+                  {t('hero.support_description', 'Help us create meaningful music for communities, ministries, and churches worldwide. Every contribution supports hope, healing, and inspiration through custom songs.')}
                 </p>
               </div>
 
@@ -171,19 +170,19 @@ const Hero = () => {
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">🎵</span>
                   </div>
-                  <span className="text-sm text-muted-foreground font-medium">Free Songs</span>
+                  <span className="text-sm text-muted-foreground font-medium">{t('hero.free_songs', 'Free Songs')}</span>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">🌍</span>
                   </div>
-                  <span className="text-sm text-muted-foreground font-medium">Global Reach</span>
+                  <span className="text-sm text-muted-foreground font-medium">{t('hero.global_reach', 'Global Reach')}</span>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">⛪</span>
                   </div>
-                  <span className="text-sm text-muted-foreground font-medium">Community</span>
+                  <span className="text-sm text-muted-foreground font-medium">{t('hero.community', 'Community')}</span>
                 </div>
               </div>
             </div>
@@ -195,7 +194,7 @@ const Hero = () => {
             >
               <Link to="/donate">
                 <Heart className="w-5 h-5 mr-2" />
-                Donate Now
+                {t('hero.donate_now', 'Donate Now')}
               </Link>
             </Button>
           </div>
@@ -211,19 +210,18 @@ const Hero = () => {
                 </div>
                 
                 <div className="space-y-4 flex-grow">
-                  <h3 className="text-2xl font-playfair font-bold text-foreground">
-                    Earn Referral Bonus
-                  </h3>
+                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                  {t('hero.earn_referral', 'Earn Referral Bonus')}
+                </h3>
                   
-                  <h4 className="text-lg text-primary font-semibold">
-                    Share & Earn Commissions
-                  </h4>
+                <h4 className="text-lg text-primary font-semibold">
+                  {t('hero.share_earn', 'Share & Earn Commissions')}
+                </h4>
                   
-                  <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
-                    Invite friends to Zamar and earn commission on their purchases. 
-                    Share the gift of custom music while building your income.
-                  </p>
-                </div>
+                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                  {t('hero.referral_description', 'Invite friends to Zamar and earn commission on their purchases. Share the gift of custom music while building your income.')}
+                </p>
+              </div>
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
@@ -232,7 +230,7 @@ const Hero = () => {
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">15%</div>
-                      <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
+                      <span className="text-sm text-muted-foreground font-medium">{t('hero.direct_referrals', 'Direct Referrals')}</span>
                     </div>
                   </div>
                   <div className="text-center">
@@ -241,7 +239,7 @@ const Hero = () => {
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">10%</div>
-                      <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
+                      <span className="text-sm text-muted-foreground font-medium">{t('hero.indirect_referrals', 'Indirect Referrals')}</span>
                     </div>
                   </div>
                 </div>
@@ -267,7 +265,7 @@ const Hero = () => {
               >
                 <Link to="/referrals">
                   <Calculator className="w-5 h-5 mr-2" />
-                  Calculate Your Earnings
+                  {t('hero.calculate_earnings', 'Calculate Your Earnings')}
                 </Link>
               </Button>
             </div>
@@ -284,19 +282,18 @@ const Hero = () => {
                 </div>
                 
                 <div className="space-y-4 flex-grow">
-                  <h3 className="text-2xl font-playfair font-bold text-foreground">
-                    Earn Referral Bonus
-                  </h3>
+                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                  {t('hero.earn_referral', 'Earn Referral Bonus')}
+                </h3>
                   
-                  <h4 className="text-lg text-primary font-semibold">
-                    Join & Start Earning
-                  </h4>
+                <h4 className="text-lg text-primary font-semibold">
+                  {t('hero.join_start_earning', 'Join & Start Earning')}
+                </h4>
                   
-                  <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
-                    Create an account to get your referral link and start earning commission 
-                    on every friend who purchases custom songs through your link.
-                  </p>
-                </div>
+                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                  {t('hero.guest_referral_description', 'Create an account to get your referral link and start earning commission on every friend who purchases custom songs through your link.')}
+                </p>
+              </div>
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
@@ -305,7 +302,7 @@ const Hero = () => {
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">15%</div>
-                      <span className="text-sm text-muted-foreground font-medium">Direct Referrals</span>
+                      <span className="text-sm text-muted-foreground font-medium">{t('hero.direct_referrals', 'Direct Referrals')}</span>
                     </div>
                   </div>
                   <div className="text-center">
@@ -314,7 +311,7 @@ const Hero = () => {
                     </div>
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-primary">10%</div>
-                      <span className="text-sm text-muted-foreground font-medium">Indirect Referrals</span>
+                      <span className="text-sm text-muted-foreground font-medium">{t('hero.indirect_referrals', 'Indirect Referrals')}</span>
                     </div>
                   </div>
                 </div>
@@ -327,7 +324,7 @@ const Hero = () => {
               >
                 <Link to="/auth">
                   <ExternalLink className="w-5 h-5 mr-2" />
-                  Join & Earn
+                  {t('hero.join_earn', 'Join & Earn')}
                 </Link>
               </Button>
             </div>
