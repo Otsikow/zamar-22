@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Clock, Music } from "lucide-react";
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface CustomSongRequest {
   id: string;
@@ -21,6 +22,11 @@ interface RequestReviewPanelProps {
 }
 
 const RequestReviewPanel = ({ requests, onRequestAction }: RequestReviewPanelProps) => {
+  // Pull the current language from the translation context so we can
+  // format dates according to the selected locale. Without this the
+  // admin panel would always display dates in US English.
+  const { currentLanguage } = useTranslation();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
@@ -41,7 +47,8 @@ const RequestReviewPanel = ({ requests, onRequestAction }: RequestReviewPanelPro
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const locale = getLocaleForLanguage(currentLanguage);
+    return new Date(dateString).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

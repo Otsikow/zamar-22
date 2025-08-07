@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Heart, Volume2 } from "lucide-react";
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface Testimonial {
   id: string;
@@ -18,6 +19,9 @@ interface TestimonyModerationPanelProps {
 }
 
 const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: TestimonyModerationPanelProps) => {
+  // Pull current language from context for locale aware date formatting
+  const { currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
@@ -28,7 +32,7 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'

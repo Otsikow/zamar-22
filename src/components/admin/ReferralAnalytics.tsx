@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Users, DollarSign, TrendingUp, Award, Plus } from 'lucide-react';
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface ReferralAnalytics {
   totalReferrals: number;
@@ -17,6 +18,9 @@ interface ReferralAnalytics {
 
 export const ReferralAnalytics = () => {
   const { toast } = useToast();
+  // Get the current language and resolve a suitable locale for date formatting.
+  const { currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   const [analytics, setAnalytics] = useState<ReferralAnalytics>({
     totalReferrals: 0,
     totalPaid: 0,
@@ -36,7 +40,8 @@ export const ReferralAnalytics = () => {
         totalPaid: 0,
         monthlyStats: {
           paid: 0,
-          month: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          // Use the resolved locale so the month label reflects the selected language
+          month: new Date().toLocaleDateString(locale, { month: 'long', year: 'numeric' })
         }
       });
 

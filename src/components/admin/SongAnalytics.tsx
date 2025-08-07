@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -67,6 +68,10 @@ interface SongAnalyticsProps {
 
 const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProps) => {
   const { toast } = useToast();
+
+  // Retrieve the current language for locale aware date formatting.
+  const { currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   const [songs, setSongs] = useState<Song[]>([]);
   const [requests, setRequests] = useState<CustomSongRequest[]>([]);
   const [stats, setStats] = useState<SongStats>({
@@ -265,7 +270,7 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
     for (let i = 11; i >= 0; i--) {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
-      const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      const monthKey = date.toLocaleDateString(locale, { month: 'short', year: '2-digit' });
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
       
@@ -298,7 +303,7 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', { 
+    return new Date(dateStr).toLocaleDateString(locale, { 
       month: 'short', 
       day: 'numeric' 
     });
@@ -306,7 +311,7 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
 
   const formatMonth = (monthKey: string) => {
     const [year, month] = monthKey.split('-');
-    return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-US', {
+    return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short'
     });

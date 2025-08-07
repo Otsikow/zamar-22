@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { DollarSign, TrendingUp, Users, Calendar, Plus, Search } from 'lucide-react';
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface DonationData {
   id: string;
@@ -40,6 +41,9 @@ export default function AdminDonationAnalytics() {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useIsAdmin();
   const { toast } = useToast();
+  // Retrieve current language for dynamic date formatting
+  const { currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   
   const [donations, setDonations] = useState<DonationData[]>([]);
   const [stats, setStats] = useState<DonationStats | null>(null);
@@ -346,7 +350,7 @@ export default function AdminDonationAnalytics() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {new Date(donation.created_at).toLocaleDateString('en-US', {
+                        {new Date(donation.created_at).toLocaleDateString(locale, {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'

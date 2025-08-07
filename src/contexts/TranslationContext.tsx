@@ -25,6 +25,41 @@ const AVAILABLE_LANGUAGES = [
   { code: 'sw', name: 'Kiswahili', flag: '🇰🇪' },
 ];
 
+// Mapping from application language codes to locales accepted by
+// JavaScript's Intl APIs. Many of the `toLocaleDateString` calls in the
+// application previously hard‑coded the US English locale ("en-US"). This
+// prevented dates from reflecting the currently selected language when the
+// user changed languages via the language selector. By providing a mapping
+// here, components can derive an appropriate locale for each supported
+// language. If a language code is not found in this map, the language
+// itself is returned as the locale. Note: some locales, such as Arabic,
+// simply use the language code without a region because specifying a
+// region (e.g. "ar-SA") can cause number formatting issues in some
+// browsers.
+export const LANGUAGE_TO_LOCALE: Record<string, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  es: 'es-ES',
+  de: 'de-DE',
+  pt: 'pt-PT',
+  it: 'it-IT',
+  ar: 'ar',
+  zh: 'zh-CN',
+  hi: 'hi-IN',
+  sw: 'sw-KE',
+};
+
+/**
+ * Returns a locale string for a given language code. If the language code
+ * exists in the `LANGUAGE_TO_LOCALE` map, the mapped locale is used.
+ * Otherwise the provided language code itself is returned. Components
+ * should use this helper when formatting dates so that the output
+ * automatically adjusts to the selected language.
+ */
+export function getLocaleForLanguage(language: string): string {
+  return LANGUAGE_TO_LOCALE[language] ?? language;
+}
+
 interface TranslationProviderProps {
   children: ReactNode;
 }

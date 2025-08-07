@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 import { User, Mail, Calendar, Edit3, Save, X, Users } from 'lucide-react';
 import BackButton from '@/components/ui/back-button';
 import { ReferralDashboard } from '@/components/referrals/ReferralDashboard';
@@ -24,6 +25,11 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  // Pull the current language from the translation context so that date
+  // formatting honours the selected locale. Without this, the "Member
+  // Since" field always displays in US English.
+  const { currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -259,7 +265,7 @@ const Profile = () => {
                 <Label className="text-sm text-muted-foreground">Member Since</Label>
                 <p className="text-foreground font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                  {profile?.created_at ? new Date(profile.created_at).toLocaleDateString(locale, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
