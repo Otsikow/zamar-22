@@ -55,10 +55,10 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <TranslationProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <TranslationProvider>
               <NowPlayingProvider>
-              <div className="flex flex-col min-h-screen bg-background">
+                <div className="flex flex-col min-h-screen bg-background">
                 <Header />
                 
                 <main className="flex-1 pt-16 pb-20">
@@ -111,10 +111,10 @@ const App = () => (
                 <BottomNav />
                 <MiniPlayer />
                 <FloatingChatButton />
-              </div>
-            </NowPlayingProvider>
+                </div>
+              </NowPlayingProvider>
+            </TranslationProvider>
           </AuthProvider>
-        </TranslationProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
