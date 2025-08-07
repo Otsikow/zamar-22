@@ -106,6 +106,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     const handleEnded = () => {
+      console.log('🎵 Song ended, handling queue advance...');
       setState(prev => {
         if (prev.isLooping) {
           // Loop the current song - restart immediately
@@ -122,6 +123,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           // Auto-advance to next song in queue mode
           const nextIndex = prev.currentIndex + 1;
           const nextSong = prev.queue[nextIndex];
+          console.log('🎵 Auto-advancing to next song:', nextSong.title);
           return {
             ...prev,
             currentSong: nextSong,
@@ -132,6 +134,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
           // At end of queue - loop back to beginning for continuous playback
           const firstSong = prev.queue[0];
+          console.log('🎵 End of queue reached, looping back to first song:', firstSong.title);
           return {
             ...prev,
             currentSong: firstSong,
@@ -141,6 +144,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           };
         } else {
           // Song ended, show stopped state
+          console.log('🎵 Song ended, stopping playback');
           return {
             ...prev,
             isPlaying: false,
@@ -262,20 +266,27 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentTime: 0
           }));
           
-          // Try to play immediately after metadata loads
-          console.log('🎵 Attempting auto-play after metadata load...');
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                console.log('✅ Auto-play successful');
-                setState(prev => ({ ...prev, isPlaying: true }));
-              })
-              .catch(error => {
-                console.log('⚠️ Auto-play blocked by browser, user must interact first');
-                setState(prev => ({ ...prev, isPlaying: false }));
-              });
-          }
+          // Check if we should auto-play (for queue mode or when explicitly playing)
+          setTimeout(() => {
+            setState(currentState => {
+              if (currentState.isQueueMode || currentState.isPlaying) {
+                console.log('🎵 Attempting auto-play after metadata load for queue mode...');
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                  playPromise
+                    .then(() => {
+                      console.log('✅ Auto-play successful');
+                      setState(prev => ({ ...prev, isPlaying: true }));
+                    })
+                    .catch(error => {
+                      console.log('⚠️ Auto-play blocked by browser, user must interact first');
+                      setState(prev => ({ ...prev, isPlaying: false }));
+                    });
+                }
+              }
+              return currentState;
+            });
+          }, 0);
         }
       };
 
