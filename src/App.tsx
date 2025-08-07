@@ -71,14 +71,14 @@ const App = () => (
                     {/* Public Routes */}
                     <Route path="/radio" element={<Radio />} />
                     <Route path="/songs" element={<SongsLibrary />} />
+                    <Route path="/player/:id" element={<SongPlayer />} />
+                    <Route path="/songs/:id" element={<SongDetail />} />
                     
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
                     <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
-                    <Route path="/songs/:id" element={<ProtectedRoute><SongDetail /></ProtectedRoute>} />
-                    <Route path="/player/:id" element={<ProtectedRoute><SongPlayer /></ProtectedRoute>} />
                     <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
                     <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
