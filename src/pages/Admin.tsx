@@ -96,6 +96,7 @@ const Admin = () => {
     occasion: "",
     scriptureRef: "",
     tags: "",
+    language: "English",
     featured: false,
     audioFile: null as File | null,
     lyrics: ""
@@ -298,7 +299,7 @@ const Admin = () => {
           .insert({
             song_id: songData.id,
             text: songForm.lyrics,
-            language: "English"
+            language: songForm.language
           });
 
         if (lyricsError) throw lyricsError;
@@ -315,6 +316,7 @@ const Admin = () => {
         occasion: "",
         scriptureRef: "",
         tags: "",
+        language: "English",
         featured: false,
         audioFile: null,
         lyrics: ""
@@ -628,6 +630,59 @@ const Admin = () => {
                       </Select>
                     </div>
                     <div>
+                      <Label htmlFor="language">Language</Label>
+                      <Select value={songForm.language} onValueChange={(value) => setSongForm({...songForm, language: value})}>
+                        <SelectTrigger className="bg-background border-border">
+                          <SelectValue placeholder="Select a language" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border-border z-50">
+                          <SelectItem value="English">English</SelectItem>
+                          <SelectItem value="Spanish">Spanish</SelectItem>
+                          <SelectItem value="French">French</SelectItem>
+                          <SelectItem value="German">German</SelectItem>
+                          <SelectItem value="Portuguese">Portuguese</SelectItem>
+                          <SelectItem value="Italian">Italian</SelectItem>
+                          <SelectItem value="Dutch">Dutch</SelectItem>
+                          <SelectItem value="Chinese">Chinese</SelectItem>
+                          <SelectItem value="Japanese">Japanese</SelectItem>
+                          <SelectItem value="Korean">Korean</SelectItem>
+                          <SelectItem value="Arabic">Arabic</SelectItem>
+                          <SelectItem value="Hebrew">Hebrew</SelectItem>
+                          <SelectItem value="Swahili">Swahili</SelectItem>
+                          <SelectItem value="Yoruba">Yoruba</SelectItem>
+                          <SelectItem value="Igbo">Igbo</SelectItem>
+                          <SelectItem value="Hausa">Hausa</SelectItem>
+                          <SelectItem value="Amharic">Amharic</SelectItem>
+                          <SelectItem value="Hindi">Hindi</SelectItem>
+                          <SelectItem value="Bengali">Bengali</SelectItem>
+                          <SelectItem value="Tamil">Tamil</SelectItem>
+                          <SelectItem value="Telugu">Telugu</SelectItem>
+                          <SelectItem value="Marathi">Marathi</SelectItem>
+                          <SelectItem value="Gujarati">Gujarati</SelectItem>
+                          <SelectItem value="Punjabi">Punjabi</SelectItem>
+                          <SelectItem value="Urdu">Urdu</SelectItem>
+                          <SelectItem value="Russian">Russian</SelectItem>
+                          <SelectItem value="Ukrainian">Ukrainian</SelectItem>
+                          <SelectItem value="Polish">Polish</SelectItem>
+                          <SelectItem value="Czech">Czech</SelectItem>
+                          <SelectItem value="Hungarian">Hungarian</SelectItem>
+                          <SelectItem value="Romanian">Romanian</SelectItem>
+                          <SelectItem value="Bulgarian">Bulgarian</SelectItem>
+                          <SelectItem value="Croatian">Croatian</SelectItem>
+                          <SelectItem value="Serbian">Serbian</SelectItem>
+                          <SelectItem value="Swedish">Swedish</SelectItem>
+                          <SelectItem value="Norwegian">Norwegian</SelectItem>
+                          <SelectItem value="Danish">Danish</SelectItem>
+                          <SelectItem value="Finnish">Finnish</SelectItem>
+                          <SelectItem value="Tagalog">Tagalog</SelectItem>
+                          <SelectItem value="Vietnamese">Vietnamese</SelectItem>
+                          <SelectItem value="Thai">Thai</SelectItem>
+                          <SelectItem value="Indonesian">Indonesian</SelectItem>
+                          <SelectItem value="Malay">Malay</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
                       <Label htmlFor="scriptureRef">Scripture Reference</Label>
                       <Input
                         id="scriptureRef"
@@ -877,7 +932,6 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
 
           {/* Lyrics Management */}
           <TabsContent value="lyrics">
