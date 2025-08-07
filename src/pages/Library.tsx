@@ -7,8 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
-import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface Purchase {
   id: string;
