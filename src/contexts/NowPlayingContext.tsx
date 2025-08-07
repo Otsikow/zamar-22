@@ -96,6 +96,8 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const handleLoadedMetadata = () => {
       console.log('✅ Audio metadata loaded, duration:', audio.duration);
+      console.log('✅ Audio URL:', audio.src);
+      console.log('✅ Audio readyState:', audio.readyState);
       setState(prev => ({
         ...prev,
         currentSong: prev.currentSong ? {
@@ -107,6 +109,8 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const handleEnded = () => {
       console.log('🎵 Song ended, handling queue advance...');
+      console.log('🎵 Audio duration reported:', audioRef.current?.duration);
+      console.log('🎵 Audio currentTime when ended:', audioRef.current?.currentTime);
       setState(prev => {
         console.log('🎵 Current state during ended:', {
           isQueueMode: prev.isQueueMode,

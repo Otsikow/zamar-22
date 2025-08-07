@@ -200,6 +200,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   
   // Helper to check if a category is currently playing
   const isCategoryPlaying = (category: string) => {
+    console.log('🎵 Checking if category playing:', category, 'current:', currentCategory, 'isQueueMode:', state.isQueueMode, 'isPlaying:', state.isPlaying);
     return state.isQueueMode && state.isPlaying && currentCategory === category;
   };
 
