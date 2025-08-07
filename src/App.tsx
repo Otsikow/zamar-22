@@ -43,6 +43,7 @@ import ThankYou from "./pages/ThankYou";
 import Testimonies from "./pages/Testimonies";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import ReferralCalculator from "./pages/ReferralCalculator";
+import PlaylistDetail from "./pages/PlaylistDetail";
 import { ReferralDashboard as ReferralDashboardComponent } from "./components/referrals/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -95,6 +96,9 @@ const App = () => (
                     <Route path="/referrals/dashboard" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
                     <Route path="/referral" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     <Route path="/referral-calculator" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
+                    
+                    {/* Playlist Routes */}
+                    <Route path="/playlists/:id" element={<ProtectedRoute><PlaylistDetail /></ProtectedRoute>} />
                     
                     {/* Admin Routes */}
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />

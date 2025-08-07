@@ -189,8 +189,8 @@ const ManagePlaylists = () => {
               <Card key={playlist.id} className="border-primary/20 shadow-lg">
                 <CardHeader className="border-b border-primary/10">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-primary">{playlist.name}</CardTitle>
+                    <div className="flex-1 cursor-pointer" onClick={() => navigate(`/playlists/${playlist.id}`)}>
+                      <CardTitle className="text-primary hover:text-primary/80 transition-colors">{playlist.name}</CardTitle>
                       {playlist.description && (
                         <p className="text-muted-foreground mt-1">{playlist.description}</p>
                       )}
@@ -211,8 +211,18 @@ const ManagePlaylists = () => {
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => navigate(`/playlists/${playlist.id}`)}
+                        className="text-primary hover:bg-primary/10"
+                        title="View playlist"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleEdit(playlist)}
                         className="text-primary hover:bg-primary/10"
+                        title="Edit playlist"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -221,6 +231,7 @@ const ManagePlaylists = () => {
                         size="icon"
                         onClick={() => handleDelete(playlist)}
                         className="text-destructive hover:bg-destructive/10"
+                        title="Delete playlist"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

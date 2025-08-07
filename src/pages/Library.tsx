@@ -42,6 +42,14 @@ interface CustomSong {
   created_at: string;
 }
 
+interface Playlist {
+  id: string;
+  name: string;
+  description: string | null;
+  is_public: boolean;
+  created_at: string;
+}
+
 const Library = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -51,6 +59,7 @@ const Library = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [requests, setRequests] = useState<CustomRequest[]>([]);
   const [customSongs, setCustomSongs] = useState<CustomSong[]>([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("songs");
 
@@ -69,11 +78,12 @@ const Library = () => {
       }
       setUser(session.user);
       
-      // Fetch user's purchases, requests, and custom songs
+      // Fetch user's purchases, requests, custom songs, and playlists
       await Promise.all([
         fetchPurchases(session.user.id),
         fetchRequests(session.user.id),
-        fetchCustomSongs(session.user.id)
+        fetchCustomSongs(session.user.id),
+        fetchPlaylists(session.user.id)
       ]);
       
       setIsLoading(false);
@@ -187,6 +197,40 @@ const Library = () => {
     }
   };
 
+  const fetchPlaylists = async (userId: string) => {
+    try {
+      console.log("Fetching playlists for user:", userId);
+      
+      const { data, error } = await supabase
+        .from("playlists")
+        .select("id, name, description, is_public, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      console.log("Playlists query result:", { data, error });
+
+      if (error) {
+        console.error("Database error:", error);
+        toast({
+          title: t('errors.fetchPlaylistsTitle', 'Error fetching playlists'),
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
+      console.log("Setting playlists:", data);
+      setPlaylists(data || []);
+    } catch (error: any) {
+      console.error("Error fetching playlists:", error);
+      toast({
+        title: t('errors.general', 'Error'),
+        description: t('errors.fetchPlaylistsDescription', 'Failed to load your playlists. Please try refreshing the page.'),
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
@@ -268,12 +312,18 @@ const Library = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="grid w-full grid-cols-3 bg-gradient-card border border-border">
+            <TabsList className="grid w-full grid-cols-4 bg-gradient-card border border-border">
               <TabsTrigger 
                 value="songs" 
                 className="data-[state=active]:bg-primary data-[state=active]:text-black"
               >
                 {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
+              </TabsTrigger>
+              <TabsTrigger 
+                value="playlists"
+                className="data-[state=active]:bg-primary data-[state=active]:text-black"
+              >
+                📋 {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="custom"
@@ -359,6 +409,68 @@ const Library = () => {
                           </div>
                         </div>
                       </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Playlists Tab */}
+            <TabsContent value="playlists" className="mt-6">
+              {playlists.length === 0 ? (
+                <Card className="bg-gradient-card border-border">
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                      <Music2 className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-playfair text-foreground mb-2">
+                      {t('library.noPlaylists', 'No playlists yet.')}
+                    </h3>
+                    <p className="text-muted-foreground font-inter mb-6">
+                      {t('library.noPlaylistsDescription', 'Create your first playlist to organize your favorite songs.')}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Button asChild className="bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 text-white">
+                        <Link to="/playlist/create">{t('library.createPlaylist', 'Create Playlist')}</Link>
+                      </Button>
+                      <Button variant="outline" asChild>
+                        <Link to="/manage-playlists">{t('library.managePlaylists', 'Manage Playlists')}</Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-6 md:grid-cols-2">
+                  {playlists.map((playlist) => (
+                    <Card 
+                      key={playlist.id} 
+                      className="bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg cursor-pointer"
+                      onClick={() => navigate(`/playlists/${playlist.id}`)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg font-playfair font-bold text-foreground mb-2 flex items-center gap-2">
+                              📋 {playlist.name}
+                            </CardTitle>
+                            {playlist.description && (
+                              <p className="text-muted-foreground text-sm mb-2">{playlist.description}</p>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs px-2 py-1 rounded ${
+                                playlist.is_public 
+                                  ? 'bg-primary/20 text-primary' 
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {playlist.is_public ? t('library.public', 'Public') : t('library.private', 'Private')}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(playlist.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
                     </Card>
                   ))}
                 </div>
