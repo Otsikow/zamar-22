@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,12 @@ interface Song {
   thumbnail_url?: string;
 }
 
+interface Lyrics {
+  id: string;
+  text: string;
+  song_id: string;
+}
+
 interface SongEditFormProps {
   song: Song;
   onSave: (updatedSong: Song) => void;
@@ -35,9 +41,49 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
   const [tags, setTags] = useState(song.tags.join(", "));
   const [featured, setFeatured] = useState(song.featured);
   const [language, setLanguage] = useState(song.language || "English");
+  const [lyricsText, setLyricsText] = useState("");
+  const [bibleReference, setBibleReference] = useState("");
+  const [lyricsId, setLyricsId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const languages = ["English", "Spanish", "Twi"];
+
+  useEffect(() => {
+    fetchLyrics();
+  }, [song.id]);
+
+  const fetchLyrics = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("lyrics")
+        .select("*")
+        .eq("song_id", song.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching lyrics:", error);
+        return;
+      }
+
+      if (data) {
+        setLyricsId(data.id);
+        // Extract scripture reference from lyrics text
+        const scriptureMatch = data.text?.match(/Scripture Inspiration:\s*([^–\n]+)\s*–\s*([^"\n]+)/);
+        if (scriptureMatch) {
+          const reference = scriptureMatch[1].trim();
+          const quote = scriptureMatch[2].trim().replace(/"/g, '');
+          setBibleReference(`${reference} – "${quote}"`);
+          // Remove scripture from lyrics text for editing
+          const cleanedLyrics = data.text.replace(/Scripture Inspiration:[^\n]*\n\n?/, '');
+          setLyricsText(cleanedLyrics);
+        } else {
+          setLyricsText(data.text || "");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching lyrics:", error);
+    }
+  };
 
   const handleFeaturedChange = (checked: boolean | "indeterminate") => {
     setFeatured(checked === true);
@@ -48,7 +94,8 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
     try {
       const tagsArray = tags.split(",").map(tag => tag.trim()).filter(tag => tag);
       
-      const { error } = await supabase
+      // Update song
+      const { error: songError } = await supabase
         .from("songs")
         .update({
           title,
@@ -60,7 +107,41 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
         })
         .eq("id", song.id);
 
-      if (error) throw error;
+      if (songError) throw songError;
+
+      // Update or create lyrics
+      if (lyricsText.trim() || bibleReference.trim()) {
+        let finalLyricsText = lyricsText.trim();
+        
+        // Add Bible reference to lyrics if provided
+        if (bibleReference.trim()) {
+          finalLyricsText = `${finalLyricsText}\n\nScripture Inspiration: ${bibleReference}`;
+        }
+
+        if (lyricsId) {
+          // Update existing lyrics
+          const { error: lyricsError } = await supabase
+            .from("lyrics")
+            .update({
+              text: finalLyricsText,
+              language
+            })
+            .eq("id", lyricsId);
+
+          if (lyricsError) throw lyricsError;
+        } else {
+          // Create new lyrics
+          const { error: lyricsError } = await supabase
+            .from("lyrics")
+            .insert({
+              song_id: song.id,
+              text: finalLyricsText,
+              language
+            });
+
+          if (lyricsError) throw lyricsError;
+        }
+      }
 
       const updatedSong = {
         ...song,
@@ -141,6 +222,29 @@ const SongEditForm = ({ song, onSave, onCancel }: SongEditFormProps) => {
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder="Enter tags separated by commas"
+            className="bg-background border-border text-foreground"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="lyrics" className="text-foreground">Lyrics</Label>
+          <Textarea
+            id="lyrics"
+            value={lyricsText}
+            onChange={(e) => setLyricsText(e.target.value)}
+            placeholder="Enter song lyrics..."
+            rows={8}
+            className="bg-background border-border text-foreground"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="bibleReference" className="text-foreground">Bible Reference</Label>
+          <Input
+            id="bibleReference"
+            value={bibleReference}
+            onChange={(e) => setBibleReference(e.target.value)}
+            placeholder="e.g. Psalm 23:1 – 'The Lord is my shepherd, I lack nothing.'"
             className="bg-background border-border text-foreground"
           />
         </div>
