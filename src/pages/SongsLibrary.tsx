@@ -43,6 +43,7 @@ const SongsLibrary = () => {
         const { data, error } = await supabase
           .from("songs")
           .select("*")
+          .range(0, 99)
           .order("created_at", { ascending: false });
 
         if (error) throw error;
