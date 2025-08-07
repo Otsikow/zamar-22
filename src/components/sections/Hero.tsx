@@ -52,7 +52,7 @@ const Hero = () => {
   }, [user]);
 
   const copyReferralLink = () => {
-    const referralLink = `https://zamarsongs.com/auth?ref=${referralCode}`;
+    const referralLink = `https://www.zamarsongs.com/auth?ref=${referralCode}`;
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Link copied!",
@@ -248,7 +248,7 @@ const Hero = () => {
                   <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
                     <div className="flex items-center justify-between gap-3">
                       <code className="text-sm font-mono text-foreground/80 truncate">
-                        zamarsongs.com/auth?ref={referralCode}
+                        www.zamarsongs.com/auth?ref={referralCode}
                       </code>
                       <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0 border-primary/30 text-primary hover:bg-primary/10">
                         <Copy className="w-4 h-4 text-primary" />

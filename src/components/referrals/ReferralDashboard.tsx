@@ -118,7 +118,7 @@ export const ReferralDashboard = () => {
   };
 
   const copyReferralLink = () => {
-    const referralLink = `https://zamarsongs.com/auth?ref=${data.referralCode}`;
+    const referralLink = `https://www.zamarsongs.com/auth?ref=${data.referralCode}`;
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Link copied!",
@@ -170,7 +170,7 @@ export const ReferralDashboard = () => {
         <CardContent>
           <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
             <code className="flex-1 text-sm font-mono">
-              https://zamarsongs.com/auth?ref={data.referralCode}
+              https://www.zamarsongs.com/auth?ref={data.referralCode}
             </code>
             <Button onClick={copyReferralLink} size="sm">
               <Copy className="h-4 w-4 mr-2" />
@@ -181,7 +181,7 @@ export const ReferralDashboard = () => {
             <SocialShare
               title="Join Zamar - Create Your Custom Songs"
               description="Check out this amazing platform for creating custom songs with faith and purpose. Use my referral link to get started!"
-              url={`https://zamarsongs.com/auth?ref=${data.referralCode}`}
+              url={`https://www.zamarsongs.com/auth?ref=${data.referralCode}`}
               hashtags={['ZamarMusic', 'CustomSongs', 'FaithMusic', 'MusicCreation']}
               trigger={
                 <Button variant="outline" size="sm">

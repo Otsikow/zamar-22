@@ -225,7 +225,7 @@ export default function ReferralDashboard() {
   };
 
   const copyReferralLink = () => {
-    const referralLink = `https://zamarsongs.com/auth?ref=${referralCode}`;
+    const referralLink = `https://www.zamarsongs.com/auth?ref=${referralCode}`;
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Referral link copied!",
@@ -339,7 +339,7 @@ export default function ReferralDashboard() {
               <div className="text-4xl font-bold text-primary mb-4">{referralCode}</div>
               <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg mb-4">
                 <code className="flex-1 text-sm font-mono">
-                  https://zamarsongs.com/auth?ref={referralCode}
+                  https://www.zamarsongs.com/auth?ref={referralCode}
                 </code>
                 <Button onClick={copyReferralLink} size="sm">
                   <Copy className="h-4 w-4 mr-2" />
