@@ -8,6 +8,7 @@ import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calen
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
+import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
 interface Purchase {
   id: string;
@@ -44,6 +45,8 @@ interface CustomSong {
 const Library = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, currentLanguage } = useTranslation();
+  const locale = getLocaleForLanguage(currentLanguage);
   const [user, setUser] = useState<any>(null);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [requests, setRequests] = useState<CustomRequest[]>([]);
@@ -57,8 +60,8 @@ const Library = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast({
-          title: "Authentication Required",
-          description: "Please log in to view your library.",
+          title: t('auth.authRequired', 'Authentication Required'),
+          description: t('auth.loginToViewLibrary', 'Please log in to view your library.'),
           variant: "destructive",
         });
         navigate("/auth");
@@ -131,7 +134,7 @@ const Library = () => {
       if (error) {
         console.error("Database error:", error);
         toast({
-          title: "Error fetching requests",
+          title: t('errors.fetchRequestsTitle', 'Error fetching requests'),
           description: error.message,
           variant: "destructive",
         });
@@ -143,8 +146,8 @@ const Library = () => {
     } catch (error: any) {
       console.error("Error fetching requests:", error);
       toast({
-        title: "Error",
-        description: "Failed to load your custom song requests. Please try refreshing the page.",
+        title: t('errors.general', 'Error'),
+        description: t('errors.fetchRequestsDescription', 'Failed to load your custom song requests. Please try refreshing the page.'),
         variant: "destructive",
       });
     }
@@ -165,7 +168,7 @@ const Library = () => {
       if (error) {
         console.error("Database error:", error);
         toast({
-          title: "Error fetching custom songs",
+          title: t('errors.fetchCustomSongsTitle', 'Error fetching custom songs'),
           description: error.message,
           variant: "destructive",
         });
@@ -177,8 +180,8 @@ const Library = () => {
     } catch (error: any) {
       console.error("Error fetching custom songs:", error);
       toast({
-        title: "Error",
-        description: "Failed to load your custom songs. Please try refreshing the page.",
+        title: t('errors.general', 'Error'),
+        description: t('errors.fetchCustomSongsDescription', 'Failed to load your custom songs. Please try refreshing the page.'),
         variant: "destructive",
       });
     }
@@ -213,7 +216,7 @@ const Library = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
+    return new Date(dateString).toLocaleDateString(locale, {
       day: "numeric",
       month: "short", 
       year: "numeric"
@@ -227,7 +230,7 @@ const Library = () => {
           <div className="container mx-auto px-4">
             <div className="text-center py-16">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading your library...</p>
+              <p className="text-muted-foreground">{t('library.loading', 'Loading your library...')}</p>
             </div>
           </div>
         </main>
@@ -244,7 +247,7 @@ const Library = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to="/">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Home
+                {t('library.backToHome', 'Back to Home')}
               </Link>
             </Button>
           </div>
@@ -253,13 +256,13 @@ const Library = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
               <LibraryIcon className="w-10 h-10 md:w-12 md:h-12 text-primary" />
-              My{" "}
+              {t('library.title', 'My Library').split(' ')[0]}{" "}
               <span className="text-transparent bg-gradient-primary bg-clip-text">
-                Library
+                {t('library.title', 'My Library').split(' ')[1] || 'Library'}
               </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
-              Track your custom song requests and access your completed songs.
+              {t('library.subtitle', 'Track your custom song requests and access your completed songs.')}
             </p>
           </div>
 
@@ -270,19 +273,19 @@ const Library = () => {
                 value="songs" 
                 className="data-[state=active]:bg-primary data-[state=active]:text-black"
               >
-                My Songs ({purchases.length})
+                {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="custom"
                 className="data-[state=active]:bg-primary data-[state=active]:text-black"
               >
-                🎁 Custom Songs ({customSongs.length})
+                🎁 {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="requests"
                 className="data-[state=active]:bg-primary data-[state=active]:text-black"
               >
-                My Requests ({requests.length})
+                {t('library.tabs.myRequests', 'My Requests')} ({requests.length})
               </TabsTrigger>
             </TabsList>
 
@@ -293,17 +296,17 @@ const Library = () => {
                   <CardContent className="p-8 text-center">
                     <Music2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-xl font-playfair text-foreground mb-2">
-                      No Songs Yet
+                      {t('library.noSongsYet', 'No Songs Yet')}
                     </h3>
                     <p className="text-muted-foreground font-inter mb-6">
-                      You haven't purchased any songs yet. Start by exploring our library or requesting a custom song.
+                      {t('library.noSongsDescription', 'You haven\'t purchased any songs yet. Start by exploring our library or requesting a custom song.')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <Button asChild>
-                        <Link to="/songs">Browse Songs</Link>
+                        <Link to="/songs">{t('library.browseSongs', 'Browse Songs')}</Link>
                       </Button>
                       <Button variant="outline" asChild>
-                        <Link to="/request">Request Custom Song</Link>
+                        <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -336,7 +339,7 @@ const Library = () => {
                             </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-2">
                               <Calendar className="w-4 h-4" />
-                              Purchased on {formatDate(purchase.created_at)}
+                              {t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}
                             </p>
                           </div>
 
@@ -344,13 +347,13 @@ const Library = () => {
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline" asChild>
                               <Link to={`/songs/${purchase.songs.id}`}>
-                                View
+                                {t('library.view', 'View')}
                               </Link>
                             </Button>
                             {purchase.songs.audio_url && (
                               <Button size="sm">
                                 <Download className="w-4 h-4 mr-2" />
-                                Download
+                                {t('library.download', 'Download')}
                               </Button>
                             )}
                           </div>
@@ -371,13 +374,13 @@ const Library = () => {
                       <Music2 className="w-8 h-8 text-black" />
                     </div>
                     <h3 className="text-xl font-playfair text-foreground mb-2">
-                      No custom songs yet.
+                      {t('library.noCustomSongs', 'No custom songs yet.')}
                     </h3>
                     <p className="text-muted-foreground font-inter mb-6">
-                      Request your own song and see it here when ready.
+                      {t('library.noCustomSongsDescription', 'Request your own song and see it here when ready.')}
                     </p>
                     <Button asChild className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-black">
-                      <Link to="/request">Request Custom Song</Link>
+                      <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -406,7 +409,7 @@ const Library = () => {
                                   : 'bg-blue-100 text-blue-700 border-blue-200'
                                 }
                               >
-                                {song.status === 'delivered' ? '✨ Delivered' : song.status === 'created' ? '🎵 Created' : '⏳ Pending'}
+                                {song.status === 'delivered' ? `✨ ${t('library.delivered', 'Delivered')}` : song.status === 'created' ? `🎵 ${t('library.created', 'Created')}` : `⏳ ${t('library.pending', 'Pending')}`}
                               </Badge>
                             </div>
                           </div>
@@ -421,7 +424,7 @@ const Library = () => {
                               <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
                                 <Music2 className="w-5 h-5 text-white" />
                               </div>
-                              <span className="font-medium text-foreground">Your Custom Song</span>
+                              <span className="font-medium text-foreground">{t('library.yourCustomSong', 'Your Custom Song')}</span>
                             </div>
                             <audio 
                               controls 
@@ -452,7 +455,7 @@ const Library = () => {
                                 download
                               >
                                 <Download className="w-4 h-4 mr-2" />
-                                📄 Download Lyrics
+                                📄 {t('library.downloadLyrics', 'Download Lyrics')}
                               </a>
                             </Button>
                           )}
@@ -469,7 +472,7 @@ const Library = () => {
                                 download={`${song.song_title}.mp3`}
                               >
                                 <Download className="w-4 h-4 mr-2" />
-                                Download Song
+                                {t('library.download', 'Download')} Song
                               </a>
                             </Button>
                           )}
@@ -499,13 +502,13 @@ const Library = () => {
                   <CardContent className="p-8 text-center">
                     <Clock className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                     <h3 className="text-xl font-playfair text-foreground mb-2">
-                      No Requests Yet
+                      {t('library.noRequestsYet', 'No requests yet')}
                     </h3>
                     <p className="text-muted-foreground font-inter mb-6">
-                      You haven't made any custom song requests yet. Create your first personalized song today.
+                      {t('library.noRequestsDescription', 'You haven\'t made any custom song requests yet. Create your first request to get started.')}
                     </p>
                     <Button asChild>
-                      <Link to="/request">Request Custom Song</Link>
+                      <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -517,7 +520,7 @@ const Library = () => {
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-playfair font-semibold text-foreground text-lg">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg">
                                 {request.occasion} Song
                               </h3>
                               {getStatusIcon(request.status)}
@@ -525,10 +528,10 @@ const Library = () => {
                             
                             <div className="space-y-2 mb-4">
                               <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">Genre:</span> {request.style_genre}
+                                <span className="font-medium">{t('library.genre', 'Genre')}:</span> {request.style_genre}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">Tier:</span> {request.tier}
+                                <span className="font-medium">{t('library.tier', 'Tier')}:</span> {request.tier}
                               </p>
                               <p className="text-sm text-muted-foreground line-clamp-2">
                                 <span className="font-medium">Message:</span> {request.key_message}
@@ -538,7 +541,7 @@ const Library = () => {
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Calendar className="w-4 h-4" />
-                                {formatDate(request.created_at)}
+                                {t('library.requestedOn', 'Requested on')} {formatDate(request.created_at)}
                               </div>
                             </div>
                           </div>
@@ -560,7 +563,7 @@ const Library = () => {
             <Button asChild size="lg" className="w-full md:w-auto">
               <Link to="/request">
                 <Music2 className="w-5 h-5 mr-2" />
-                Request a New Song
+                {t('library.requestCustomSong', 'Request a New Song')}
               </Link>
             </Button>
           </div>
