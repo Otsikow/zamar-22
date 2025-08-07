@@ -12,6 +12,10 @@ interface Playlist {
   name: string;
   description: string | null;
   created_at: string;
+  profiles?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 interface Song {
@@ -51,14 +55,26 @@ const PublicPlaylistDetail = () => {
           id,
           name,
           description,
-          created_at
+          created_at,
+          user_id
         `)
         .eq('id', id)
         .eq('is_public', true)
         .single();
 
       if (playlistError) throw playlistError;
-      setPlaylist(playlistData);
+
+      // Get creator profile data
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', playlistData.user_id)
+        .single();
+
+      setPlaylist({
+        ...playlistData,
+        profiles: profileData
+      });
 
       // Fetch playlist songs
       const { data: songsData, error: songsError } = await supabase

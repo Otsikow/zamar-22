@@ -14,6 +14,10 @@ interface PublicPlaylist {
   description: string | null;
   created_at: string;
   song_count?: number;
+  profiles?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 const PublicPlaylists = () => {
@@ -42,7 +46,7 @@ const PublicPlaylists = () => {
 
       if (error) throw error;
 
-      // Get song counts for each playlist
+      // Get song counts and profile data for each playlist
       const playlistsWithCounts = await Promise.all(
         (data || []).map(async (playlist) => {
           const { count } = await supabase
@@ -50,9 +54,17 @@ const PublicPlaylists = () => {
             .select('*', { count: 'exact', head: true })
             .eq('playlist_id', playlist.id);
 
+          // Get creator profile data
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', playlist.user_id)
+            .single();
+
           return {
             ...playlist,
-            song_count: count || 0
+            song_count: count || 0,
+            profiles: profileData
           };
         })
       );
