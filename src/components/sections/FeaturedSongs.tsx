@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Music } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface Song {
   id: string;
@@ -21,6 +22,7 @@ const FeaturedSongs = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const { playSong, togglePlayPause, state } = useNowPlaying();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchFeaturedSongs = async () => {
@@ -75,7 +77,7 @@ const FeaturedSongs = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
-            Featured Songs
+            {t('featured.title', 'Featured Songs')}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[...Array(12)].map((_, i) => (
@@ -97,7 +99,7 @@ const FeaturedSongs = () => {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
-          Featured Songs
+          {t('featured.title', 'Featured Songs')}
         </h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -157,7 +159,7 @@ const FeaturedSongs = () => {
 
         <div className="text-center mt-8">
           <Button variant="outline" size="lg" asChild>
-            <a href="/songs">View All Songs</a>
+            <a href="/songs">{t('featured.view_all', 'View All Songs')}</a>
           </Button>
         </div>
       </div>
