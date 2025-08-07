@@ -93,6 +93,7 @@ const App = () => (
                     {/* Referral Routes */}
                     <Route path="/referrals" element={<ProtectedRoute><ReferralDashboardComponent /></ProtectedRoute>} />
                     <Route path="/referrals/dashboard" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+                    <Route path="/referral" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     <Route path="/referral-calculator" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     
                     {/* Admin Routes */}
