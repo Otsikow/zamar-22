@@ -61,6 +61,7 @@ function App() {
                 <Route path="/song/:id" element={<ProtectedRoute><SongPlayer /></ProtectedRoute>} />
                 <Route path="/song-detail/:id" element={<ProtectedRoute><SongDetail /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/admin/chat" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
                 <Route path="/admin/chat-inbox" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
