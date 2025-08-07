@@ -49,10 +49,11 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   
   // Reset current category when radio stops
   useEffect(() => {
-    if (!state.isQueueMode) {
+    if (!state.isQueueMode || !state.isPlaying) {
+      console.log('🎵 Radio stopped, clearing category');
       setCurrentCategory("");
     }
-  }, [state.isQueueMode]);
+  }, [state.isQueueMode, state.isPlaying]);
 
   useEffect(() => {
     fetchCategories();

@@ -42,6 +42,7 @@ const NowPlayingContext = createContext<NowPlayingContextType | undefined>(undef
 export const useNowPlaying = () => {
   const context = useContext(NowPlayingContext);
   if (!context) {
+    console.error('useNowPlaying called outside NowPlayingProvider. Component stack:', new Error().stack);
     throw new Error('useNowPlaying must be used within a NowPlayingProvider');
   }
   return context;
@@ -142,7 +143,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentSong: nextSong,
             currentIndex: nextIndex,
             currentTime: 0,
-            isPlaying: true,
+            isPlaying: true, // Keep playing
           };
         } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
           // At end of queue - loop back to beginning for continuous playback
@@ -153,7 +154,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentSong: firstSong,
             currentIndex: 0,
             currentTime: 0,
-            isPlaying: true,
+            isPlaying: true, // Keep playing for continuous radio
           };
         } else {
           // Song ended, show stopped state
