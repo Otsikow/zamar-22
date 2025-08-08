@@ -118,6 +118,23 @@
 /* Make the whole app auto-theme without touching every component */
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground font-inter; }
+  body { @apply bg-background text-foreground font-inter antialiased; }
   h1, h2, h3, h4, h5, h6 { @apply font-playfair; }
+
+  /* Mobile-first type scale */
+  h1 { @apply text-3xl font-bold leading-tight xs:text-4xl sm:text-5xl md:text-6xl; }
+  h2 { @apply text-2xl font-bold leading-tight xs:text-3xl sm:text-4xl md:text-5xl; }
+  h3 { @apply text-xl font-semibold xs:text-2xl sm:text-3xl; }
+  p, li { @apply text-base xs:text-[17px] sm:text-lg md:text-xl; }
+
+  /* App chrome safe areas */
+  :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+}
+
+@layer utilities {
+  /* Utility for image aspect ratio without layout shift */
+  .resp-img { @apply block w-full h-auto object-cover rounded-2xl; aspect-ratio: 16/9; }
+  /* Brand gold helpers mapped to design tokens */
+  .text-brand-gold { @apply text-primary; }
+  .bg-brand-gold { @apply bg-primary text-primary-foreground; }
 }

@@ -10,7 +10,7 @@ export default {
 	theme: {
 		container: {
 			center: true,
-			padding: '1rem',
+			padding: { DEFAULT: '1rem', sm: '1.25rem', lg: '2rem' },
 			screens: {
 				sm: '640px',
 				md: '768px',
@@ -20,6 +20,7 @@ export default {
 			}
 		},
 		extend: {
+			screens: { xs: '360px' },
 			fontFamily: {
 				'playfair': ['Playfair Display', 'serif'],
 				'inter': ['Inter', 'sans-serif'],
@@ -118,5 +119,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("@tailwindcss/line-clamp")],
 } satisfies Config;
