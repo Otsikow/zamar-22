@@ -22,6 +22,9 @@ import {
   Heart,
   Globe
 } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import WaveformVisualization from "@/components/player/WaveformVisualization";
+import { Volume2 } from "lucide-react";
 
 interface Song {
   id: string;
@@ -40,7 +43,7 @@ interface CategoryRadioProps {
 }
 
 const CategoryRadio = ({ className }: CategoryRadioProps) => {
-  const { state, playQueue, togglePlayPause, nextSong, previousSong, toggleShuffle, setQueueMode, stopRadio } = useNowPlaying();
+  const { state, playQueue, togglePlayPause, nextSong, previousSong, toggleShuffle, setQueueMode, stopRadio, seekTo, setVolume } = useNowPlaying();
   const { toast } = useToast();
   
   const [availableGenres, setAvailableGenres] = useState<string[]>([]);
@@ -50,6 +53,13 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const [toppingUp, setToppingUp] = useState(false);
   
   const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
+  // time format helper
+  const formatTime = (seconds: number) => {
+    if (!isFinite(seconds) || isNaN(seconds) || seconds < 0) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
   
   // Reset current category when radio stops
   useEffect(() => {
@@ -355,6 +365,35 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   )}
                 </div>
               </TooltipProvider>
+            </div>
+
+            {/* Waveform Visualization */}
+            <div className="mt-4 h-32 rounded-xl border border-border/50 bg-card/40 overflow-hidden">
+              <WaveformVisualization className="h-full" />
+            </div>
+
+            {/* Progress + Volume */}
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{formatTime(state.currentTime)}</span>
+                <span>{formatTime(state.currentSong?.duration || 0)}</span>
+              </div>
+              <Slider
+                value={[state.currentTime || 0]}
+                max={Math.max(state.currentSong?.duration || 0, 1)}
+                step={0.1}
+                onValueChange={(v) => seekTo(v[0])}
+              />
+              <div className="flex items-center gap-3 pt-1">
+                <Volume2 className="w-4 h-4 text-muted-foreground" />
+                <Slider
+                  value={[state.volume]}
+                  max={1}
+                  step={0.01}
+                  onValueChange={(v) => setVolume(v[0])}
+                  className="w-40"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
