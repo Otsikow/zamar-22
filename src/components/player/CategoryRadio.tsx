@@ -22,7 +22,7 @@ import {
   Heart,
   Globe
 } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import PlayerSlider from "@/components/player/PlayerSlider";
 // WaveformVisualization replaced by WaveformPlayerPro
 import { Volume2 } from "lucide-react";
 import WaveformPlayerPro from "@/components/player/WaveformPlayerPro";
@@ -391,7 +391,8 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 <span>{formatTime(state.currentTime)}</span>
                 <span>{formatTime(state.currentSong?.duration || 0)}</span>
               </div>
-              <Slider
+              <PlayerSlider
+                variant="progress"
                 value={[state.currentTime || 0]}
                 max={Math.max(state.currentSong?.duration || 0, 1)}
                 step={0.1}
@@ -399,7 +400,8 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
               />
               <div className="flex items-center gap-3 pt-1">
                 <Volume2 className="w-4 h-4 text-muted-foreground" />
-                <Slider
+                <PlayerSlider
+                  variant="volume"
                   value={[state.volume]}
                   max={1}
                   step={0.01}
