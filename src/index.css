@@ -6,7 +6,7 @@
 :root {
   /* base */
   --background: 0 0% 100%;
-  --foreground: 222 47% 11%; /* slate-900 */
+  --foreground: 0 0% 0%; /* black */
 
   /* surfaces */
   --card: 0 0% 100%;
@@ -15,7 +15,7 @@
   --popover-foreground: 222 47% 11%;
 
   /* brand accent: amber/gold */
-  --primary: 45 93% 47%;             /* amber-500 */
+  --primary: 43 89% 38%;             /* deep goldenrod */
   --primary-foreground: 0 0% 10%;
 
   /* neutrals */
@@ -25,7 +25,7 @@
   --muted-foreground: 215 20% 50%;
 
   /* UI */
-  --accent: 45 93% 47%;
+  --accent: 43 89% 38%;
   --accent-foreground: 0 0% 8%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
@@ -35,15 +35,15 @@
   /* lines/rings/inputs */
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 45 93% 47%;
+  --ring: 43 89% 38%;
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 55%));
+  --gradient-primary: linear-gradient(135deg, hsl(43 89% 38%), hsl(43 89% 46%));
   --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 16% 98%));
   --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 16% 98%));
 
   /* Shadows */
-  --shadow-gold: 0 10px 30px -10px hsl(45 93% 47% / 0.3);
+  --shadow-gold: 0 10px 30px -10px hsl(43 89% 38% / 0.3);
   --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.1);
   --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.05);
 
