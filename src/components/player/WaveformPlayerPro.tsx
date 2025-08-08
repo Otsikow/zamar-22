@@ -25,9 +25,13 @@ type Props = {
   onTimeUpdate?: (currentTime: number) => void;
   /** When user play/pause inside the waveform */
   onPlayState?: (playing: boolean) => void;
-  /** Optional starting time (sec) */
+  /** Optional starting time (sec), used only when not bound to mediaElement */
   startAt?: number;
   className?: string;
+  /** Optional: use an existing HTMLAudioElement (e.g., NowPlaying audio) */
+  mediaElement?: HTMLAudioElement | null;
+  /** Show built-in controls (usually false when using external controls) */
+  showInternalControls?: boolean;
 };
 
 // Read HSL colors from the design system; fall back to gold hues
@@ -52,6 +56,8 @@ const WaveformPlayerPro = forwardRef<WaveformPlayerProRef, Props>(
       onPlayState,
       startAt = 0,
       className,
+      mediaElement,
+      showInternalControls = false,
     }: Props,
     ref
   ) => {
@@ -80,7 +86,7 @@ const WaveformPlayerPro = forwardRef<WaveformPlayerProRef, Props>(
 
     // Create wavesurfer
     useEffect(() => {
-      if (!containerRef.current || !audioUrl) return;
+      if (!containerRef.current || (!audioUrl && !mediaElement)) return;
 
       // Clean up any prior instance
       ws.current?.destroy();
@@ -101,10 +107,14 @@ const WaveformPlayerPro = forwardRef<WaveformPlayerProRef, Props>(
         interact: true,
       };
       ws.current = WaveSurfer.create(options);
-      ws.current.load(audioUrl);
+      if (mediaElement) {
+        ws.current.load(mediaElement as any);
+      } else {
+        ws.current.load(audioUrl);
+      }
 
       ws.current.on("ready", () => {
-        if (startAt > 0) ws.current?.setTime(startAt);
+        if (!mediaElement && startAt > 0) ws.current?.setTime(startAt);
         onReady?.(ws.current!.getDuration());
         setupAnalyser();
         // Sync initial external state
@@ -137,7 +147,7 @@ const WaveformPlayerPro = forwardRef<WaveformPlayerProRef, Props>(
         ws.current = null;
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [audioUrl]);
+    }, [audioUrl, mediaElement]);
 
     // Sync with external controls
     useEffect(() => {
@@ -255,22 +265,24 @@ const WaveformPlayerPro = forwardRef<WaveformPlayerProRef, Props>(
           />
         </div>
 
-        {/* Internal controls (optional—hide if using external buttons) */}
-        <div className="mt-3 flex items-center gap-2">
-          <Button
-            onClick={() => ws.current?.playPause()}
-            className="rounded-full px-4"
-          >
-            ▶ / ⏸
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => ws.current?.seekTo(0)}
-            className="rounded-full px-3"
-          >
-            ⟲
-          </Button>
-        </div>
+        {showInternalControls && (
+          <div className="mt-3 flex items-center gap-2">
+            <Button
+              onClick={() => ws.current?.playPause()}
+              className="rounded-full px-4"
+            >
+              ▶ / ⏸
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => ws.current?.seekTo(0)}
+              className="rounded-full px-3"
+            >
+              ⟲
+            </Button>
+          </div>
+        )}
+
       </div>
     );
   }
