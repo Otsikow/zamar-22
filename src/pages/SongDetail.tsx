@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import SyncedLyricsViewer from "@/components/player/SyncedLyricsViewer";
 import Footer from "@/components/sections/Footer";
+import { extractScriptureFromLyrics } from "@/lib/utils";
 
 interface Song {
   id: string;
@@ -423,9 +424,9 @@ const SongDetail = () => {
                     {lyrics ? (
                       <div className="whitespace-pre-line text-foreground leading-relaxed">
                         {(() => {
-                          // Remove scripture inspiration line from lyrics display
+                          // Remove scripture lines from lyrics display (various formats)
                           const lyricsText = lyrics.text || "Lyrics not available";
-                          const cleanedLyrics = lyricsText.replace(/Scripture Inspiration:[^\n]*\n\n?/, '');
+                          const cleanedLyrics = lyricsText.replace(/^\s*\(?\s*Scripture(?:\s+Inspiration|\s+Reference)?\s*:[^\n\)]*\)?\s*\n\n?/im, '');
                           return cleanedLyrics;
                         })()}
                       </div>
@@ -472,20 +473,21 @@ const SongDetail = () => {
                 </CardHeader>
                 <CardContent>
                   {(() => {
-                    // Extract scripture inspiration from lyrics text
-                    const scriptureMatch = lyrics?.text?.match(/Scripture Inspiration:\s*([^–\n]+)\s*–\s*([^"\n]+)/);
-                    if (scriptureMatch) {
-                      const reference = scriptureMatch[1].trim();
-                      const quote = scriptureMatch[2].trim().replace(/"/g, '');
+                    const scripture = extractScriptureFromLyrics(lyrics?.text || "");
+                    if (scripture?.quote || scripture?.reference) {
                       return (
                         <div className="space-y-4">
                           <div className="border-l-4 border-primary pl-4">
-                            <blockquote className="text-lg italic text-foreground leading-relaxed">
-                              "{quote}"
-                            </blockquote>
-                            <cite className="text-sm text-primary font-medium mt-2 block">
-                              — {reference}
-                            </cite>
+                            {scripture.quote && (
+                              <blockquote className="text-lg italic text-foreground leading-relaxed">
+                                "{scripture.quote}"
+                              </blockquote>
+                            )}
+                            {scripture.reference && (
+                              <cite className="text-sm text-primary font-medium mt-2 block">
+                                — {scripture.reference}
+                              </cite>
+                            )}
                           </div>
                         </div>
                       );
