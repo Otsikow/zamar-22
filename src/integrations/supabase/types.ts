@@ -362,6 +362,7 @@ export type Database = {
           is_read: boolean | null
           link: string | null
           message: string
+          metadata: Json | null
           title: string | null
           type: string
           updated_at: string
@@ -373,6 +374,7 @@ export type Database = {
           is_read?: boolean | null
           link?: string | null
           message: string
+          metadata?: Json | null
           title?: string | null
           type: string
           updated_at?: string
@@ -384,6 +386,7 @@ export type Database = {
           is_read?: boolean | null
           link?: string | null
           message?: string
+          metadata?: Json | null
           title?: string | null
           type?: string
           updated_at?: string
