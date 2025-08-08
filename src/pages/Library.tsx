@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon } from "lucide-react";
+import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
@@ -312,29 +312,33 @@ const Library = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="flex w-full overflow-x-auto whitespace-nowrap gap-2 bg-gradient-card border border-border rounded-xl p-1">
+            <TabsList className="relative flex w-full overflow-x-auto whitespace-nowrap gap-2 bg-card/60 border border-border rounded-full p-1 px-3 [scrollbar-width:none] [-ms-overflow-style:'none'] [&::-webkit-scrollbar]:hidden">
               <TabsTrigger 
                 value="songs" 
-                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
               >
+                <Music2 className="w-4 h-4" />
                 {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="playlists"
-                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
               >
-                📋 {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
+                <ClipboardList className="w-4 h-4" />
+                {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="custom"
-                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
               >
-                🎁 {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
+                <Gift className="w-4 h-4" />
+                {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="requests"
-                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
               >
+                <Calendar className="w-4 h-4" />
                 {t('library.tabs.myRequests', 'My Requests')} ({requests.length})
               </TabsTrigger>
             </TabsList>
