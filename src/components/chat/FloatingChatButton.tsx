@@ -228,7 +228,7 @@ export const FloatingChatButton = () => {
       {!isOpen && (
         <Button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50"
+          className="fixed right-4 sm:right-6 bottom-[88px] sm:bottom-6 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-40"
           size="icon"
         >
           <MessageCircle className="h-6 w-6" />
@@ -245,7 +245,7 @@ export const FloatingChatButton = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-80 h-96 flex flex-col shadow-xl z-50 bg-background border-border">
+        <Card className="fixed right-4 sm:right-6 bottom-[92px] sm:bottom-6 w-[min(92vw,20rem)] h-[28rem] flex flex-col shadow-xl z-50 bg-background border-border">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground rounded-t-lg">
             <h3 className="font-semibold">Support Chat</h3>
