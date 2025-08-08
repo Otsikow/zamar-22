@@ -16,29 +16,27 @@ const Slider = React.forwardRef<
     {...props}
   >
     <SliderPrimitive.Track
-      className="relative w-full grow overflow-hidden rounded-full"
+      className="relative w-full grow overflow-hidden rounded-full bg-primary/40"
       style={{
-        height: '14px',
-        backgroundColor: 'hsl(var(--primary) / 0.35)',
+        height: '16px',
       }}
     >
       <SliderPrimitive.Range
-        className="absolute rounded-full"
+        className="absolute rounded-full bg-primary"
         style={{
           height: '100%',
-          backgroundColor: 'hsl(var(--primary))',
         }}
       />
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb
       className="block rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-grab active:cursor-grabbing hover:scale-110"
       style={{
-        width: '24px',
-        height: '24px',
+        width: '26px',
+        height: '26px',
         border: '2px solid hsl(var(--primary))',
         backgroundColor: 'hsl(var(--primary))',
-        backgroundImage: 'radial-gradient(circle at center, hsl(0 0% 0%) 0 6px, rgba(0,0,0,0) 7px)',
-        boxShadow: '0 0 0 1px hsl(var(--primary)), 0 4px 12px hsl(var(--primary) / 0.3)',
+        backgroundImage: 'radial-gradient(circle at center, hsl(0 0% 0%) 0 7px, rgba(0,0,0,0) 8px)',
+        boxShadow: '0 0 0 1px hsl(var(--primary)), 0 4px 12px hsl(var(--primary) / 0.35)',
       }}
     />
   </SliderPrimitive.Root>

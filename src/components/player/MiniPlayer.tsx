@@ -38,7 +38,7 @@ const MiniPlayer: React.FC = () => {
           max={Math.max(state.currentSong?.duration || 100, 1)}
           step={0.1}
           onValueChange={handleProgressChange}
-          className="w-full h-3 cursor-pointer"
+          className="w-full cursor-pointer"
           disabled={!state.currentSong?.url}
         />
       </div>
