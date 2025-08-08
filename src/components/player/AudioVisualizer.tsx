@@ -51,6 +51,41 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     // Connect source to analyser ONLY (avoid double playback echo)
     sourceNode.connect(analyser);
 
+    // Resolve CSS variable colors (canvas does not understand CSS vars directly)
+    const resolveColor = (input: string, fallback: string) => {
+      if (!input) return fallback;
+      if (input.includes('var(')) {
+        const match = input.match(/var\((--[^)]+)\)/);
+        const varName = match?.[1];
+        if (varName) {
+          const val = getComputedStyle(document.documentElement)
+            .getPropertyValue(varName)
+            .trim();
+          if (val) {
+            // If token is "220 90% 50%" style, wrap in hsl()
+            if (val.includes('%')) return `hsl(${val})`;
+            return val;
+          }
+        }
+      }
+      return input;
+    };
+
+    const lightenHsl = (hsl: string, delta = 12) => {
+      const m = hsl.match(/hsl\(\s*([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%/i);
+      if (!m) return hsl;
+      const h = Number(m[1]);
+      const s = Number(m[2]);
+      const l = Math.min(100, Number(m[3]) + delta);
+      return `hsl(${h} ${s}% ${l}%)`;
+    };
+
+    const resolvedBarStart = resolveColor(barColor, '#F59E0B');
+    const resolvedBarEnd = lightenHsl(resolvedBarStart, 18);
+    const resolvedBg = backgroundColor === 'transparent'
+      ? 'transparent'
+      : resolveColor(backgroundColor, '#0F172A');
+
     // Auto-resume context when audio plays (required on iOS)
     const resumeOnPlay = () => {
       if (audioCtx.state === "suspended") {
@@ -58,6 +93,15 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       }
     };
     audioEl.addEventListener("play", resumeOnPlay);
+
+    // Also resume on user interaction with canvas (click/touch)
+    const resumeOnInteract = () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    };
+    canvas.addEventListener('click', resumeOnInteract);
+    canvas.addEventListener('touchstart', resumeOnInteract, { passive: true } as any);
 
     audioCtxRef.current = audioCtx;
     analyserRef.current = analyser;
@@ -78,24 +122,29 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
 
       // Background
       ctx.clearRect(0, 0, width, heightPx);
-      if (backgroundColor !== "transparent") {
-        ctx.fillStyle = backgroundColor;
+      if (resolvedBg !== "transparent") {
+        ctx.fillStyle = resolvedBg;
         ctx.fillRect(0, 0, width, heightPx);
       }
 
       const barCount = bufferLength;
-      const barWidth = (width / barCount) * 1.5; // Spacing between bars
+      const barWidth = (width / barCount) * 2.5; // Wider spacing for distinct bars
       let x = 0;
       for (let i = 0; i < barCount; i++) {
         const value = dataArray[i];
         // Emphasize low frequencies (kick/bass)
-        const scale = i < barCount * 0.15 ? 1.5 : 1;
-        const barHeight = (value / 255) * heightPx * 0.75 * scale;
+        const scale = i < barCount * 0.2 ? 1.8 : 1;
+        const barHeight = (value / 255) * heightPx * 0.7 * scale;
 
-        ctx.fillStyle = barColor;
+        // Gradient from base to lighter at the top
+        const gradient = ctx.createLinearGradient(0, heightPx, 0, heightPx - barHeight);
+        gradient.addColorStop(0, resolvedBarStart);
+        gradient.addColorStop(1, resolvedBarEnd);
+        ctx.fillStyle = gradient;
+
         // Rounded top bars look nicer
         const y = heightPx - barHeight;
-        const radius = Math.min(3, barHeight / 2);
+        const radius = Math.min(4, barHeight / 2);
         ctx.beginPath();
         ctx.moveTo(x, heightPx);
         ctx.lineTo(x, y + radius);
@@ -119,6 +168,9 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", handleResize);
       try {
+        audioEl.removeEventListener("play", resumeOnPlay);
+        canvas.removeEventListener('click', resumeOnInteract);
+        canvas.removeEventListener('touchstart', resumeOnInteract as any);
         sourceNode.disconnect();
         analyser.disconnect();
         audioCtx.close();
