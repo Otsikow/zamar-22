@@ -530,7 +530,7 @@ const Admin = () => {
                 Notification Center
               </Button>
             </Link>
-            <Link to="/admin/chat">
+            <Link to="/admin/chat-inbox">
               <Button variant="outline" className="flex items-center gap-2">
                 <MessageCircle className="h-4 w-4" />
                 Chat Inbox
@@ -928,7 +928,7 @@ const Admin = () => {
                     For the complete chat management experience, use our dedicated full-screen chat inbox.
                   </p>
                   <Button asChild className="bg-primary hover:bg-primary/90">
-                    <Link to="/admin/chat">
+                    <Link to="/admin/chat-inbox">
                       Open Full Chat Inbox
                     </Link>
                   </Button>
