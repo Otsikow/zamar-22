@@ -26,7 +26,7 @@ export default function HeroSection({
     { icon: "⏱️", text: "24–48hr Delivery" },
     { icon: "🙏", text: "Faith‑Based Platform" },
   ],
-  ctaHref = "/request",
+  ctaHref = "/request-song",
   ctaLabel = "Create Your Song",
   secondaryHref = "/about",
   secondaryLabel = "How it works",

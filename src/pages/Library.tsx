@@ -360,7 +360,7 @@ const Library = () => {
                         <Link to="/songs">{t('library.browseSongs', 'Browse Songs')}</Link>
                       </Button>
                       <Button variant="outline" asChild>
-                        <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                        <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -496,7 +496,7 @@ const Library = () => {
                       {t('library.noCustomSongsDescription', 'Request your own song and see it here when ready.')}
                     </p>
                     <Button asChild className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-black">
-                      <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                      <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -624,7 +624,7 @@ const Library = () => {
                       {t('library.noRequestsDescription', 'You haven\'t made any custom song requests yet. Create your first request to get started.')}
                     </p>
                     <Button asChild>
-                      <Link to="/request">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                      <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -674,15 +674,6 @@ const Library = () => {
             </TabsContent>
           </Tabs>
 
-          {/* Request New Song Button */}
-          <div className="text-center">
-            <Button asChild size="lg" className="w-full md:w-auto">
-              <Link to="/request">
-                <Music2 className="w-5 h-5 mr-2" />
-                {t('library.requestCustomSong', 'Request a New Song')}
-              </Link>
-            </Button>
-          </div>
         </div>
       </main>
 

@@ -50,7 +50,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/request" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                <Link to="/request-song" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <Plus className="w-4 h-4" />
                   {t('footer.create_song', 'Create Song')}
                 </Link>
