@@ -152,15 +152,15 @@ const Hero = () => {
               </div>
               
               <div className="space-y-4 flex-grow">
-                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                <h3 className="text-xl sm:text-2xl font-playfair font-bold text-foreground">
                   {t('hero.support_mission', 'Support Our Mission')}
                 </h3>
                 
-                <h4 className="text-lg text-primary font-semibold">
+                <h4 className="text-base sm:text-lg text-primary font-semibold">
                   {t('hero.empowering_communities', 'Empowering Communities Through Music')}
                 </h4>
                 
-                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
                   {t('hero.support_description', 'Help us create meaningful music for communities, ministries, and churches worldwide. Every contribution supports hope, healing, and inspiration through custom songs.')}
                 </p>
               </div>
@@ -168,19 +168,19 @@ const Hero = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 py-4 sm:py-6">
                 <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-black text-xl">🎵</span>
+                    <span className="text-black text-lg sm:text-xl">🎵</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.free_songs', 'Free Songs')}</span>
                 </div>
                 <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-black text-xl">🌍</span>
+                    <span className="text-black text-lg sm:text-xl">🌍</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.global_reach', 'Global Reach')}</span>
                 </div>
                 <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-black text-xl">⛪</span>
+                    <span className="text-black text-lg sm:text-xl">⛪</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.community', 'Community')}</span>
                 </div>
@@ -189,7 +189,7 @@ const Hero = () => {
             
             <Button 
             size="lg" 
-              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+              className="bg-primary text-black font-semibold text-sm sm:text-base px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
               asChild
             >
               <Link to="/donate">
@@ -210,26 +210,26 @@ const Hero = () => {
                 </div>
                 
                 <div className="space-y-4 flex-grow">
-                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                <h3 className="text-xl sm:text-2xl font-playfair font-bold text-foreground">
                   {t('hero.earn_referral', 'Earn Referral Bonus')}
                 </h3>
                   
-                <h4 className="text-lg text-primary font-semibold">
+                <h4 className="text-base sm:text-lg text-primary font-semibold">
                   {t('hero.share_earn', 'Share & Earn Commissions')}
                 </h4>
                   
-                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
                   {t('hero.referral_description', 'Invite friends to Zamar and earn commission on their purchases. Share the gift of custom music while building your income.')}
                 </p>
               </div>
 
-                <div className="grid grid-cols-2 gap-6 py-6">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
                   <div className="text-center">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-primary">15%</div>
+                      <div className="text-xl sm:text-2xl font-bold text-primary">15%</div>
                       <span className="text-sm text-muted-foreground font-medium">{t('hero.direct_referrals', 'Direct Referrals')}</span>
                     </div>
                   </div>
@@ -238,7 +238,7 @@ const Hero = () => {
                       <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-primary">10%</div>
+                      <div className="text-xl sm:text-2xl font-bold text-primary">10%</div>
                       <span className="text-sm text-muted-foreground font-medium">{t('hero.indirect_referrals', 'Indirect Referrals')}</span>
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const Hero = () => {
                 <div className="space-y-4">
                   <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border border-border/50">
                     <div className="flex items-center justify-between gap-3">
-                      <code className="text-sm font-mono text-foreground/80 truncate">
+                      <code className="text-xs sm:text-sm font-mono text-foreground/80 truncate">
                         www.zamarsongs.com/auth?ref={referralCode}
                       </code>
                       <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0 border-primary/30 text-primary hover:bg-primary/10">
@@ -260,7 +260,7 @@ const Hero = () => {
               
               <Button 
             size="lg" 
-              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+              className="bg-primary text-black font-semibold text-sm sm:text-base px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
                 asChild
               >
                 <Link to="/referrals">
@@ -282,26 +282,26 @@ const Hero = () => {
                 </div>
                 
                 <div className="space-y-4 flex-grow">
-                <h3 className="text-2xl font-playfair font-bold text-foreground">
+                <h3 className="text-xl sm:text-2xl font-playfair font-bold text-foreground">
                   {t('hero.earn_referral', 'Earn Referral Bonus')}
                 </h3>
                   
-                <h4 className="text-lg text-primary font-semibold">
+                <h4 className="text-base sm:text-lg text-primary font-semibold">
                   {t('hero.join_start_earning', 'Join & Start Earning')}
                 </h4>
                   
-                <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
                   {t('hero.guest_referral_description', 'Create an account to get your referral link and start earning commission on every friend who purchases custom songs through your link.')}
                 </p>
               </div>
 
-                <div className="grid grid-cols-2 gap-6 py-6">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
                   <div className="text-center">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-primary">15%</div>
+                      <div className="text-xl sm:text-2xl font-bold text-primary">15%</div>
                       <span className="text-sm text-muted-foreground font-medium">{t('hero.direct_referrals', 'Direct Referrals')}</span>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ const Hero = () => {
                       <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-primary">10%</div>
+                      <div className="text-xl sm:text-2xl font-bold text-primary">10%</div>
                       <span className="text-sm text-muted-foreground font-medium">{t('hero.indirect_referrals', 'Indirect Referrals')}</span>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ const Hero = () => {
               
               <Button 
             size="lg" 
-              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+              className="bg-primary text-black font-semibold text-sm sm:text-base px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
                 asChild
               >
                 <Link to="/auth">
