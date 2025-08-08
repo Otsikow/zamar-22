@@ -28,7 +28,7 @@ const Profile = () => {
   // Pull the current language from the translation context so that date
   // formatting honours the selected locale. Without this, the "Member
   // Since" field always displays in US English.
-  const { currentLanguage } = useTranslation();
+  const { currentLanguage, t } = useTranslation();
   const locale = getLocaleForLanguage(currentLanguage);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,9 +69,9 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
-        title: "Error loading profile",
-        description: "Please try again later",
-        variant: "destructive"
+        title: t('profile.load_error_title', 'Error loading profile'),
+        description: t('profile.load_error_desc', 'Please try again later'),
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -118,8 +118,8 @@ const Profile = () => {
       if (error) throw error;
 
       toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully."
+        title: t('profile.updated_title', 'Profile updated'),
+        description: t('profile.updated_desc', 'Your profile has been updated successfully.'),
       });
 
       setIsEditing(false);
@@ -127,9 +127,9 @@ const Profile = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
-        title: "Error updating profile",
-        description: "Please try again later",
-        variant: "destructive"
+        title: t('profile.update_error_title', 'Error updating profile'),
+        description: t('profile.update_error_desc', 'Please try again later'),
+        variant: 'destructive'
       });
     }
   };
@@ -146,7 +146,7 @@ const Profile = () => {
     return (
       <div className="min-h-screen bg-background text-foreground pb-20">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-primary">Loading profile...</div>
+          <div className="text-center text-primary">{t('profile.loading', 'Loading profile...')}</div>
         </div>
       </div>
     );
@@ -159,8 +159,8 @@ const Profile = () => {
         <div className="flex items-center gap-4 mb-8">
           <BackButton showOnDesktop={true} />
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-primary">My Account</h1>
-            <p className="text-muted-foreground mt-1">Manage your profile information</p>
+            <h1 className="text-3xl font-heading text-primary">{t('profile.title', 'My Account')}</h1>
+            <p className="text-muted-foreground mt-1">{t('profile.subtitle', 'Manage your profile information')}</p>
           </div>
           {!isEditing && (
             <Button
@@ -169,7 +169,7 @@ const Profile = () => {
               className="border-primary/30 text-primary hover:bg-primary/10"
             >
               <Edit3 className="h-4 w-4 mr-2" />
-              Edit
+              {t('profile.edit', 'Edit')}
             </Button>
           )}
         </div>
@@ -179,7 +179,7 @@ const Profile = () => {
           <CardHeader className="border-b border-primary/10">
             <CardTitle className="flex items-center gap-2 text-primary">
               <User className="h-5 w-5" />
-              Profile Information
+              {t('profile.profile_information', 'Profile Information')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -187,22 +187,22 @@ const Profile = () => {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="first_name">First Name</Label>
+                    <Label htmlFor="first_name">{t('profile.first_name', 'First Name')}</Label>
                     <Input
                       id="first_name"
                       value={formData.first_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
-                      placeholder="Enter your first name"
+                      placeholder={t('profile.first_name_placeholder', 'Enter your first name')}
                       className="border-primary/30 focus:border-primary"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last_name">Last Name</Label>
+                    <Label htmlFor="last_name">{t('profile.last_name', 'Last Name')}</Label>
                     <Input
                       id="last_name"
                       value={formData.last_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
-                      placeholder="Enter your last name"
+                      placeholder={t('profile.last_name_placeholder', 'Enter your last name')}
                       className="border-primary/30 focus:border-primary"
                     />
                   </div>
@@ -215,14 +215,14 @@ const Profile = () => {
                     className="flex-1"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Cancel
+                    {t('common.cancel', 'Cancel')}
                   </Button>
                   <Button
                     onClick={handleSave}
                     className="flex-1"
                   >
                     <Save className="h-4 w-4 mr-2" />
-                    Save Changes
+                    {t('profile.save_changes', 'Save Changes')}
                   </Button>
                 </div>
               </div>
@@ -230,15 +230,15 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">First Name</Label>
+                    <Label className="text-sm text-muted-foreground">{t('profile.first_name', 'First Name')}</Label>
                     <p className="text-foreground font-medium">
-                      {profile?.first_name || 'Not set'}
+                      {profile?.first_name || t('profile.not_set', 'Not set')}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Last Name</Label>
+                    <Label className="text-sm text-muted-foreground">{t('profile.last_name', 'Last Name')}</Label>
                     <p className="text-foreground font-medium">
-                      {profile?.last_name || 'Not set'}
+                      {profile?.last_name || t('profile.not_set', 'Not set')}
                     </p>
                   </div>
                 </div>
@@ -252,24 +252,24 @@ const Profile = () => {
           <CardHeader className="border-b border-primary/10">
             <CardTitle className="flex items-center gap-2 text-primary">
               <Mail className="h-5 w-5" />
-              Account Details
+              {t('profile.account_details', 'Account Details')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-4">
               <div>
-                <Label className="text-sm text-muted-foreground">Email Address</Label>
+                <Label className="text-sm text-muted-foreground">{t('profile.email', 'Email Address')}</Label>
                 <p className="text-foreground font-medium">{user?.email}</p>
               </div>
               <div>
-                <Label className="text-sm text-muted-foreground">Member Since</Label>
+                <Label className="text-sm text-muted-foreground">{t('profile.member_since', 'Member Since')}</Label>
                 <p className="text-foreground font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {profile?.created_at ? new Date(profile.created_at).toLocaleDateString(locale, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
-                  }) : 'Unknown'}
+                  }) : t('profile.unknown', 'Unknown')}
                 </p>
               </div>
             </div>
@@ -281,7 +281,7 @@ const Profile = () => {
           <CardHeader className="border-b border-primary/10">
             <CardTitle className="flex items-center gap-2 text-primary">
               <Users className="h-5 w-5" />
-              My Referral Earnings
+              {t('profile.referral_earnings', 'My Referral Earnings')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">

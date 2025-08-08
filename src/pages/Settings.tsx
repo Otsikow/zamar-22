@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import BackButton from '@/components/ui/back-button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { 
   Volume2, 
   Bell, 
@@ -49,6 +50,7 @@ const ThemeSelector = () => {
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<SettingsData>({
     notifications: true,
     autoPlay: false,
@@ -72,23 +74,23 @@ const Settings = () => {
     localStorage.setItem('zamar_settings', JSON.stringify(newSettings));
     
     toast({
-      title: "Settings updated",
-      description: "Your preferences have been saved."
+      title: t('settings.toast.updated_title', 'Settings updated'),
+      description: t('settings.toast.updated_desc', 'Your preferences have been saved.')
     });
   };
 
   const clearCache = () => {
-    if (confirm('This will clear all cached data. Are you sure?')) {
+    if (confirm(t('settings.confirm.clear_cache', 'This will clear all cached data. Are you sure?'))) {
       localStorage.removeItem('zamar_cache');
       toast({
-        title: "Cache cleared",
-        description: "All cached data has been removed."
+      title: t('settings.toast.cache_cleared_title', 'Cache cleared'),
+      description: t('settings.toast.cache_cleared_desc', 'All cached data has been removed.')
       });
     }
   };
 
   const resetSettings = () => {
-    if (confirm('This will reset all settings to default. Are you sure?')) {
+    if (confirm(t('settings.confirm.reset', 'This will reset all settings to default. Are you sure?'))) {
       const defaultSettings: SettingsData = {
         notifications: true,
         autoPlay: false,
@@ -101,8 +103,8 @@ const Settings = () => {
       localStorage.setItem('zamar_settings', JSON.stringify(defaultSettings));
       
       toast({
-        title: "Settings reset",
-        description: "All settings have been restored to default."
+      title: t('settings.toast.reset_title', 'Settings reset'),
+      description: t('settings.toast.reset_desc', 'All settings have been restored to default.')
       });
     }
   };
@@ -114,8 +116,8 @@ const Settings = () => {
         <div className="flex items-center gap-4 mb-8">
           <BackButton showOnDesktop={true} />
           <div>
-            <h1 className="text-3xl font-heading text-primary">Settings</h1>
-            <p className="text-muted-foreground mt-1">Customize your app experience</p>
+            <h1 className="text-3xl font-heading text-primary">{t('settings.title', 'Settings')}</h1>
+            <p className="text-muted-foreground mt-1">{t('settings.subtitle', 'Customize your app experience')}</p>
           </div>
         </div>
 
@@ -125,12 +127,12 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Volume2 className="h-5 w-5" />
-                Audio Settings
+                {t('settings.audio.title', 'Audio Settings')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="space-y-2">
-                <Label>Default Volume: {settings.volume}%</Label>
+                <Label>{t('settings.audio.default_volume', 'Default Volume')}: {settings.volume}%</Label>
                 <Slider
                   value={[settings.volume]}
                   onValueChange={(value) => updateSetting('volume', value[0])}
@@ -141,7 +143,7 @@ const Settings = () => {
               </div>
 
               <div className="space-y-4">
-                <Label>Audio Quality</Label>
+                <Label>{t('settings.audio.quality', 'Audio Quality')}</Label>
                 <Select
                   value={settings.audioQuality}
                   onValueChange={(value) => updateSetting('audioQuality', value)}
@@ -150,19 +152,19 @@ const Settings = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low (64 kbps)</SelectItem>
-                    <SelectItem value="medium">Medium (128 kbps)</SelectItem>
-                    <SelectItem value="high">High (320 kbps)</SelectItem>
-                    <SelectItem value="lossless">Lossless</SelectItem>
+                    <SelectItem value="low">{t('settings.audio.quality_low', 'Low (64 kbps)')}</SelectItem>
+                    <SelectItem value="medium">{t('settings.audio.quality_medium', 'Medium (128 kbps)')}</SelectItem>
+                    <SelectItem value="high">{t('settings.audio.quality_high', 'High (320 kbps)')}</SelectItem>
+                    <SelectItem value="lossless">{t('settings.audio.quality_lossless', 'Lossless')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label>Auto-play Next Song</Label>
+                  <Label>{t('settings.audio.autoplay', 'Auto-play Next Song')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Automatically play the next song in queue
+                    {t('settings.audio.autoplay_desc', 'Automatically play the next song in queue')}
                   </p>
                 </div>
                 <Switch
@@ -173,9 +175,9 @@ const Settings = () => {
 
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label>High Quality Streaming</Label>
+                  <Label>{t('settings.audio.high_quality', 'High Quality Streaming')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Use higher bitrate for better sound quality
+                    {t('settings.audio.high_quality_desc', 'Use higher bitrate for better sound quality')}
                   </p>
                 </div>
                 <Switch
@@ -191,15 +193,15 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Smartphone className="h-5 w-5" />
-                App Preferences
+                {t('settings.app.title', 'App Preferences')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label>Push Notifications</Label>
+                  <Label>{t('settings.app.push_notifications', 'Push Notifications')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Receive updates about new songs and features
+                    {t('settings.app.push_desc', 'Receive updates about new songs and features')}
                   </p>
                 </div>
                 <Switch
@@ -209,7 +211,7 @@ const Settings = () => {
               </div>
 
               <div className="space-y-4">
-                <Label>Theme</Label>
+                <Label>{t('settings.app.theme', 'Theme')}</Label>
                 <ThemeSelector />
               </div>
             </CardContent>
@@ -220,15 +222,15 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Download className="h-5 w-5" />
-                Download Settings
+                {t('settings.download.title', 'Download Settings')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label>Download Over Wi-Fi Only</Label>
+                  <Label>{t('settings.download.wifi_only', 'Download Over Wi-Fi Only')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Prevent downloads when using mobile data
+                    {t('settings.download.wifi_only_desc', 'Prevent downloads when using mobile data')}
                   </p>
                 </div>
                 <Switch
@@ -244,7 +246,7 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Shield className="h-5 w-5" />
-                Privacy & Security
+                {t('settings.privacy.title', 'Privacy & Security')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
@@ -253,14 +255,14 @@ const Settings = () => {
                 onClick={() => navigate('/privacy-policy')}
                 className="w-full justify-start border-primary/30 hover:bg-primary/10"
               >
-                View Privacy Policy
+                {t('settings.privacy.view_policy', 'View Privacy Policy')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate('/terms-of-service')}
                 className="w-full justify-start border-primary/30 hover:bg-primary/10"
               >
-                Terms of Service
+                {t('settings.privacy.terms', 'Terms of Service')}
               </Button>
             </CardContent>
           </Card>
@@ -270,7 +272,7 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Trash2 className="h-5 w-5" />
-                Data Management
+                {t('settings.data.title', 'Data Management')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
@@ -279,14 +281,14 @@ const Settings = () => {
                 onClick={clearCache}
                 className="w-full justify-start border-primary/30 hover:bg-primary/10"
               >
-                Clear Cache
+                {t('settings.data.clear_cache', 'Clear Cache')}
               </Button>
               <Button
                 variant="outline"
                 onClick={resetSettings}
                 className="w-full justify-start border-destructive/30 text-destructive hover:bg-destructive/10"
               >
-                Reset All Settings
+                {t('settings.data.reset_all', 'Reset All Settings')}
               </Button>
             </CardContent>
           </Card>
@@ -296,18 +298,18 @@ const Settings = () => {
             <CardHeader className="border-b border-primary/10">
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Info className="h-5 w-5" />
-                About Zamar
+                {t('settings.about.title', 'About Zamar')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4 text-center">
               <div>
                 <h3 className="font-heading text-primary text-lg">Zamar</h3>
-                <p className="text-muted-foreground">Custom Songs for Every Occasion</p>
-                <p className="text-sm text-muted-foreground mt-2">Version 1.0.0</p>
+                <p className="text-muted-foreground">{t('settings.about.tagline', 'Custom Songs for Every Occasion')}</p>
+                <p className="text-sm text-muted-foreground mt-2">{t('settings.about.version', 'Version 1.0.0')}</p>
               </div>
               <div className="pt-4 border-t border-primary/10">
                 <p className="text-xs text-muted-foreground">
-                  © 2025 Zamar. All rights reserved.
+                  {t('settings.about.copyright', '© 2025 Zamar. All rights reserved.')}
                 </p>
               </div>
             </CardContent>

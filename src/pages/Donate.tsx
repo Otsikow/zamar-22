@@ -8,9 +8,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Heart, CreditCard, Calendar, Target, Music, Globe, Church, Info } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 const Donate = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [selectedAmount, setSelectedAmount] = useState<string>("25");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [donationType, setDonationType] = useState<string>("one-time");
@@ -67,9 +69,9 @@ const Donate = () => {
     const amount = getFinalAmount();
     if (!amount || parseFloat(amount) < 1) {
       toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid donation amount.",
-        variant: "destructive",
+        title: t('donate.invalid_amount_title', 'Invalid Amount'),
+        description: t('donate.invalid_amount_desc', 'Please enter a valid donation amount.'),
+        variant: 'destructive',
       });
       return;
     }
@@ -79,24 +81,24 @@ const Donate = () => {
     try {
       // TODO: Implement Stripe payment integration
       toast({
-        title: "Payment Processing",
-        description: "Stripe payment integration will be implemented here.",
+        title: t('donate.payment_processing', 'Payment Processing'),
+        description: t('donate.payment_processing_desc', 'Stripe payment integration will be implemented here.'),
       });
       
       // Simulate processing
       setTimeout(() => {
         setIsProcessing(false);
         toast({
-          title: "Thank You!",
-          description: "Your donation helps us create meaningful music.",
+          title: t('donate.thank_you', 'Thank You!'),
+          description: t('donate.success_message', 'Your donation helps us create meaningful music.'),
         });
       }, 2000);
     } catch (error) {
       setIsProcessing(false);
       toast({
-        title: "Error",
-        description: "Payment failed. Please try again.",
-        variant: "destructive",
+        title: t('donate.error_title', 'Error'),
+        description: t('donate.error_desc', 'Payment failed. Please try again.'),
+        variant: 'destructive',
       });
     }
   };
@@ -115,11 +117,11 @@ const Donate = () => {
             
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-primary bg-clip-text mb-6 flex items-center justify-center gap-3">
               <Heart className="w-10 h-10 md:w-12 md:h-12 text-primary" />
-              Support the Mission
+              {t('donate.title', 'Support the Mission')}
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-inter leading-relaxed">
-              Your giving helps us create meaningful music and reach more lives with songs that inspire, heal, and bring hope.
+              {t('donate.subtitle', 'Your giving helps us create meaningful music and reach more lives with songs that inspire, heal, and bring hope.')}
             </p>
           </div>
 
@@ -130,7 +132,7 @@ const Donate = () => {
                 <CardHeader>
                   <CardTitle className="text-2xl font-playfair text-foreground flex items-center gap-2">
                     <CreditCard className="w-6 h-6 text-primary" />
-                    Make a Donation
+                    {t('donate.make_a_donation', 'Make a Donation')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -141,14 +143,14 @@ const Donate = () => {
                         value="one-time"
                         className="data-[state=active]:bg-primary data-[state=active]:text-black"
                       >
-                        One-Time
+                        {t('donate.one_time', 'One-Time')}
                       </TabsTrigger>
                       <TabsTrigger 
                         value="monthly"
                         className="data-[state=active]:bg-primary data-[state=active]:text-black"
                       >
                         <Calendar className="w-4 h-4 mr-2" />
-                        Monthly
+                        {t('donate.monthly', 'Monthly')}
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -156,7 +158,7 @@ const Donate = () => {
                   {/* Amount Selection */}
                   <div className="space-y-4">
                     <label className="text-foreground font-inter font-medium text-sm">
-                      Donation Amount
+                      {t('donate.amount_label', 'Donation Amount')}
                     </label>
                     
                     {/* Preset Amounts */}
@@ -184,7 +186,7 @@ const Donate = () => {
                       </span>
                       <Input
                         type="number"
-                        placeholder="Custom amount"
+                        placeholder={t('donate.custom_amount', 'Custom amount')}
                         value={customAmount}
                         onChange={(e) => handleCustomAmountChange(e.target.value)}
                         className="pl-8 bg-background border-primary/30 focus:border-primary/60"
@@ -197,7 +199,7 @@ const Donate = () => {
                   {/* Campaign Selection */}
                   <div className="space-y-3">
                     <label className="text-foreground font-inter font-medium text-sm">
-                      Support Campaign (Optional)
+                      {t('donate.support_campaign', 'Support Campaign (Optional)')}
                     </label>
                     <div className="space-y-2">
                       <Button
@@ -209,7 +211,7 @@ const Donate = () => {
                         }`}
                         onClick={() => setSelectedCampaign("general")}
                       >
-                        General Fund
+                        {t('donate.general_fund', 'General Fund')}
                       </Button>
                       {campaigns.map((campaign) => (
                         <Button
@@ -223,7 +225,7 @@ const Donate = () => {
                           onClick={() => setSelectedCampaign(campaign.id)}
                         >
                           {campaign.icon}
-                          <span className="ml-2">{campaign.title}</span>
+                          <span className="ml-2">{t(`donate.campaigns.${campaign.id}.title`, campaign.title)}</span>
                         </Button>
                       ))}
                     </div>
@@ -237,11 +239,11 @@ const Donate = () => {
                     className="w-full"
                   >
                     {isProcessing ? (
-                      "Processing..."
+                      t('donate.processing', 'Processing...')
                     ) : (
                       <>
                         <Heart className="w-5 h-5 mr-2" />
-                        Donate £{getFinalAmount() || "0"} {donationType === "monthly" ? "/month" : ""}
+                        {t('donate.button_label', 'Donate')} £{getFinalAmount() || '0'} {donationType === 'monthly' ? t('donate.per_month', '/month') : ''}
                       </>
                     )}
                   </Button>
@@ -253,7 +255,7 @@ const Donate = () => {
             <div className="space-y-6">
               <h2 className="text-2xl font-playfair font-bold text-foreground flex items-center gap-2">
                 <Target className="w-6 h-6 text-primary" />
-                Current Campaigns
+                {t('donate.current_campaigns', 'Current Campaigns')}
               </h2>
 
               {campaigns.map((campaign) => (
@@ -269,22 +271,22 @@ const Donate = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-playfair font-semibold text-foreground">
-                            {campaign.title}
+                            {t(`donate.campaigns.${campaign.id}.title`, campaign.title)}
                           </h3>
                           <Badge className="bg-primary/20 text-primary border-primary/30">
                             {campaign.percentage}%
                           </Badge>
                         </div>
                         
-                        <p className="text-sm text-muted-foreground mb-4 font-inter">
-                          {campaign.description}
-                        </p>
+                          <p className="text-sm text-muted-foreground mb-4 font-inter">
+                            {t(`donate.campaigns.${campaign.id}.description`, campaign.description)}
+                          </p>
 
                         {/* Progress Bar */}
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-primary font-medium">{campaign.current}</span>
-                            <span className="text-muted-foreground">of {campaign.target}</span>
+                            <span className="text-muted-foreground">{t('donate.of_amount', 'of')} {campaign.target}</span>
                           </div>
                           <div className="w-full h-2 bg-accent rounded-full overflow-hidden">
                             <div 
@@ -305,7 +307,7 @@ const Donate = () => {
           <Alert className="bg-primary/10 border-primary/30">
             <Info className="w-5 h-5 text-primary" />
             <AlertDescription className="text-muted-foreground font-inter italic">
-              <strong className="text-primary not-italic">Our Mission:</strong> Zamar is a Christian-led platform. Every gift helps us create songs that serve communities, ministries, and people in need around the world.
+              <strong className="text-primary not-italic">{t('donate.our_mission', 'Our Mission:')}</strong> {t('donate.mission_text', 'Zamar is a Christian-led platform. Every gift helps us create songs that serve communities, ministries, and people in need around the world.')}
             </AlertDescription>
           </Alert>
         </div>

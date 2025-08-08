@@ -10,11 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Plus } from 'lucide-react';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const CreatePlaylist = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -27,18 +29,18 @@ const CreatePlaylist = () => {
     
     if (!user) {
       toast({
-        title: "Authentication required",
-        description: "You must be logged in to create a playlist",
-        variant: "destructive"
+        title: t('playlist.auth_required_title', 'Authentication required'),
+        description: t('playlist.auth_required_desc', 'You must be logged in to create a playlist'),
+        variant: 'destructive'
       });
       return;
     }
 
     if (!formData.name.trim()) {
       toast({
-        title: "Playlist name required",
-        description: "Please enter a name for your playlist",
-        variant: "destructive"
+        title: t('playlist.name_required_title', 'Playlist name required'),
+        description: t('playlist.name_required_desc', 'Please enter a name for your playlist'),
+        variant: 'destructive'
       });
       return;
     }
@@ -58,17 +60,17 @@ const CreatePlaylist = () => {
       if (error) throw error;
 
       toast({
-        title: "Playlist created!",
-        description: `"${formData.name}" has been created successfully.`
+        title: t('playlist.created_title', 'Playlist created!'),
+        description: t('playlist.created_desc', '"{name}" has been created successfully.').replace('{name}', formData.name)
       });
 
       navigate('/library');
     } catch (error) {
       console.error('Error creating playlist:', error);
       toast({
-        title: "Error creating playlist",
-        description: "Please try again later",
-        variant: "destructive"
+        title: t('playlist.create_error_title', 'Error creating playlist'),
+        description: t('playlist.create_error_desc', 'Please try again later'),
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -89,8 +91,8 @@ const CreatePlaylist = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-heading text-primary">Create Playlist</h1>
-            <p className="text-muted-foreground mt-1">Build your custom song collection</p>
+            <h1 className="text-3xl font-heading text-primary">{t('playlist.create_title', 'Create Playlist')}</h1>
+            <p className="text-muted-foreground mt-1">{t('playlist.create_subtitle', 'Build your custom song collection')}</p>
           </div>
         </div>
 
@@ -99,7 +101,7 @@ const CreatePlaylist = () => {
           <CardHeader className="border-b border-primary/10">
             <CardTitle className="flex items-center gap-2 text-primary">
               <Plus className="h-5 w-5" />
-              New Playlist
+              {t('playlist.new_playlist', 'New Playlist')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -107,14 +109,14 @@ const CreatePlaylist = () => {
               {/* Playlist Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
-                  Playlist Name *
+                  {t('playlist.name_label', 'Playlist Name')} *
                 </Label>
                 <Input
                   id="name"
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., Sunday Worship, Wedding Songs..."
+                  placeholder={t('playlist.name_placeholder', 'e.g., Sunday Worship, Wedding Songs...')}
                   className="border-primary/30 focus:border-primary"
                   required
                 />
@@ -123,13 +125,13 @@ const CreatePlaylist = () => {
               {/* Description */}
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-sm font-medium">
-                  Description
+                  {t('playlist.description_label', 'Description')}
                 </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Optional description for your playlist..."
+                  placeholder={t('playlist.description_placeholder', 'Optional description for your playlist...')}
                   className="border-primary/30 focus:border-primary min-h-[80px]"
                   rows={3}
                 />
@@ -139,10 +141,10 @@ const CreatePlaylist = () => {
               <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
                 <div className="space-y-1">
                   <Label htmlFor="is_public" className="text-sm font-medium">
-                    Make Public
+                    {t('playlist.make_public', 'Make Public')}
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    Allow others to discover and view this playlist
+                    {t('playlist.make_public_desc', 'Allow others to discover and view this playlist')}
                   </p>
                 </div>
                 <Switch
@@ -161,14 +163,14 @@ const CreatePlaylist = () => {
                   className="flex-1"
                   disabled={loading}
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </Button>
                 <Button
                   type="submit"
                   className="flex-1"
                   disabled={loading || !formData.name.trim()}
                 >
-                  {loading ? "Creating..." : "Create Playlist"}
+                  {loading ? t('playlist.creating', 'Creating...') : t('playlist.create_button', 'Create Playlist')}
                 </Button>
               </div>
             </form>
