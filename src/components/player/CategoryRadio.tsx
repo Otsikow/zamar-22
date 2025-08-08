@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { 
   Play, 
   Pause, 
@@ -46,6 +47,8 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>("");
+  
+  const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
   
   // Reset current category when radio stops
   useEffect(() => {
@@ -210,17 +213,17 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
 
       {/* Current Playing */}
       {state.isQueueMode && currentSong && (
-        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 rounded-2xl">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Music className="w-6 h-6 text-primary" />
+        <Card className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-background shadow-md">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Music className="w-6 h-6 text-primary" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0 max-w-none">
-                <h3 className="font-bold text-lg leading-tight break-words">{currentSong.title}</h3>
+                <h3 className="font-playfair font-bold text-xl leading-tight break-words">{currentSong.title}</h3>
                 <p className="text-muted-foreground text-sm">{currentSong.artist}</p>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <Badge variant="outline" className="text-xs bg-background/50">
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <Badge variant="outline" className="text-xs rounded-full bg-background/60">
                     {currentCategory}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
@@ -228,40 +231,68 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   </span>
                 </div>
               </div>
-              <div className="flex items-start gap-1 flex-shrink-0 pt-1">
-                <Button onClick={previousSong} variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <SkipBack className="w-4 h-4" />
-                </Button>
-                <Button onClick={togglePlayPause} size="sm" className="h-8 w-8 p-0 bg-primary text-primary-foreground">
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                </Button>
-                <Button onClick={nextSong} variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <SkipForward className="w-4 h-4" />
-                </Button>
-                <Button 
-                  onClick={toggleShuffle} 
-                  variant="ghost" 
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                >
-                  <Shuffle className={`w-4 h-4 ${state.isShuffling ? 'text-primary' : ''}`} />
-                </Button>
-                <Button 
-                  onClick={() => {
-                    console.log('🧪 Manual test: simulating song ended event');
-                    const audio = document.querySelector('audio');
-                    if (audio) {
-                      audio.dispatchEvent(new Event('ended'));
-                    }
-                  }} 
-                  variant="ghost" 
-                  size="sm"
-                  className="h-8 w-8 p-0 text-orange-500"
-                  title="Test next song (dev)"
-                >
-                  ⚡
-                </Button>
-              </div>
+              <TooltipProvider>
+                <div className="flex items-center gap-1 bg-muted/40 border rounded-full p-1 shadow-sm flex-shrink-0">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={previousSong} variant="ghost" size="sm" aria-label="Previous" className="h-8 w-8 p-0 rounded-full">
+                        <SkipBack className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Previous</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={togglePlayPause} size="sm" aria-label={isPlaying ? 'Pause' : 'Play'} className="h-9 w-9 p-0 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow">
+                        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isPlaying ? 'Pause' : 'Play'}</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={nextSong} variant="ghost" size="sm" aria-label="Next" className="h-8 w-8 p-0 rounded-full">
+                        <SkipForward className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Next</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={toggleShuffle} variant="ghost" size="sm" aria-label="Shuffle" className={`h-8 w-8 p-0 rounded-full ${state.isShuffling ? 'bg-primary/10 text-primary' : ''}`}>
+                        <Shuffle className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{state.isShuffling ? 'Shuffle: On' : 'Shuffle'}</TooltipContent>
+                  </Tooltip>
+
+                  {isLocalhost && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          onClick={() => {
+                            console.log('🧪 Manual test: simulating song ended event');
+                            const audio = document.querySelector('audio');
+                            if (audio) {
+                              audio.dispatchEvent(new Event('ended'));
+                            }
+                          }} 
+                          variant="ghost" 
+                          size="sm"
+                          className="h-8 w-8 p-0 rounded-full text-orange-500"
+                          aria-label="Next (dev)"
+                        >
+                          ⚡
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Next (dev)</TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+              </TooltipProvider>
             </div>
           </CardContent>
         </Card>
@@ -290,10 +321,10 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                   <Button
                     onClick={playAllSongs}
                     disabled={loading}
-                    className={`rounded-xl px-8 h-12 ${
+                    className={`rounded-xl px-8 h-12 transition ${
                       isCategoryPlaying("All Songs") 
-                        ? "bg-green-500 hover:bg-green-600 text-white" 
-                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                        ? "bg-primary text-primary-foreground ring-2 ring-primary/50 shadow"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
                     {isCategoryPlaying("All Songs") ? (
@@ -324,10 +355,10 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                     <Button
                       onClick={() => playByCategory(genre, 'genre')}
                       disabled={loading}
-                      className={`rounded-xl px-6 h-10 ${
+                      className={`rounded-xl px-6 h-10 transition ${
                         isCategoryPlaying(genre)
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                          ? "bg-primary text-primary-foreground ring-2 ring-primary/50 shadow"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                       }`}
                     >
                       {isCategoryPlaying(genre) ? (
@@ -359,10 +390,10 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                     <Button
                       onClick={() => playByCategory(occasion, 'occasion')}
                       disabled={loading}
-                      className={`rounded-xl px-6 h-10 ${
+                      className={`rounded-xl px-6 h-10 transition ${
                         isCategoryPlaying(occasion)
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                          ? "bg-primary text-primary-foreground ring-2 ring-primary/50 shadow"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                       }`}
                     >
                       {isCategoryPlaying(occasion) ? (
