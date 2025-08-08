@@ -38,31 +38,15 @@ export default function PlayerSlider({
       </SliderPrimitive.Track>
 
       {/* Radio-button Thumb */}
+      {/* Radio-style Thumb: outer ring, transparent center */}
       <SliderPrimitive.Thumb
         className={cn(
-          "group relative -mt-[1px] h-6 w-6 rounded-full border-2",
-          "border-primary bg-card shadow-md transition-transform focus:outline-none",
-          "hover:scale-[1.04] active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-primary/30"
+          "block h-6 w-6 rounded-full border-4 border-primary bg-transparent",
+          "shadow-[0_0_0_2px_rgba(0,0,0,0.3)]",
+          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
         )}
         aria-label="Slider handle"
-      >
-        {/* outer glow ring on focus */}
-        <span
-          className={cn(
-            "pointer-events-none absolute inset-0 rounded-full",
-            "ring-0 group-focus-visible:ring-8 ring-primary/20 transition-[box-shadow]"
-          )}
-        />
-        {/* inner dot (the 'radio' fill) */}
-        <span
-          className={cn(
-            "pointer-events-none absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full",
-            "bg-primary",
-            // show the dot on hover/focus/drag for that radio feel
-            "scale-0 group-hover:scale-100 group-focus-visible:scale-100 group-active:scale-100 transition-transform"
-          )}
-        />
-      </SliderPrimitive.Thumb>
+      />
     </SliderPrimitive.Root>
   );
 }
