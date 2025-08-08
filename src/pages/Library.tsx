@@ -312,28 +312,28 @@ const Library = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="grid w-full grid-cols-4 bg-gradient-card border border-border">
+            <TabsList className="flex w-full overflow-x-auto whitespace-nowrap gap-2 bg-gradient-card border border-border rounded-xl p-1">
               <TabsTrigger 
                 value="songs" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
               >
                 {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="playlists"
-                className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
               >
                 📋 {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="custom"
-                className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
               >
                 🎁 {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="requests"
-                className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                className="shrink-0 px-3 py-2 text-sm rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black"
               >
                 {t('library.tabs.myRequests', 'My Requests')} ({requests.length})
               </TabsTrigger>
