@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, Heart, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import PlayerSlider from "@/components/player/PlayerSlider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 
 interface Song {
@@ -214,7 +214,8 @@ const SongPlayer = () => {
 
               {/* Progress Bar - force re-render with key based on currentTime */}
               <div className="space-y-2" key={Math.floor(currentTime * 10)}>
-                <Slider
+                <PlayerSlider
+                  variant="progress"
                   value={[currentTime]}
                   max={Math.max(duration, 1)}
                   step={0.1}
@@ -258,11 +259,12 @@ const SongPlayer = () => {
 
                 <div className="flex items-center gap-2 w-32">
                   <Volume2 className="w-4 h-4 text-muted-foreground" />
-                  <Slider
-                    value={[volume]}
-                    max={100}
-                    step={1}
-                    onValueChange={handleVolumeChange}
+                  <PlayerSlider
+                    variant="volume"
+                    value={[state.volume]}
+                    max={1}
+                    step={0.01}
+                    onValueChange={(v) => setVolume(v[0])}
                     className="flex-1"
                   />
                 </div>
