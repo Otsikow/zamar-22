@@ -165,7 +165,7 @@ const Hero = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 py-4 sm:py-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 py-4 sm:py-6 place-items-center">
                 <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-lg sm:text-xl">🎵</span>
@@ -178,7 +178,7 @@ const Hero = () => {
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.global_reach', 'Global Reach')}</span>
                 </div>
-                <div className="text-center">
+                <div className="text-center col-span-2 sm:col-span-1 justify-self-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-lg sm:text-xl">⛪</span>
                   </div>
@@ -223,7 +223,7 @@ const Hero = () => {
                 </p>
               </div>
 
-                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 place-items-center">
                   <div className="text-center">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
@@ -295,7 +295,7 @@ const Hero = () => {
                 </p>
               </div>
 
-                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6">
+                <div className="grid grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 place-items-center">
                   <div className="text-center">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
