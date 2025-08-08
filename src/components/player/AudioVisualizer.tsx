@@ -48,6 +48,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     const analyser = audioCtx.createAnalyser();
 
     analyser.fftSize = 256; // Reasonable performance vs detail
+    analyser.smoothingTimeConstant = 0.85; // smooth visual motion
     // Connect source to analyser ONLY (avoid double playback echo)
     sourceNode.connect(analyser);
 
@@ -79,9 +80,26 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       const l = Math.min(100, Number(m[3]) + delta);
       return `hsl(${h} ${s}% ${l}%)`;
     };
+    const darkenHsl = (hsl: string, delta = 8) => {
+      const m = hsl.match(/hsl\(\s*([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%/i);
+      if (!m) return hsl;
+      const h = Number(m[1]);
+      const s = Number(m[2]);
+      const l = Math.max(0, Number(m[3]) - delta);
+      return `hsl(${h} ${s}% ${l}%)`;
+    };
+    const parseHsl = (hsl: string) => {
+      const m = hsl.match(/hsl\(\s*([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%/i);
+      if (!m) return null;
+      return { h: Number(m[1]), s: Number(m[2]), l: Number(m[3]) } as const;
+    };
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
     const resolvedBarStart = resolveColor(barColor, '#F59E0B');
-    const resolvedBarEnd = lightenHsl(resolvedBarStart, 18);
+    const resolvedAccent = resolveColor('hsl(var(--accent))', lightenHsl(resolvedBarStart, 20));
+    const startHsl = parseHsl(resolvedBarStart) || { h: 42, s: 95, l: 50 };
+    const endHsl = parseHsl(resolvedAccent) || { h: startHsl.h + 20, s: Math.max(60, startHsl.s - 10), l: Math.min(70, startHsl.l + 10) };
+
     const resolvedBg = backgroundColor === 'transparent'
       ? 'transparent'
       : resolveColor(backgroundColor, '#0F172A');
@@ -123,7 +141,10 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       // Background
       ctx.clearRect(0, 0, width, heightPx);
       if (resolvedBg !== "transparent") {
-        ctx.fillStyle = resolvedBg;
+        const bgGrad = ctx.createLinearGradient(0, 0, width, heightPx);
+        bgGrad.addColorStop(0, darkenHsl(resolvedBg, 4));
+        bgGrad.addColorStop(1, lightenHsl(resolvedBg, 6));
+        ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, width, heightPx);
       }
 
@@ -136,10 +157,22 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         const scale = i < barCount * 0.2 ? 1.8 : 1;
         const barHeight = (value / 255) * heightPx * 0.7 * scale;
 
-        // Gradient from base to lighter at the top
+        // Ambient color across bars using theme primary -> accent
+        const t = barCount > 1 ? i / (barCount - 1) : 0;
+        const h = Math.round(lerp(startHsl.h, endHsl.h, t));
+        const s = Math.round(lerp(startHsl.s, endHsl.s, t));
+        const l = Math.round(lerp(startHsl.l, endHsl.l, t));
+        const barBase = `hsl(${h} ${s}% ${l}%)`;
+        const barTop = lightenHsl(barBase, 12);
+
+        // Glow
+        ctx.shadowColor = `hsl(${h} ${s}% ${Math.min(100, l + 20)}% / 0.35)`;
+        ctx.shadowBlur = Math.max(8, barWidth * 0.6);
+
+        // Vertical gradient per bar
         const gradient = ctx.createLinearGradient(0, heightPx, 0, heightPx - barHeight);
-        gradient.addColorStop(0, resolvedBarStart);
-        gradient.addColorStop(1, resolvedBarEnd);
+        gradient.addColorStop(0, barBase);
+        gradient.addColorStop(1, barTop);
         ctx.fillStyle = gradient;
 
         // Rounded top bars look nicer
