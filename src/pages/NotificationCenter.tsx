@@ -15,10 +15,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
   user_id: string;
-  metadata?: {
-    sender_user_id?: string;
-    room_id?: string;
-  };
+  metadata?: any;
 }
 
 interface UserProfile {

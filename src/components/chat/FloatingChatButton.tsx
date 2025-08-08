@@ -259,7 +259,7 @@ export const FloatingChatButton = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed right-4 sm:right-6 w[min(92vw,20rem)] h-[28rem] flex flex-col shadow-xl z-50 bg-background border-border" style={{ bottom: windowBottom }}>
+        <Card className="fixed right-4 sm:right-6 w-[min(92vw,20rem)] h-[28rem] flex flex-col shadow-xl z-50 bg-background border-border" style={{ bottom: windowBottom }}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground rounded-t-lg">
             <h3 className="font-semibold">Support Chat</h3>
