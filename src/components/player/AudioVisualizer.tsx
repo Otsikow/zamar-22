@@ -23,7 +23,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const sourceNodeRef = useRef<AudioNode | null>(null);
   const rafRef = useRef<number | null>(null);
 
   // Resize canvas for device pixel ratio crispness
@@ -60,14 +60,41 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       analyser = cached.analyser;
     } else {
       audioCtx = new AudioCtx();
-      sourceNode = audioCtx.createMediaElementSource(audioEl);
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256; // Reasonable performance vs detail
-      analyser.smoothingTimeConstant = 0.85; // smooth visual motion
-      // Connect source -> analyser -> destination so audio is heard
-      sourceNode.connect(analyser);
-      analyser.connect(audioCtx.destination);
-      SOURCE_CACHE.set(audioEl, { audioCtx, source: sourceNode, analyser });
+      try {
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256; // Reasonable performance vs detail
+        analyser.smoothingTimeConstant = 0.85; // smooth visual motion
+        // Connect source -> analyser (do NOT connect to destination to avoid echo)
+        sourceNode.connect(analyser);
+        SOURCE_CACHE.set(audioEl, { audioCtx, source: sourceNode, analyser });
+      } catch (err) {
+        // Fallback: if a MediaElementSource already exists from another component,
+        // use captureStream to create a separate analysis path.
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.85;
+        const canCapture = typeof (audioEl as any).captureStream === 'function';
+        if (canCapture) {
+          try {
+            const stream = (audioEl as any).captureStream();
+            const streamSource = audioCtx.createMediaStreamSource(stream);
+            // type shim so we can keep refs generic
+            sourceNode = streamSource as unknown as MediaElementAudioSourceNode;
+            streamSource.connect(analyser);
+          } catch (e) {
+            console.warn('[Visualizer] captureStream failed, visualization disabled.', e);
+          }
+        } else {
+          console.warn('[Visualizer] MediaElement already bound elsewhere and captureStream unavailable. Reusing existing cached nodes if any.');
+          const existing = SOURCE_CACHE.get(audioEl);
+          if (existing) {
+            audioCtx = existing.audioCtx;
+            sourceNode = existing.source;
+            analyser = existing.analyser;
+          }
+        }
+      }
     }
 
     // Resolve CSS variable colors (canvas does not understand CSS vars directly)
