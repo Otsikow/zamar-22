@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/sections/Footer";
-import WaveformVisualization from "@/components/player/WaveformVisualization";
+import AudioVisualizer from "@/components/player/AudioVisualizer";
 import SyncedLyricsViewer from "@/components/player/SyncedLyricsViewer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -208,9 +208,9 @@ const SongPlayer = () => {
               <CardTitle className="text-primary">Audio Player</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Enhanced Waveform Visualization - Much Taller */}
+              {/* Professional Audio Visualizer */}
               <div className="bg-muted/20 h-32 md:h-40 rounded-lg border border-primary/20 overflow-hidden">
-                <WaveformVisualization className="w-full h-full" />
+                <AudioVisualizer />
               </div>
 
               {/* Progress Bar - force re-render with key based on currentTime */}
