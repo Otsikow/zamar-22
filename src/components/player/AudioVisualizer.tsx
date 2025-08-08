@@ -48,8 +48,16 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     const analyser = audioCtx.createAnalyser();
 
     analyser.fftSize = 256; // Reasonable performance vs detail
+    // Connect source to analyser ONLY (avoid double playback echo)
     sourceNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
+
+    // Auto-resume context when audio plays (required on iOS)
+    const resumeOnPlay = () => {
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume().catch(() => {});
+      }
+    };
+    audioEl.addEventListener("play", resumeOnPlay);
 
     audioCtxRef.current = audioCtx;
     analyserRef.current = analyser;
@@ -125,7 +133,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-24 rounded-md overflow-hidden"
+      className="w-full h-32 md:h-40 rounded-md overflow-hidden"
       style={{ display: "block" }}
     />
   );

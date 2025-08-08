@@ -23,9 +23,9 @@ import {
   Globe
 } from "lucide-react";
 import PlayerSlider from "@/components/player/PlayerSlider";
-// WaveformVisualization replaced by WaveformPlayerPro
+// Visualizer powered by Web Audio API
 import { Volume2 } from "lucide-react";
-import WaveformPlayerPro from "@/components/player/WaveformPlayerPro";
+import AudioVisualizer from "@/components/player/AudioVisualizer";
 
 interface Song {
   id: string;
@@ -374,15 +374,9 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
               </TooltipProvider>
             </div>
 
-            {/* Waveform Visualization */}
+            {/* Visualizer */}
             <div className="mt-4 rounded-xl border border-border/50 bg-card/40 overflow-hidden">
-              <WaveformPlayerPro
-                className="h-32"
-                audioUrl={state.currentSong?.url || ""}
-                isPlaying={state.isPlaying}
-                mediaElement={audioEl}
-                showInternalControls={false}
-              />
+              <AudioVisualizer />
             </div>
 
             {/* Progress + Volume */}
