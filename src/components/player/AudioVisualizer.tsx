@@ -50,7 +50,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
 
     const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
     let audioCtx: AudioContext;
-    let sourceNode: MediaElementAudioSourceNode;
+    let sourceNode: AudioNode;
     let analyser: AnalyserNode;
 
     const cached = SOURCE_CACHE.get(audioEl);
@@ -60,38 +60,54 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       analyser = cached.analyser;
     } else {
       audioCtx = new AudioCtx();
-      try {
-        sourceNode = audioCtx.createMediaElementSource(audioEl);
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256; // Reasonable performance vs detail
-        analyser.smoothingTimeConstant = 0.85; // smooth visual motion
-        // Connect source -> analyser (do NOT connect to destination to avoid echo)
-        sourceNode.connect(analyser);
-        SOURCE_CACHE.set(audioEl, { audioCtx, source: sourceNode, analyser });
-      } catch (err) {
-        // Fallback: if a MediaElementSource already exists from another component,
-        // use captureStream to create a separate analysis path.
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.85;
-        const canCapture = typeof (audioEl as any).captureStream === 'function';
-        if (canCapture) {
+
+      // Prefer captureStream first to avoid InvalidStateError from duplicate MediaElementSource
+      const canCapture = typeof (audioEl as any).captureStream === 'function';
+      if (canCapture) {
+        try {
+          const stream = (audioEl as any).captureStream();
+          const streamSource = audioCtx.createMediaStreamSource(stream);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.85;
+          streamSource.connect(analyser);
+          sourceNode = streamSource as unknown as MediaElementAudioSourceNode;
+          SOURCE_CACHE.set(audioEl, { audioCtx, source: sourceNode as MediaElementAudioSourceNode, analyser });
+        } catch (e) {
+          console.warn('[Visualizer] captureStream failed, trying MediaElementSource fallback.', e);
           try {
-            const stream = (audioEl as any).captureStream();
-            const streamSource = audioCtx.createMediaStreamSource(stream);
-            // type shim so we can keep refs generic
-            sourceNode = streamSource as unknown as MediaElementAudioSourceNode;
-            streamSource.connect(analyser);
-          } catch (e) {
-            console.warn('[Visualizer] captureStream failed, visualization disabled.', e);
+            const mes = audioCtx.createMediaElementSource(audioEl);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.85;
+            mes.connect(analyser);
+            sourceNode = mes;
+            SOURCE_CACHE.set(audioEl, { audioCtx, source: mes, analyser });
+          } catch (err) {
+            console.warn('[Visualizer] MediaElementSource unavailable; visualization disabled.', err);
+            analyser = audioCtx.createAnalyser();
+            sourceNode = analyser;
           }
-        } else {
-          console.warn('[Visualizer] MediaElement already bound elsewhere and captureStream unavailable. Reusing existing cached nodes if any.');
+        }
+      } else {
+        try {
+          const mes = audioCtx.createMediaElementSource(audioEl);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.85;
+          mes.connect(analyser);
+          sourceNode = mes;
+          SOURCE_CACHE.set(audioEl, { audioCtx, source: mes, analyser });
+        } catch (err) {
+          console.warn('[Visualizer] MediaElement already bound and no captureStream; attempting to reuse existing.', err);
           const existing = SOURCE_CACHE.get(audioEl);
           if (existing) {
             audioCtx = existing.audioCtx;
             sourceNode = existing.source;
             analyser = existing.analyser;
+          } else {
+            analyser = audioCtx.createAnalyser();
+            sourceNode = analyser;
           }
         }
       }
@@ -206,8 +222,8 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         const t = barCount > 1 ? i / (barCount - 1) : 0;
         let barBase: string;
         if (colorMode === 'rainbow') {
-          const hue = Math.round(lerp(200, 360, t));
-          barBase = `hsl(${hue} 85% 50%)`;
+          const hue = Math.round(t * 360);
+          barBase = `hsl(${hue} 90% 55%)`;
         } else if (palette && palette.length >= 2) {
           const idx = Math.min(palette.length - 1, Math.floor(t * (palette.length - 1)));
           const c = resolveColor(palette[idx], resolvedBarStart);
