@@ -141,13 +141,13 @@ const Donate = () => {
                     <TabsList className="grid w-full grid-cols-2 bg-accent">
                       <TabsTrigger 
                         value="one-time"
-                        className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                        className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       >
                         {t('donate.one_time', 'One-Time')}
                       </TabsTrigger>
                       <TabsTrigger 
                         value="monthly"
-                        className="data-[state=active]:bg-primary data-[state=active]:text-black"
+                        className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       >
                         <Calendar className="w-4 h-4 mr-2" />
                         {t('donate.monthly', 'Monthly')}
