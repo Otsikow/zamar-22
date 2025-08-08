@@ -61,7 +61,7 @@ const Hero = () => {
     });
   };
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16 sm:pt-20 pb-28 safe-bottom">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
@@ -80,7 +80,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center max-w-6xl">
+      <div className="relative z-10 container-responsive text-center">
         {/* Main Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6 leading-tight">
           {t('hero.title_line1', 'Your Story, Your Song')}
@@ -141,7 +141,7 @@ const Hero = () => {
         </div>
 
         {/* Two Column Layout for Cards */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 mb-12 mx-auto">
           {/* Support Our Mission Section */}
           <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
             <div className="text-center space-y-6 flex-grow">
@@ -165,7 +165,7 @@ const Hero = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 py-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 py-4 sm:py-6">
                 <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">🎵</span>

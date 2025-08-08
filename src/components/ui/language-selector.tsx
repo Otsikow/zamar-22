@@ -35,11 +35,11 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ className })
         onValueChange={handleLanguageChange}
         disabled={loading}
       >
-        <SelectTrigger className="w-[140px] border-0 bg-transparent hover:bg-accent/50 focus:ring-0">
+        <SelectTrigger className="w-[90px] sm:w-[140px] border-0 bg-transparent hover:bg-accent/50 focus:ring-0">
           <SelectValue>
             <div className="flex items-center gap-2">
               <span>{currentLang?.flag}</span>
-              <span className="text-sm">{currentLang?.name}</span>
+              <span className="hidden sm:inline text-sm">{currentLang?.name}</span>
             </div>
           </SelectValue>
         </SelectTrigger>

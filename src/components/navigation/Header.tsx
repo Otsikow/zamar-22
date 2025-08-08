@@ -62,11 +62,11 @@ const Header = () => {
   if (loading) {
     return (
       <header className="fixed top-0 left-0 right-0 bg-background/20 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-50">
-        <div className="container mx-auto px-4 py-4">
+          <div className="container-responsive py-2 sm:py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
-              <span className="text-xl font-bold text-primary font-playfair">Zamar</span>
+              <span className="text-lg sm:text-xl font-bold text-primary font-playfair">Zamar</span>
             </Link>
             <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
           </div>
@@ -77,18 +77,18 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/20 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-50">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container-responsive py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="/lovable-uploads/afeffcca-3646-4967-b85e-0646f2b6bcf2.png" alt="Zamar" className="w-8 h-8" />
-            <span className="text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
+            <span className="text-lg sm:text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
           </Link>
 
           {/* Right Side - Auth & Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Language Selector */}
-            <LanguageSelector />
+            <LanguageSelector className="min-w-[90px] sm:min-w-[140px]" />
             {user ? (
               <>
                 {/* Notifications */}
@@ -107,8 +107,8 @@ const Header = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
-                      <User className="h-4 w-4 mr-2" />
-                      {t('nav.account', 'Account')}
+                      <User className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">{t('nav.account', 'Account')}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">

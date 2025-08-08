@@ -75,7 +75,7 @@ const FeaturedSongs = () => {
   if (loading) {
     return (
       <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
+        <div className="container-responsive">
           <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
             {t('featured.title', 'Featured Songs')}
           </h2>
@@ -97,7 +97,7 @@ const FeaturedSongs = () => {
 
   return (
     <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container-responsive">
         <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
           {t('featured.title', 'Featured Songs')}
         </h2>
