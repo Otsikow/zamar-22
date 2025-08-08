@@ -82,7 +82,7 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center max-w-6xl">
         {/* Main Headline */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6 leading-tight">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-playfair font-bold text-foreground mb-6 leading-tight">
           {t('hero.title_line1', 'Your Story, Your Song')}
           <br />
           <span className="text-transparent bg-gradient-primary bg-clip-text">
@@ -113,25 +113,25 @@ const Hero = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <Button size="lg" variant="hero" className="text-lg px-8 py-4 min-w-[200px]" asChild>
+          <Button size="lg" variant="hero" className="text-base sm:text-lg px-5 py-3 sm:px-6 sm:py-3.5 sm:min-w-[200px]" asChild>
             <Link to="/pricing">
               {t('hero.create_song', 'Create Your Song')}
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-4 min-w-[200px] group" asChild>
+          <Button size="lg" variant="outline" className="text-base sm:text-lg px-5 py-3 sm:px-6 sm:py-3.5 sm:min-w-[200px] group" asChild>
             <Link to="/songs">
               <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               {t('hero.see_examples', 'See Examples')}
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-4 min-w-[200px] group" asChild>
+          <Button size="lg" variant="outline" className="text-base sm:text-lg px-5 py-3 sm:px-6 sm:py-3.5 sm:min-w-[200px] group" asChild>
             <Link to="/radio">
               <Radio className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
               {t('hero.radio', 'Radio')}
             </Link>
           </Button>
           {isAdmin && (
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 min-w-[200px] bg-primary/20 border-primary/30 text-primary hover:bg-primary/30" asChild>
+            <Button size="lg" variant="secondary" className="text-base sm:text-lg px-5 py-3 sm:px-6 sm:py-3.5 sm:min-w-[200px] bg-primary/20 border-primary/30 text-primary hover:bg-primary/30" asChild>
              <Link to="/admin">
                 <Settings className="w-5 h-5 mr-2" />
                 {t('nav.dashboard', 'Dashboard')}
@@ -143,10 +143,10 @@ const Hero = () => {
         {/* Two Column Layout for Cards */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
           {/* Support Our Mission Section */}
-          <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+          <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
             <div className="text-center space-y-6 flex-grow">
               <div className="flex items-center justify-center mb-6">
-                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                   <Heart className="w-8 h-8 text-black" />
                 </div>
               </div>
@@ -167,19 +167,19 @@ const Hero = () => {
 
               <div className="grid grid-cols-3 gap-6 py-6">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">🎵</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.free_songs', 'Free Songs')}</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">🌍</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.global_reach', 'Global Reach')}</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-black text-xl">⛪</span>
                   </div>
                   <span className="text-sm text-muted-foreground font-medium">{t('hero.community', 'Community')}</span>
@@ -188,8 +188,8 @@ const Hero = () => {
             </div>
             
             <Button 
-              size="lg" 
-              className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+            size="lg" 
+              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
               asChild
             >
               <Link to="/donate">
@@ -201,10 +201,10 @@ const Hero = () => {
 
           {/* Referral Bonus Section */}
           {user && (
-            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
               <div className="text-center space-y-6 flex-grow">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                     <DollarSign className="w-8 h-8 text-black" />
                   </div>
                 </div>
@@ -225,7 +225,7 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
@@ -234,7 +234,7 @@ const Hero = () => {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
@@ -245,7 +245,7 @@ const Hero = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                  <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border border-border/50">
                     <div className="flex items-center justify-between gap-3">
                       <code className="text-sm font-mono text-foreground/80 truncate">
                         www.zamarsongs.com/auth?ref={referralCode}
@@ -259,8 +259,8 @@ const Hero = () => {
               </div>
               
               <Button 
-                size="lg" 
-                className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+            size="lg" 
+              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
                 asChild
               >
                 <Link to="/referrals">
@@ -273,10 +273,10 @@ const Hero = () => {
 
           {/* Guest Referral Section */}
           {!user && (
-            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+            <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
               <div className="text-center space-y-6 flex-grow">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                     <DollarSign className="w-8 h-8 text-black" />
                   </div>
                 </div>
@@ -297,7 +297,7 @@ const Hero = () => {
 
                 <div className="grid grid-cols-2 gap-6 py-6">
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <TrendingUp className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
@@ -306,7 +306,7 @@ const Hero = () => {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                       <Users className="w-6 h-6 text-black" />
                     </div>
                     <div className="space-y-1">
@@ -318,8 +318,8 @@ const Hero = () => {
               </div>
               
               <Button 
-                size="lg" 
-                className="bg-primary text-black font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
+            size="lg" 
+              className="bg-primary text-black font-semibold px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
                 asChild
               >
                 <Link to="/auth">
