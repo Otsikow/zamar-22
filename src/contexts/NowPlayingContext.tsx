@@ -64,6 +64,18 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isQueueMode: false,
   });
 
+  // Read Auto-Play setting from localStorage
+  const getAutoPlayEnabled = () => {
+    try {
+      const raw = localStorage.getItem('zamar_settings');
+      if (!raw) return false;
+      const parsed = JSON.parse(raw);
+      return !!parsed.autoPlay;
+    } catch {
+      return false;
+    }
+  };
+
   // More frequent time updates for smoother UI
   useEffect(() => {
     if (state.isPlaying && audioRef.current) {
@@ -133,8 +145,8 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentTime: 0,
             isPlaying: true,
           };
-        } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex < prev.queue.length - 1) {
-          // Auto-advance to next song in queue mode
+        } else if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0 && prev.currentIndex < prev.queue.length - 1) {
+          // Auto-advance to next song in queue/auto-play mode
           const nextIndex = prev.currentIndex + 1;
           const nextSong = prev.queue[nextIndex];
           console.log('🎵 Auto-advancing to next song:', nextSong?.title || 'Unknown');
@@ -145,7 +157,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             currentTime: 0,
             isPlaying: true, // Keep playing
           };
-        } else if (prev.isQueueMode && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
+        } else if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
           // At end of queue - loop back to beginning for continuous playback
           const firstSong = prev.queue[0];
           console.log('🎵 End of queue reached, looping back to first song:', firstSong?.title || 'Unknown');
@@ -355,6 +367,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       queue: newQueue,
       currentIndex: index >= 0 ? index : 0,
       currentTime: 0,
+      isQueueMode: getAutoPlayEnabled() || newQueue.length > 1,
     }));
   }, []);
 
