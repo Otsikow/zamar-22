@@ -2,6 +2,7 @@ import HeroSection from "@/components/HeroSection";
 import FeaturedSongs from "@/components/sections/FeaturedSongs";
 import LiveCounter from "@/components/sections/LiveCounter";
 import Footer from "@/components/sections/Footer";
+import VideoShowcase from "@/components/sections/VideoShowcase";
 import heroImage from "@/assets/hero-music.jpg";
 
 const Index = () => {
@@ -11,6 +12,7 @@ const Index = () => {
         <HeroSection bgImageUrl={heroImage} />
         <FeaturedSongs />
         <LiveCounter />
+        <VideoShowcase />
       </main>
       <Footer />
     </div>
