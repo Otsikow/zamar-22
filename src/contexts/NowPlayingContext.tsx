@@ -213,7 +213,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('play', handlePlay);
     };
-  }, []);
+  }, [state.currentSong?.id]);
 
   // Effect to sync audio playback with state
   useEffect(() => {
@@ -551,23 +551,22 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   return (
     <NowPlayingContext.Provider value={value}>
       {/* Hidden audio element for global playback */}
-      {state.currentSong && (
-        <audio
-          ref={audioRef}
-          preload="metadata"
-          crossOrigin="anonymous"
-          style={{ display: 'none' }}
-          onError={(e) => {
-            const error = e.currentTarget.error;
-            if (error && error.code !== 4) {
-              console.error('❌ Audio element error:', error);
-              console.error('❌ Error code:', error.code);
-              console.error('❌ Error message:', error.message);
-            }
-            setState(prev => ({ ...prev, isPlaying: false }));
-          }}
-        />
-      )}
+      <audio
+        id="radio-audio"
+        ref={audioRef}
+        preload="metadata"
+        crossOrigin="anonymous"
+        style={{ display: 'none' }}
+        onError={(e) => {
+          const error = e.currentTarget.error;
+          if (error && error.code !== 4) {
+            console.error('❌ Audio element error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+          }
+          setState(prev => ({ ...prev, isPlaying: false }));
+        }}
+      />
       {children}
     </NowPlayingContext.Provider>
   );
