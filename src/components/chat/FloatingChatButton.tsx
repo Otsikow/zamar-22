@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
+import { useNowPlaying } from '@/contexts/NowPlayingContext';
 
 interface ChatRoom {
   id: string;
@@ -36,6 +37,18 @@ export const FloatingChatButton = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { state: playerState } = useNowPlaying();
+  const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsSmall(window.innerWidth < 640);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const buttonBottom = playerState?.currentSong ? (isSmall ? 176 : 112) : (isSmall ? 88 : 24);
+  const windowBottom = playerState?.currentSong ? (isSmall ? 180 : 116) : (isSmall ? 92 : 28);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -228,8 +241,9 @@ export const FloatingChatButton = () => {
       {!isOpen && (
         <Button
           onClick={handleOpen}
-          className="fixed right-4 sm:right-6 bottom-[88px] sm:bottom-6 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-40"
+          className="fixed right-4 sm:right-6 h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-40"
           size="icon"
+          style={{ bottom: buttonBottom }}
         >
           <MessageCircle className="h-6 w-6" />
           {unreadCount > 0 && (
@@ -245,7 +259,7 @@ export const FloatingChatButton = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed right-4 sm:right-6 bottom-[92px] sm:bottom-6 w-[min(92vw,20rem)] h-[28rem] flex flex-col shadow-xl z-50 bg-background border-border">
+        <Card className="fixed right-4 sm:right-6 w[min(92vw,20rem)] h-[28rem] flex flex-col shadow-xl z-50 bg-background border-border" style={{ bottom: windowBottom }}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground rounded-t-lg">
             <h3 className="font-semibold">Support Chat</h3>
