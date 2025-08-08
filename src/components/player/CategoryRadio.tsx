@@ -23,8 +23,9 @@ import {
   Globe
 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
-import WaveformVisualization from "@/components/player/WaveformVisualization";
+// WaveformVisualization replaced by WaveformPlayerPro
 import { Volume2 } from "lucide-react";
+import WaveformPlayerPro from "@/components/player/WaveformPlayerPro";
 
 interface Song {
   id: string;
@@ -51,6 +52,12 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const [loading, setLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>("");
   const [toppingUp, setToppingUp] = useState(false);
+  
+  const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const el = document.getElementById('radio-audio') as HTMLAudioElement | null;
+    setAudioEl(el || null);
+  }, []);
   
   const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
   // time format helper
@@ -368,8 +375,14 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
             </div>
 
             {/* Waveform Visualization */}
-            <div className="mt-4 h-32 rounded-xl border border-border/50 bg-card/40 overflow-hidden">
-              <WaveformVisualization className="h-full" />
+            <div className="mt-4 rounded-xl border border-border/50 bg-card/40 overflow-hidden">
+              <WaveformPlayerPro
+                className="h-32"
+                audioUrl={state.currentSong?.url || ""}
+                isPlaying={state.isPlaying}
+                mediaElement={audioEl}
+                showInternalControls={false}
+              />
             </div>
 
             {/* Progress + Volume */}
