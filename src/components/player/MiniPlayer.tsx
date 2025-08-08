@@ -1,14 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
-import { Play, Pause, SkipForward, SkipBack, Maximize2 } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Maximize2, Shuffle, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
+import PlayerSlider from '@/components/player/PlayerSlider';
 import { useNowPlaying } from '@/contexts/NowPlayingContext';
 import { useNavigate } from 'react-router-dom';
 import zamarLogo from '@/assets/zamar-logo.png';
 
 const MiniPlayer: React.FC = () => {
-  const { state, togglePlayPause, nextSong, previousSong, seekTo } = useNowPlaying();
+  const { state, togglePlayPause, nextSong, previousSong, seekTo, toggleShuffle, toggleLoop } = useNowPlaying();
   const navigate = useNavigate();
 
   if (!state.currentSong) return null;
@@ -33,7 +33,8 @@ const MiniPlayer: React.FC = () => {
     <div className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border z-40 animate-fade-in">
       {/* Interactive Progress Slider */}
       <div className="px-0 py-0">
-        <Slider
+        <PlayerSlider
+          variant="progress"
           value={[state.currentTime || 0]}
           max={Math.max(state.currentSong?.duration || 100, 1)}
           step={0.1}
@@ -74,6 +75,16 @@ const MiniPlayer: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
+            onClick={toggleShuffle}
+            className={`w-8 h-8 p-0 hover:bg-accent ${state.isShuffling ? 'text-primary' : ''}`}
+            aria-label="Toggle shuffle"
+          >
+            <Shuffle className="w-4 h-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={previousSong}
             disabled={state.currentIndex <= 0}
             className="w-8 h-8 p-0 hover:bg-accent"
@@ -102,6 +113,16 @@ const MiniPlayer: React.FC = () => {
             className="w-8 h-8 p-0 hover:bg-accent"
           >
             <SkipForward className="w-4 h-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLoop}
+            className={`w-8 h-8 p-0 hover:bg-accent ${state.isLooping ? 'text-primary' : ''}`}
+            aria-label="Toggle repeat"
+          >
+            <Repeat className="w-4 h-4" />
           </Button>
 
           <Button
