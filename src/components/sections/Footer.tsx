@@ -99,7 +99,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground font-inter">{t('footer.copyright', '© 2025 Zamar. All rights reserved.')}</p>
+            <p className="text-sm text-muted-foreground font-inter">© {new Date().getFullYear()} Zamar. {t('footer.rights', 'All rights reserved.')}</p>
             
             {/* Faith Disclaimer */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground bg-accent/20 px-4 py-2 rounded-lg">
