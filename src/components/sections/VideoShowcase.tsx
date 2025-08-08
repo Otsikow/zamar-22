@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
 
-const howItWorksUrl = "https://www.youtube.com/embed/VIDEO_ID_1";
+const howItWorksUrl = "https://www.youtube.com/embed/GG34m4WIEys";
 const testimonials = [
   "https://www.youtube.com/embed/VIDEO_ID_2",
   "https://www.youtube.com/embed/VIDEO_ID_3",
