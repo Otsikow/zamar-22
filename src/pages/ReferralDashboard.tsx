@@ -337,11 +337,11 @@ export default function ReferralDashboard() {
           <CardContent className="space-y-4">
             <div className="text-center">
               <div className="text-4xl font-bold text-primary mb-4">{referralCode}</div>
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg mb-4">
-                <code className="flex-1 text-sm font-mono">
+              <div className="grid grid-cols-[1fr_auto] items-center gap-3 p-4 bg-muted/50 rounded-lg mb-4">
+                <code className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs sm:text-sm font-mono">
                   https://www.zamarsongs.com/auth?ref={referralCode}
                 </code>
-                <Button onClick={copyReferralLink} size="sm">
+                <Button onClick={copyReferralLink} size="sm" className="shrink-0">
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
                 </Button>
