@@ -122,8 +122,9 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const handleEnded = () => {
       console.log('🎵 Song ended, handling queue advance...');
-      console.log('🎵 Audio duration reported:', audioRef.current?.duration);
-      console.log('🎵 Audio currentTime when ended:', audioRef.current?.currentTime);
+      const audio = audioRef.current;
+      let nextUrl: string | null = null;
+
       setState(prev => {
         console.log('🎵 Current state during ended:', {
           isQueueMode: prev.isQueueMode,
@@ -132,52 +133,57 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           queueLength: prev.queue.length,
           currentSong: prev.currentSong?.title
         });
-        
+
         if (prev.isLooping) {
           // Loop the current song - restart immediately
           console.log('🎵 Looping current song');
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(console.error);
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(console.error);
           }
           return {
             ...prev,
             currentTime: 0,
             isPlaying: true,
           };
-        } else if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0 && prev.currentIndex < prev.queue.length - 1) {
-          // Auto-advance to next song in queue/auto-play mode
-          const nextIndex = prev.currentIndex + 1;
+        }
+
+        if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0) {
+          // Determine next index (advance or wrap)
+          const isLast = prev.currentIndex >= prev.queue.length - 1;
+          const nextIndex = isLast ? 0 : prev.currentIndex + 1;
           const nextSong = prev.queue[nextIndex];
-          console.log('🎵 Auto-advancing to next song:', nextSong?.title || 'Unknown');
+          nextUrl = nextSong?.url ?? null;
+          console.log(isLast ? '🎵 End of queue, looping to first' : '🎵 Auto-advancing to next', nextSong?.title);
           return {
             ...prev,
             currentSong: nextSong,
             currentIndex: nextIndex,
             currentTime: 0,
-            isPlaying: true, // Keep playing
-          };
-        } else if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0 && prev.currentIndex >= prev.queue.length - 1) {
-          // At end of queue - loop back to beginning for continuous playback
-          const firstSong = prev.queue[0];
-          console.log('🎵 End of queue reached, looping back to first song:', firstSong?.title || 'Unknown');
-          return {
-            ...prev,
-            currentSong: firstSong,
-            currentIndex: 0,
-            currentTime: 0,
-            isPlaying: true, // Keep playing for continuous radio
-          };
-        } else {
-          // Song ended, show stopped state
-          console.log('🎵 Song ended, stopping playback');
-          return {
-            ...prev,
-            isPlaying: false,
-            currentTime: 0,
+            isPlaying: true,
           };
         }
+
+        // Otherwise stop playback
+        console.log('🎵 Song ended, stopping playback');
+        return {
+          ...prev,
+          isPlaying: false,
+          currentTime: 0,
+        };
       });
+
+      // Proactively set next src and play to ensure seamless handoff
+      if (nextUrl && audio) {
+        try {
+          audio.src = nextUrl;
+          audio.currentTime = 0;
+          const playPromise = audio.play();
+          if (playPromise) playPromise.catch(err => console.warn('⚠️ Auto-advance play blocked:', err));
+        } catch (e) {
+          console.warn('⚠️ Could not auto-advance audio element immediately:', e);
+        }
+      }
     };
 
     // Handle audio pause events (like when audio stops loading)
