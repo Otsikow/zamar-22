@@ -18,8 +18,8 @@ const Slider = React.forwardRef<
     <SliderPrimitive.Track
       className="relative w-full grow overflow-hidden rounded-full"
       style={{
-        height: '12px',
-        backgroundColor: 'hsl(var(--secondary))',
+        height: '14px',
+        backgroundColor: 'hsl(var(--primary) / 0.35)',
       }}
     >
       <SliderPrimitive.Range

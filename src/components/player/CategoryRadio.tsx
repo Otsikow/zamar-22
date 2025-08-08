@@ -292,7 +292,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 <Music className="w-6 h-6 text-primary" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0 max-w-none">
-                <h3 className="font-playfair font-bold text-xl leading-tight break-words">{currentSong.title}</h3>
+                <h3 className="font-playfair font-bold text-xl md:text-2xl leading-tight break-normal whitespace-normal hyphens-none">{currentSong.title}</h3>
                 <p className="text-muted-foreground text-sm">{currentSong.artist}</p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <Badge variant="outline" className="text-xs rounded-full bg-background/60">
