@@ -47,6 +47,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
   const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>("");
+  const [toppingUp, setToppingUp] = useState(false);
   
   const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
   
@@ -196,6 +197,67 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
       setLoading(false);
     }
   };
+  // Ensure the queue never runs out by topping up with random songs
+  const shuffleArrayLocal = <T,>(arr: T[]): T[] => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
+  const ensureQueueHasNext = async (minRemaining = 5) => {
+    try {
+      const remaining = state.queue.length - (state.currentIndex + 1);
+      if (remaining >= minRemaining || toppingUp) return;
+      setToppingUp(true);
+
+      const excludeIds = Array.from(new Set(state.queue.map((s) => s.id)));
+      let query = supabase
+        .from("songs")
+        .select("*")
+        .not("audio_url", "is", null)
+        .limit(40);
+
+      if (excludeIds.length) {
+        const list = `(${excludeIds.map((id) => `'${id}'`).join(",")})`;
+        // Exclude already queued songs if possible
+        // @ts-ignore PostgREST supports NOT.IN syntax
+        query = query.not("id", "in", list);
+      }
+
+      const { data: more, error } = await query;
+      if (error) throw error;
+
+      if (more && more.length) {
+        const newSongs = more.map((song) => ({
+          id: song.id,
+          title: song.title,
+          artist: "Zamar Artists",
+          duration: 240,
+          url: song.audio_url,
+          cover: song.thumbnail_url || undefined,
+        }));
+
+        const toAppend = shuffleArrayLocal(newSongs);
+        const newQueue = [...state.queue, ...toAppend];
+        // Keep current song/index stable while extending the tail
+        playQueue(newQueue, state.currentIndex);
+        setQueueMode(true);
+      }
+    } catch (e) {
+      console.error("Error topping up radio queue:", e);
+    } finally {
+      setToppingUp(false);
+    }
+  };
+
+  // Watch playback position and keep queue topped up
+  useEffect(() => {
+    if (!state.isQueueMode) return;
+    ensureQueueHasNext(5);
+  }, [state.currentIndex, state.queue.length, state.isQueueMode]);
 
   const isPlaying = state.isPlaying && state.isQueueMode;
   const currentSong = state.currentSong;
@@ -207,7 +269,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
     console.log('🎵 Checking if category playing:', category, 'current:', currentCategory, 'isQueueMode:', state.isQueueMode, 'isPlaying:', state.isPlaying);
     return state.isQueueMode && state.isPlaying && currentCategory === category;
   };
-
+  
   return (
     <div className={`space-y-4 ${className}`}>
 
