@@ -1,10 +1,14 @@
 import React, { useEffect, useRef } from "react";
 
+const SOURCE_CACHE = new WeakMap<HTMLMediaElement, { audioCtx: AudioContext; source: MediaElementAudioSourceNode; analyser: AnalyserNode }>();
+
 interface AudioVisualizerProps {
   audioElementId?: string; // Defaults to the global hidden audio element id
   barColor?: string; // Accept CSS color, defaults to themed primary
   backgroundColor?: string; // Accept CSS color, defaults transparent to blend with card
   height?: number; // Canvas internal height (for DPR scaling)
+  colorMode?: 'theme' | 'rainbow' | 'custom'; // Color strategy
+  palette?: string[]; // When colorMode='custom', array of CSS colors to blend across bars
 }
 
 const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
@@ -12,6 +16,8 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   barColor = "hsl(var(--primary))",
   backgroundColor = "transparent",
   height = 100,
+  colorMode = 'rainbow',
+  palette,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -43,14 +49,26 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     resizeCanvas();
 
     const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
-    const audioCtx = new AudioCtx();
-    const sourceNode = audioCtx.createMediaElementSource(audioEl);
-    const analyser = audioCtx.createAnalyser();
+    let audioCtx: AudioContext;
+    let sourceNode: MediaElementAudioSourceNode;
+    let analyser: AnalyserNode;
 
-    analyser.fftSize = 256; // Reasonable performance vs detail
-    analyser.smoothingTimeConstant = 0.85; // smooth visual motion
-    // Connect source to analyser ONLY (avoid double playback echo)
-    sourceNode.connect(analyser);
+    const cached = SOURCE_CACHE.get(audioEl);
+    if (cached) {
+      audioCtx = cached.audioCtx;
+      sourceNode = cached.source;
+      analyser = cached.analyser;
+    } else {
+      audioCtx = new AudioCtx();
+      sourceNode = audioCtx.createMediaElementSource(audioEl);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256; // Reasonable performance vs detail
+      analyser.smoothingTimeConstant = 0.85; // smooth visual motion
+      // Connect source -> analyser -> destination so audio is heard
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      SOURCE_CACHE.set(audioEl, { audioCtx, source: sourceNode, analyser });
+    }
 
     // Resolve CSS variable colors (canvas does not understand CSS vars directly)
     const resolveColor = (input: string, fallback: string) => {
@@ -157,16 +175,26 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         const scale = i < barCount * 0.2 ? 1.8 : 1;
         const barHeight = (value / 255) * heightPx * 0.7 * scale;
 
-        // Ambient color across bars using theme primary -> accent
+        // Ambient color across bars
         const t = barCount > 1 ? i / (barCount - 1) : 0;
-        const h = Math.round(lerp(startHsl.h, endHsl.h, t));
-        const s = Math.round(lerp(startHsl.s, endHsl.s, t));
-        const l = Math.round(lerp(startHsl.l, endHsl.l, t));
-        const barBase = `hsl(${h} ${s}% ${l}%)`;
+        let barBase: string;
+        if (colorMode === 'rainbow') {
+          const hue = Math.round(lerp(200, 360, t));
+          barBase = `hsl(${hue} 85% 50%)`;
+        } else if (palette && palette.length >= 2) {
+          const idx = Math.min(palette.length - 1, Math.floor(t * (palette.length - 1)));
+          const c = resolveColor(palette[idx], resolvedBarStart);
+          barBase = c.includes('%') ? `hsl(${c})` : c;
+        } else {
+          const h = Math.round(lerp(startHsl.h, endHsl.h, t));
+          const s = Math.round(lerp(startHsl.s, endHsl.s, t));
+          const l = Math.round(lerp(startHsl.l, endHsl.l, t));
+          barBase = `hsl(${h} ${s}% ${l}%)`;
+        }
         const barTop = lightenHsl(barBase, 12);
 
         // Glow
-        ctx.shadowColor = `hsl(${h} ${s}% ${Math.min(100, l + 20)}% / 0.35)`;
+        ctx.shadowColor = barTop;
         ctx.shadowBlur = Math.max(8, barWidth * 0.6);
 
         // Vertical gradient per bar
@@ -204,9 +232,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         audioEl.removeEventListener("play", resumeOnPlay);
         canvas.removeEventListener('click', resumeOnInteract);
         canvas.removeEventListener('touchstart', resumeOnInteract as any);
-        sourceNode.disconnect();
-        analyser.disconnect();
-        audioCtx.close();
+        // Keep audio graph alive via cache to prevent sound drop and reuse nodes
       } catch {}
       audioCtxRef.current = null;
       analyserRef.current = null;
