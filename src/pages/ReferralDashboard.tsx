@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Copy, Users, DollarSign, TrendingUp, Eye, Share2, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ReferralTestingPanel } from '@/components/referrals/ReferralTestingPanel';
+import { addWWWToReferralLink } from '@/lib/utils';
 
 interface ReferralStats {
   totalReferrals: number;
@@ -225,14 +226,13 @@ export default function ReferralDashboard() {
   };
 
   const copyReferralLink = () => {
-    const referralLink = `https://www.zamarsongs.com/auth?ref=${referralCode}`;
+    const referralLink = addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`);
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Referral link copied!",
       description: "Share your link to start earning commissions"
     });
   };
-
   const filteredActivity = stats.referralActivity.filter(activity => {
     const monthMatch = selectedMonth === 'all' || new Date(activity.joinedDate).getMonth() + 1 === parseInt(selectedMonth);
     const generationMatch = selectedGeneration === 'all' || activity.generation === selectedGeneration;

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Users, DollarSign, TrendingUp, ExternalLink, Gift, Target, Trophy } from 'lucide-react';
 import SocialShare from '@/components/ui/social-share';
+import { addWWWToReferralLink } from '@/lib/utils';
 
 interface ReferralData {
   referralCode: string;
@@ -118,14 +119,13 @@ export const ReferralDashboard = () => {
   };
 
   const copyReferralLink = () => {
-    const referralLink = `https://www.zamarsongs.com/auth?ref=${data.referralCode}`;
+    const referralLink = addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${data.referralCode}`);
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Link copied!",
       description: "Your referral link has been copied to clipboard"
     });
   };
-
   if (loading) {
     return (
       <div className="space-y-6">

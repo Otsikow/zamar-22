@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-music.jpg";
 import LiveCounter from "./LiveCounter";
 import { useToast } from "@/hooks/use-toast";
+import { addWWWToReferralLink } from "@/lib/utils";
 
 const Hero = () => {
   const { user } = useAuth();
@@ -52,14 +53,13 @@ const Hero = () => {
   }, [user]);
 
   const copyReferralLink = () => {
-    const referralLink = `https://www.zamarsongs.com/auth?ref=${referralCode}`;
+    const referralLink = addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`);
     navigator.clipboard.writeText(referralLink);
     toast({
       title: "Link copied!",
       description: "Your referral link has been copied to clipboard"
     });
   };
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-20">
       {/* Background Image */}
