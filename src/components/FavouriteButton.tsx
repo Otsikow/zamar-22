@@ -50,16 +50,26 @@ export default function FavouriteButton({ songId, size = "sm", className }: Prop
     setLoading(true);
     try {
       if (isFav) {
-        await (supabase.from as any)("user_favourites")
+        const { error } = await (supabase.from as any)("user_favourites")
           .delete()
           .eq("user_id", userId)
           .eq("song_id", songId);
+        if (error) {
+          console.error("Favourite delete error", error);
+          toast({ title: "Could not remove from Favourites", description: error.message, variant: "destructive" });
+          return;
+        }
         setIsFav(false);
         window.dispatchEvent(new CustomEvent('favourites:changed', { detail: { songId, added: false } }));
         toast({ title: "Removed from Favourites" });
       } else {
-        await (supabase.from as any)("user_favourites")
+        const { error } = await (supabase.from as any)("user_favourites")
           .insert({ user_id: userId, song_id: songId });
+        if (error) {
+          console.error("Favourite insert error", error);
+          toast({ title: "Could not add to Favourites", description: error.message, variant: "destructive" });
+          return;
+        }
         setIsFav(true);
         window.dispatchEvent(new CustomEvent('favourites:changed', { detail: { songId, added: true } }));
         toast({ title: "Added to Favourites" });
