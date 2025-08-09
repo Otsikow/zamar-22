@@ -319,7 +319,7 @@ const SongsLibrary = () => {
 
                     {/* Song Info */}
                     <div className="p-3">
-                      <h3 className="font-playfair font-semibold text-foreground mb-2 line-clamp-1 text-sm">
+                      <h3 className="font-playfair font-semibold text-foreground mb-2 text-sm sm:text-base whitespace-normal break-words leading-snug">
                         {song.title}
                       </h3>
                       
