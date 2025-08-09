@@ -11,6 +11,8 @@ import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
+import FavouriteButton from "@/components/FavouriteButton";
+
 interface Song {
   id: string;
   title: string;
@@ -302,8 +304,11 @@ const SongsLibrary = () => {
                          alt={song.title}
                          className="w-full h-full object-contain p-3 bg-gradient-to-br from-amber-50 to-amber-100 group-hover:scale-105 transition-transform duration-300"
                        />
-                      
-                      {/* Play/Pause Button Overlay */}
+                       <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
+                         <FavouriteButton songId={song.id} />
+                       </div>
+                       
+                       {/* Play/Pause Button Overlay */}
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Button 
                           size="icon" 

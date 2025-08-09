@@ -7,6 +7,7 @@ import { Play, Pause, Music } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
+import FavouriteButton from "@/components/FavouriteButton";
 
 interface Song {
   id: string;
@@ -112,6 +113,9 @@ const FeaturedSongs = () => {
                   alt={song.title}
                   className="w-full h-full object-contain p-4 bg-gradient-to-br from-amber-50 to-amber-100"
                 />
+                <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
+                  <FavouriteButton songId={song.id} />
+                </div>
                 
                 {/* Play/pause button overlay */}
                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
