@@ -464,7 +464,7 @@ const NotificationCenter = () => {
                     {group.items.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer ${
+                        className={`p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer overflow-hidden ${
                           !notification.is_read ? 'border-yellow-500/80 shadow-yellow-500/10' : 'border-gray-800'
                         }`}
                         onClick={() => handleNotificationClick(notification)}
@@ -496,7 +496,7 @@ const NotificationCenter = () => {
                                   <ExternalLink className="h-3 w-3 text-muted-foreground" />
                                 )}
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-start sm:justify-end">
                                 {(notification.type === 'message' || notification.type === 'song_request') && (
                                   <Button
                                     size="sm"
