@@ -138,16 +138,16 @@ const Donate = () => {
                 <CardContent className="space-y-6">
                   {/* One-Time vs Monthly */}
                   <Tabs value={donationType} onValueChange={setDonationType}>
-                    <TabsList className="grid w-full grid-cols-2 bg-accent rounded-full p-1 border border-primary/30">
+                    <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger 
                         value="one-time"
-                        className="rounded-full font-medium text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow data-[state=active]:ring-2 data-[state=active]:ring-primary/60"
+                        className="font-medium"
                       >
                         {t('donate.one_time', 'One-Time')}
                       </TabsTrigger>
                       <TabsTrigger 
                         value="monthly"
-                        className="rounded-full font-medium text-muted-foreground hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow data-[state=active]:ring-2 data-[state=active]:ring-primary/60"
+                        className="font-medium"
                       >
                         <Calendar className="w-4 h-4 mr-2" />
                         {t('donate.monthly', 'Monthly')}
