@@ -46,7 +46,12 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     const audioEl = (document.getElementById(audioElementId) as HTMLAudioElement) || null;
     if (!canvas || !audioEl) return;
 
+    // Ensure CORS for analyser on remote assets
+    if (!audioEl.crossOrigin) audioEl.crossOrigin = 'anonymous';
+
     resizeCanvas();
+    // Resize once more next tick to catch late layout
+    requestAnimationFrame(resizeCanvas);
 
     const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
     let audioCtx: AudioContext;
@@ -184,6 +189,27 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     canvas.addEventListener('click', resumeOnInteract);
     canvas.addEventListener('touchstart', resumeOnInteract, { passive: true } as any);
 
+    // Resume on any user interaction on the page (first interaction)
+    const resumeOnDoc = () => {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    };
+    const docEvents: (keyof DocumentEventMap)[] = ['pointerdown', 'keydown', 'touchstart'];
+    docEvents.forEach((evt) => document.addEventListener(evt, resumeOnDoc as any, { once: true, passive: true } as any));
+
+    // Keep canvas sized correctly when container changes
+    const ro = new ResizeObserver(() => resizeCanvas());
+    try {
+      ro.observe(canvas);
+      if (canvas.parentElement) ro.observe(canvas.parentElement);
+    } catch {}
+
+    const onVis = () => {
+      if (!document.hidden) requestAnimationFrame(resizeCanvas);
+    };
+    document.addEventListener('visibilitychange', onVis);
+
     audioCtxRef.current = audioCtx;
     analyserRef.current = analyser;
     sourceNodeRef.current = sourceNode;
@@ -193,8 +219,13 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
 
     const draw = () => {
       rafRef.current = requestAnimationFrame(draw);
-      const ctx = ctxRef.current;
-      if (!ctx) return;
+      let ctx = ctxRef.current;
+      if (!ctx) {
+        const newCtx = canvas.getContext("2d");
+        if (!newCtx) return;
+        ctxRef.current = newCtx;
+        ctx = newCtx;
+      }
 
       analyser.getByteFrequencyData(dataArray);
       const canvasRect = canvas.getBoundingClientRect();
@@ -277,6 +308,9 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         audioEl.removeEventListener("play", resumeOnPlay);
         canvas.removeEventListener('click', resumeOnInteract);
         canvas.removeEventListener('touchstart', resumeOnInteract as any);
+        document.removeEventListener('visibilitychange', onVis);
+        docEvents.forEach((evt) => document.removeEventListener(evt, resumeOnDoc as any));
+        ro.disconnect?.();
         // Keep audio graph alive via cache to prevent sound drop and reuse nodes
       } catch {}
       audioCtxRef.current = null;
