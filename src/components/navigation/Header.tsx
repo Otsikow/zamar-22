@@ -30,6 +30,8 @@ const Header = () => {
       return;
     }
 
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
     const fetchNotifications = async () => {
       try {
         const { count, error } = await supabase
@@ -47,6 +49,21 @@ const Header = () => {
     };
 
     fetchNotifications();
+
+    channel = supabase
+      .channel('notifications-header')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
+        () => {
+          fetchNotifications();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const handleSignOut = async () => {

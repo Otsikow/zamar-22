@@ -319,9 +319,11 @@ const NotificationCenter = () => {
     if (notification.type === 'message') {
       const senderId = notification.metadata?.sender_user_id || notification.user_id;
       const userName = getUserDisplayName(senderId);
-      const preview: string | undefined = notification.metadata?.message_preview;
-      const previewText = preview ? `: ${preview.length > 120 ? preview.slice(0, 117) + '…' : preview}` : '';
-      return `New chat message from ${userName}${previewText}`;
+      const preview: string | undefined = notification.metadata?.message_preview || '';
+      const maxLen = 160;
+      const content = preview ? preview : notification.message;
+      const trimmed = content && content.length > maxLen ? content.slice(0, maxLen - 1) + '…' : content;
+      return `From ${userName}${trimmed ? `: ${trimmed}` : ''}`;
     }
     return notification.message;
   };
