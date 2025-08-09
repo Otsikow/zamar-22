@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Music2, Search, Plus, Trash2, Play, Eye } from 'lucide-react';
@@ -318,65 +319,69 @@ const PlaylistDetail = () => {
           <div className="space-y-4">
             {playlistSongs.map((playlistSong) => (
               <Card key={playlistSong.id} className="border-primary/20 shadow-lg hover:border-primary/30 transition-colors">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
-                      {playlistSong.songs.thumbnail_url ? (
-                        <img 
-                          src={playlistSong.songs.thumbnail_url} 
-                          alt={playlistSong.songs.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Music2 className="w-6 h-6 text-primary" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Song Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-heading font-semibold text-foreground text-lg mb-1 truncate">
-                        {playlistSong.songs.title}
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        {playlistSong.songs.genre && (
-                          <span>{playlistSong.songs.genre}</span>
-                        )}
-                        <span>
-                          Added {new Date(playlistSong.added_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" asChild>
-                        <Link to={`/songs/${playlistSong.songs.id}`}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          View
-                        </Link>
-                      </Button>
-                      {playlistSong.songs.audio_url && (
-                        <Button size="sm" variant="outline" asChild>
-                          <Link to={`/player/${playlistSong.songs.id}`}>
-                            <Play className="w-4 h-4 mr-2" />
-                            Play
-                          </Link>
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => removeSongFromPlaylist(playlistSong.id)}
-                        className="text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            {/* Thumbnail */}
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+              <AspectRatio ratio={1}>
+                {playlistSong.songs.thumbnail_url ? (
+                  <img
+                    src={playlistSong.songs.thumbnail_url}
+                    alt={playlistSong.songs.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Music2 className="w-6 h-6 text-primary" />
                   </div>
-                </CardContent>
+                )}
+              </AspectRatio>
+            </div>
+
+            {/* Song Info */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-heading font-semibold text-foreground text-lg mb-1 truncate">
+                {playlistSong.songs.title}
+              </h3>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                {playlistSong.songs.genre && (
+                  <span className="capitalize">{playlistSong.songs.genre}</span>
+                )}
+                <span>
+                  Added {new Date(playlistSong.added_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex w-full sm:w-auto sm:justify-end gap-2 mt-2 sm:mt-0">
+              <Button size="sm" variant="outline" asChild>
+                <Link to={`/songs/${playlistSong.songs.id}`}>
+                  <Eye className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">View</span>
+                </Link>
+              </Button>
+              {playlistSong.songs.audio_url && (
+                <Button size="sm" variant="outline" asChild>
+                  <Link to={`/player/${playlistSong.songs.id}`}>
+                    <Play className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Play</span>
+                  </Link>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => removeSongFromPlaylist(playlistSong.id)}
+                className="text-destructive hover:bg-destructive/10"
+                aria-label="Remove from playlist"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
               </Card>
             ))}
           </div>
