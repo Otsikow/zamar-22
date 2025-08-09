@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, Send, User, Clock } from 'lucide-react';
+import { MessageCircle, Send, User, Clock, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
+import { useLocation } from 'react-router-dom';
 
 interface ChatRoom {
   id: string;
@@ -39,11 +40,16 @@ interface ChatMessage {
 
 export const LiveChats = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const presetUserId = params.get('chatUserId');
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -150,6 +156,16 @@ export const LiveChats = () => {
       );
 
       setChatRooms(roomsWithData);
+      // Auto-select by URL param if provided
+      if (presetUserId) {
+        const target = roomsWithData.find(r => r.user_id === presetUserId);
+        if (target) {
+          setSelectedRoom(target);
+          fetchMessages(target.id);
+        } else {
+          ensureRoomForUser(presetUserId);
+        }
+      }
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
     }
@@ -227,7 +243,7 @@ export const LiveChats = () => {
       message: messageText,
       seen: false,
       sent_at: new Date().toISOString()
-    };
+    } as any;
     setMessages(prev => [...prev, optimisticMessage]);
     setNewMessage('');
 
@@ -271,12 +287,22 @@ export const LiveChats = () => {
     }
   };
 
-  const selectRoom = (room: ChatRoom) => {
-    setSelectedRoom(room);
-    fetchMessages(room.id);
+  const ensureRoomForUser = async (targetUserId: string) => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('chat_rooms')
+        .insert({ user_id: targetUserId, admin_id: user.id })
+        .select()
+        .single();
+      if (error) throw error;
+      setSelectedRoom(data as any);
+      fetchMessages((data as any).id);
+    } catch (err) {
+      console.error('Error creating chat room:', err);
+    }
   };
 
-  const getUserDisplayName = (room: ChatRoom) => {
     const profile = room.profiles;
     if (profile?.first_name || profile?.last_name) {
       return `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
@@ -381,7 +407,11 @@ export const LiveChats = () => {
                             : 'bg-muted text-foreground'
                         }`}
                       >
-                        <p>{message.message}</p>
+                        {message.image_url ? (
+                          <img src={message.image_url} alt="attachment" className="rounded-md max-w-[220px] mb-1" loading="lazy" />
+                        ) : (
+                          <p>{message.message}</p>
+                        )}
                         <p className="text-xs mt-1 opacity-70">
                           {formatDistanceToNow(new Date(message.sent_at), { addSuffix: true })}
                         </p>
@@ -394,20 +424,63 @@ export const LiveChats = () => {
 
               {/* Input */}
               <div className="p-4 border-t">
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !selectedRoom || !user) return;
+                      setUploading(true);
+                      try {
+                        const fileName = `${selectedRoom.id}/${Date.now()}_${file.name}`;
+                        const { data, error } = await supabase.storage
+                          .from('chat')
+                          .upload(fileName, file);
+                        if (error) throw error;
+                        const { data: pub } = supabase.storage.from('chat').getPublicUrl(fileName);
+                        // Insert image message
+                        await supabase.from('chat_messages').insert({
+                          room_id: selectedRoom.id,
+                          sender_id: user.id,
+                          message: '',
+                          image_url: pub.publicUrl
+                        });
+                        // Refresh
+                        fetchMessages(selectedRoom.id);
+                      } catch (err) {
+                        console.error('Image upload failed:', err);
+                      } finally {
+                        setUploading(false);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={!selectedRoom || uploading}
+                    title="Upload image"
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                  </Button>
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={handleKeyPress}
                     onKeyPress={handleKeyPress}
-                    placeholder="Type your reply..."
+                    placeholder={uploading ? 'Uploading image…' : 'Type your reply...'}
                     className="flex-1"
-                    disabled={loading}
+                    disabled={loading || uploading}
                   />
                   <Button 
                     onClick={sendMessage} 
                     size="icon"
-                    disabled={!newMessage.trim() || loading}
+                    disabled={!newMessage.trim() || loading || uploading}
                   >
                     <Send className="h-4 w-4" />
                   </Button>

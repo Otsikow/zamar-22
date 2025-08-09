@@ -601,7 +601,7 @@ const Admin = () => {
             <TabsTrigger value="lyrics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Lyrics</TabsTrigger>
             <TabsTrigger value="donations" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
             <TabsTrigger value="testimonials" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Roles</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
             <TabsTrigger value="role-history" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Role History</TabsTrigger>
             <TabsTrigger value="ads" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
             <TabsTrigger value="referrals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
@@ -1337,9 +1337,20 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          {/* User Role Management */}
+          {/* User Management (with sub-tabs) */}
           <TabsContent value="users">
-            <UserRoleManagement />
+            <Tabs defaultValue="manage" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 gap-1 h-auto p-1">
+                <TabsTrigger value="manage" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
+                <TabsTrigger value="history" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Role History</TabsTrigger>
+              </TabsList>
+              <TabsContent value="manage">
+                <UserRoleManagement />
+              </TabsContent>
+              <TabsContent value="history">
+                <RoleChangeHistory />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           {/* Role Change History */}
