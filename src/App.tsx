@@ -49,6 +49,7 @@ import PublicPlaylistDetail from "./pages/PublicPlaylistDetail";
 import NotFound from "./pages/NotFound";
 import LegalCompliance from "./pages/LegalCompliance";
 import Contact from "./pages/Contact";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const App = () => (
                     <Route path="/player/:id" element={<SongPlayer />} />
                     <Route path="/songs/:id" element={<SongDetail />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/faq" element={<FAQ />} />
                     
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
