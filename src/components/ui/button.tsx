@@ -9,11 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-gold hover:shadow-lg",
+        // Default now reflects the gold-outline style for consistency app-wide
+        default:
+          "border border-primary/60 bg-transparent text-primary hover:bg-primary/10 hover:border-primary/70 shadow-none",
+        // Solid fills are still available when needed
+        solid:
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-gold hover:shadow-lg",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-primary/30 bg-transparent text-primary hover:bg-primary/10 hover:border-primary/60",
+          "border border-primary/60 bg-transparent text-primary hover:bg-primary/10 hover:border-primary/70",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

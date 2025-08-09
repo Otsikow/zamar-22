@@ -79,9 +79,9 @@ export default {
 				},
 			},
 			borderRadius: {
-				lg: "0.75rem",
-				xl: "1rem",
-				"2xl": "1.25rem",
+				lg: "0.5rem",
+				xl: "0.625rem",
+				"2xl": "0.75rem",
 			},
 			keyframes: {
 				'accordion-down': {

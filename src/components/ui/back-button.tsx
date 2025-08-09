@@ -17,7 +17,7 @@ const BackButton = ({
   to, 
   onClick, 
   className, 
-  variant = 'ghost', 
+  variant = 'default', 
   size = 'sm',
   showOnDesktop = false 
 }: BackButtonProps) => {
@@ -38,11 +38,11 @@ const BackButton = ({
       variant={variant}
       size={size}
       className={cn(
-        "text-white hover:bg-white/10 transition-colors",
+        "transition-colors",
         !showOnDesktop && "lg:hidden",
         size === 'sm' && "p-2 h-8 w-8",
         size === 'lg' && "p-4 h-12 w-12",
-        size === 'icon' && "p-3 h-10 w-10", 
+        size === 'icon' && "p-3 h-10 w-10",
         className
       )}
       onClick={handleClick}
