@@ -86,7 +86,7 @@ const MiniPlayer: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={previousSong}
-            disabled={state.currentIndex <= 0}
+            disabled={state.queue.length === 0}
             className="w-8 h-8 p-0 hover:bg-accent"
           >
             <SkipBack className="w-4 h-4" />

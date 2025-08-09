@@ -411,6 +411,23 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (prev.queue.length === 0) {
         return prev;
       }
+
+      // If shuffle is enabled, jump to a random different index
+      if (prev.isShuffling) {
+        if (prev.queue.length === 1) return prev;
+        let rand = Math.floor(Math.random() * prev.queue.length);
+        if (rand === prev.currentIndex) {
+          rand = (rand + 1) % prev.queue.length;
+        }
+        return {
+          ...prev,
+          currentSong: prev.queue[rand],
+          currentIndex: rand,
+          currentTime: 0,
+          isPlaying: true,
+        };
+      }
+
       let nextIndex = prev.currentIndex + 1;
       if (nextIndex >= prev.queue.length) {
         if (prev.isQueueMode) {
