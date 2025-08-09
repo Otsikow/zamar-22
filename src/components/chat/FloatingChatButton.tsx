@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { MessageCircle, X, Send, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,6 +24,7 @@ interface ChatMessage {
   room_id: string;
   sender_id: string;
   message: string;
+  image_url?: string | null;
   seen: boolean;
   sent_at: string;
 }
@@ -226,6 +227,46 @@ export const FloatingChatButton = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !chatRoom || !user) return;
+    setLoading(true);
+    try {
+      const path = `${chatRoom.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+      const { error: uploadError } = await supabase.storage
+        .from('chat')
+        .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: pub } = supabase.storage.from('chat').getPublicUrl(path);
+      const imageUrl = pub.publicUrl;
+
+      const optimisticMessage: ChatMessage = {
+        id: 'temp-' + Date.now(),
+        room_id: chatRoom.id,
+        sender_id: user.id,
+        message: file.name,
+        image_url: imageUrl,
+        seen: false,
+        sent_at: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, optimisticMessage]);
+
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({ room_id: chatRoom.id, sender_id: user.id, message: file.name, image_url: imageUrl })
+        .select()
+        .single();
+      if (error) throw error;
+      setMessages(prev => prev.map(m => (m.id === optimisticMessage.id ? (data as any) : m)));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+    } finally {
+      setLoading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -296,7 +337,17 @@ export const FloatingChatButton = () => {
                           : 'bg-muted text-foreground'
                       }`}
                     >
-                      <p>{message.message}</p>
+                      {message.image_url ? (
+                        <a href={message.image_url} target="_blank" rel="noreferrer">
+                          <img
+                            src={message.image_url}
+                            alt="Sent image"
+                            className="rounded-md max-h-48 w-auto max-w-full object-contain mb-2"
+                            loading="lazy"
+                          />
+                        </a>
+                      ) : null}
+                      {message.message && <p>{message.message}</p>}
                       <p className={`text-xs mt-1 opacity-70`}>
                         {formatDistanceToNow(new Date(message.sent_at), { addSuffix: true })}
                       </p>

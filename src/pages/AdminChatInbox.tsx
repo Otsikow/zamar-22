@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Send, User, Clock } from 'lucide-react';
+import { MessageCircle, Send, User, Clock, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -34,6 +34,7 @@ interface ChatMessage {
   room_id: string;
   sender_id: string;
   message: string;
+  image_url?: string | null;
   seen: boolean;
   sent_at: string;
 }
@@ -320,6 +321,46 @@ const AdminChatInbox = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedRoom || !user) return;
+    setLoading(true);
+    try {
+      const path = `${selectedRoom.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+      const { error: uploadError } = await supabase.storage
+        .from('chat')
+        .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: pub } = supabase.storage.from('chat').getPublicUrl(path);
+      const imageUrl = pub.publicUrl;
+
+      const optimisticMessage: ChatMessage = {
+        id: 'temp-' + Date.now(),
+        room_id: selectedRoom.id,
+        sender_id: user.id,
+        message: file.name,
+        image_url: imageUrl,
+        seen: false,
+        sent_at: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, optimisticMessage]);
+
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({ room_id: selectedRoom.id, sender_id: user.id, message: file.name, image_url: imageUrl })
+        .select()
+        .single();
+      if (error) throw error;
+      setMessages(prev => prev.map(m => (m.id === optimisticMessage.id ? (data as any) : m)));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+    } finally {
+      setLoading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -502,7 +543,19 @@ const AdminChatInbox = () => {
                                     : 'bg-[#2a2a2a] text-white'
                                 }`}
                               >
-                                <p className="break-words">{message.message}</p>
+                                {message.image_url ? (
+                                  <a href={message.image_url} target="_blank" rel="noreferrer">
+                                    <img
+                                      src={message.image_url}
+                                      alt="Sent image"
+                                      className="rounded-md max-h-64 w-auto max-w-full object-contain mb-2"
+                                      loading="lazy"
+                                    />
+                                  </a>
+                                ) : null}
+                                {message.message && (
+                                  <p className="break-words">{message.message}</p>
+                                )}
                                 <p className={`text-xs mt-1 ${
                                   message.sender_id === user?.id ? 'text-black/70' : 'text-gray-400'
                                 }`}>
@@ -520,7 +573,24 @@ const AdminChatInbox = () => {
 
                 {/* Message Input - Fixed at bottom */}
                 <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-[#1a1a1a] mb-36 md:mb-28 lg:mb-24 relative z-50">{/* Extra margin to clear mini player & bottom nav */}
-                  <div className="flex space-x-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="admin-image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="shrink-0 h-10 w-10 sm:h-auto sm:w-auto sm:px-3"
+                      onClick={() => (document.getElementById('admin-image-upload') as HTMLInputElement)?.click()}
+                      disabled={loading}
+                      aria-label="Attach image"
+                    >
+                      <Paperclip className="h-4 w-4" />
+                    </Button>
                     <Input
                       ref={inputRef}
                       value={newMessage}
@@ -534,6 +604,7 @@ const AdminChatInbox = () => {
                       onClick={sendMessage} 
                       className="bg-[#FFD700] text-black hover:bg-[#FFD700]/90 shrink-0 h-10 w-10 sm:h-auto sm:w-auto sm:px-4"
                       disabled={!newMessage.trim() || loading}
+                      aria-label="Send message"
                     >
                       <Send className="h-4 w-4" />
                     </Button>
