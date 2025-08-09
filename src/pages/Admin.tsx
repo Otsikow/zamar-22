@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,6 +91,11 @@ const Admin = () => {
   const [editingSong, setEditingSong] = useState<any>(null);
   const [activeSessions, setActiveSessions] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  // Read tab from URL
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get('tab') || 'upload';
 
   // Manage Songs search state
   const [q, setQ] = useState("");
@@ -585,7 +590,7 @@ const Admin = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="upload" className="w-full">
+        <Tabs defaultValue={initialTab} key={location.search} className="w-full">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-12 gap-1 h-auto p-1">
             <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
             <TabsTrigger value="custom-upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Search, Users, Crown, Heart } from 'lucide-react';
+import { RefreshCw, Search, Users, Crown, Heart, MessageCircle, Ban, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -22,6 +23,9 @@ interface ProfileRow {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  account_status?: 'active' | 'suspended' | 'deleted' | null;
+  suspended_at?: string | null;
+  deleted_at?: string | null;
 }
 
 interface AdminRow {
@@ -57,7 +61,7 @@ const UserRoleManagement = () => {
     try {
       setLoading(true);
       const [{ data: profiles, error: pErr }, { data: adminRows, error: aErr }] = await Promise.all([
-        supabase.from('profiles').select('id, email, first_name, last_name').order('created_at', { ascending: false }),
+        supabase.from('profiles').select('id, email, first_name, last_name, account_status, suspended_at, deleted_at').order('created_at', { ascending: false }),
         supabase.from('admin_users').select('id, user_id, role, created_at')
       ]);
       if (pErr) throw pErr;
@@ -120,6 +124,43 @@ const UserRoleManagement = () => {
         next.delete(userId);
         return next;
       });
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleChat = (targetUserId: string) => {
+    navigate(`/admin?tab=chat&chatUserId=${targetUserId}`);
+  };
+
+  const handleSuspendToggle = async (targetUserId: string, isSuspended: boolean) => {
+    try {
+      if (isSuspended) {
+        const { error } = await supabase.rpc('admin_unsuspend_user', { target_user_id: targetUserId });
+        if (error) throw error;
+        toast({ title: 'User unsuspended' });
+      } else {
+        const { error } = await supabase.rpc('admin_suspend_user', { target_user_id: targetUserId });
+        if (error) throw error;
+        toast({ title: 'User suspended' });
+      }
+      await fetchAllUsersWithRoles();
+    } catch (error) {
+      console.error('Suspend toggle failed:', error);
+      toast({ title: 'Error', description: 'Failed to update suspension', variant: 'destructive' });
+    }
+  };
+
+  const handleSoftDelete = async (targetUserId: string) => {
+    if (!confirm('Soft-delete this user? They will be marked as deleted.')) return;
+    try {
+      const { error } = await supabase.rpc('admin_soft_delete_user', { target_user_id: targetUserId });
+      if (error) throw error;
+      toast({ title: 'User deleted', description: 'User marked as deleted' });
+      await fetchAllUsersWithRoles();
+    } catch (error) {
+      console.error('Delete failed:', error);
+      toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' });
     }
   };
 
@@ -209,6 +250,19 @@ const UserRoleManagement = () => {
               <div>
                 <p className="text-sm font-medium">Admins</p>
                 <p className="text-2xl font-bold">{roleCounts.admin || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Supporters */}
+        <Card onClick={() => setRoleFilter('supporter')} className="cursor-pointer hover:border-primary/50 transition-colors">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-3">
+              <Heart className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm font-medium">Supporters</p>
+                <p className="text-2xl font-bold">{roleCounts.supporter || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -307,18 +361,16 @@ const UserRoleManagement = () => {
                                 You
                               </Badge>
                             )}
+                            {u.profile.account_status === 'suspended' && (
+                              <Badge variant="secondary" className="ml-2 text-xs">Suspended</Badge>
+                            )}
+                            {u.profile.account_status === 'deleted' && (
+                              <Badge variant="destructive" className="ml-2 text-xs">Deleted</Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {u.profile.email || 'No email'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getRoleColor(u.role)}>
-                            <div className="flex items-center gap-1">
-                              {getRoleIcon(u.role)}
-                              {u.role}
-                            </div>
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           <Select
@@ -345,6 +397,28 @@ const UserRoleManagement = () => {
                               Cannot edit own role
                             </p>
                           )}
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <Button variant="outline" size="sm" onClick={() => handleChat(userId)}>
+                              <MessageCircle className="h-4 w-4 mr-1" /> Chat
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSuspendToggle(userId, u.profile.account_status === 'suspended')}
+                              disabled={isCurrentUser}
+                            >
+                              <Ban className="h-4 w-4 mr-1" />
+                              {u.profile.account_status === 'suspended' ? 'Unsuspend' : 'Suspend'}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleSoftDelete(userId)}
+                              disabled={isCurrentUser}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" /> Delete
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );

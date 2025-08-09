@@ -548,30 +548,39 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: Database["public"]["Enums"]["account_status"]
           created_at: string
+          deleted_at: string | null
           email: string | null
           first_name: string | null
           id: string
           last_name: string | null
           preferred_language: string | null
+          suspended_at: string | null
           updated_at: string
         }
         Insert: {
+          account_status?: Database["public"]["Enums"]["account_status"]
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
           preferred_language?: string | null
+          suspended_at?: string | null
           updated_at?: string
         }
         Update: {
+          account_status?: Database["public"]["Enums"]["account_status"]
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
           preferred_language?: string | null
+          suspended_at?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -912,6 +921,18 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_soft_delete_user: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      admin_suspend_user: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
+      admin_unsuspend_user: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
       get_all_referral_rewards: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1022,7 +1043,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      account_status: "active" | "suspended" | "deleted"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1149,6 +1170,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_status: ["active", "suspended", "deleted"],
+    },
   },
 } as const
