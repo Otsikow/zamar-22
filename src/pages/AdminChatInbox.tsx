@@ -340,7 +340,7 @@ const AdminChatInbox = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#111] text-white pb-32">{/* Added bottom padding for mini player + nav */}
+    <div className="min-h-screen bg-[#111] text-white pb-48">{/* Added bottom padding for mini player + nav */}
       <div className="pt-16 pb-8 h-screen flex flex-col">{/* Adjusted padding for proper spacing */}
         {/* Header */}
         <div className="flex-shrink-0 px-4 py-4">
@@ -490,7 +490,7 @@ const AdminChatInbox = () => {
                 </div>
 
                 {/* Message Input - Fixed at bottom */}
-                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-[#1a1a1a] mb-20">{/* Added bottom margin to prevent hiding under nav */}
+                <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-[#1a1a1a] mb-36 md:mb-28 lg:mb-24 relative z-50">{/* Extra margin to clear mini player & bottom nav */}
                   <div className="flex space-x-2">
                     <Input
                       value={newMessage}
