@@ -128,6 +128,7 @@ export type Database = {
       chat_messages: {
         Row: {
           id: string
+          image_url: string | null
           message: string
           room_id: string
           seen: boolean | null
@@ -136,6 +137,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          image_url?: string | null
           message: string
           room_id: string
           seen?: boolean | null
@@ -144,6 +146,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          image_url?: string | null
           message?: string
           room_id?: string
           seen?: boolean | null
