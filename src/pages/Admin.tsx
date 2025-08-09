@@ -91,6 +91,46 @@ const Admin = () => {
   const [activeSessions, setActiveSessions] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Manage Songs search state
+  const [q, setQ] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  const fetchSongsSearch = async (query: string) => {
+    try {
+      setSearchLoading(true);
+      const { data, error } = await supabase
+        .from("songs")
+        .select("*")
+        .or([
+          `title.ilike.%${query}%`,
+          `genre.ilike.%${query}%`,
+          `occasion.ilike.%${query}%`,
+          // tags is text[]; cs means array contains
+          `tags.cs.{${query}}`
+        ].join(","))
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (!error) setSearchResults(data || []);
+    } catch (e) {
+      console.error("Song search failed:", e);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const query = q.trim();
+      if (query) {
+        fetchSongsSearch(query);
+      }
+    }, 250);
+    return () => clearTimeout(handler);
+  }, [q]);
+
   // Song upload form state
   const [songForm, setSongForm] = useState({
     title: "",
@@ -760,7 +800,23 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {allSongs.map((song) => (
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        placeholder="Search title, genre, occasion, tags…"
+                        className="max-w-md"
+                      />
+                      {q && (
+                        <Button variant="outline" onClick={() => setQ("")}>Clear</Button>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {q ? (searchLoading ? 'Searching…' : `Showing ${searchResults.length} result(s)`) : `Showing ${allSongs.length} song(s)`}
+                    </div>
+                  </div>
+                  {(q ? searchResults : allSongs).map((song) => (
                     <div key={song.id} className="border border-primary/20 rounded-lg p-4">
                       {editingSong?.id === song.id ? (
                         <form onSubmit={handleSongUpdate} className="space-y-4">
