@@ -51,6 +51,39 @@ export const useNowPlaying = () => {
 export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const timeUpdateIntervalRef = useRef<NodeJS.Timeout>();
+  // Web Audio nodes for iOS volume control fallback
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const mediaSourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+
+  const isIOS = typeof navigator !== 'undefined' && ((/iPad|iPhone|iPod/.test(navigator.userAgent)) || (navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1));
+
+  const ensureAudioGraph = () => {
+    if (!isIOS) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+    const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
+    if (!audioCtxRef.current) {
+      try { audioCtxRef.current = new AudioCtx(); } catch {}
+    }
+    const ctx = audioCtxRef.current;
+    if (!ctx) return;
+    try {
+      if (!mediaSourceRef.current) {
+        mediaSourceRef.current = ctx.createMediaElementSource(audio);
+      }
+      if (!gainNodeRef.current) {
+        gainNodeRef.current = ctx.createGain();
+        gainNodeRef.current.gain.value = audio.volume || 1;
+        mediaSourceRef.current.connect(gainNodeRef.current);
+        gainNodeRef.current.connect(ctx.destination);
+        // Mute element output to avoid double-audio; route via WebAudio instead
+        audio.muted = true;
+      }
+    } catch (e) {
+      // If creating source fails (already exists), ignore
+    }
+  };
   
   // Initialize volume from saved settings (zamar_settings.volume is 0-100)
   const getInitialVolume = () => {
@@ -219,6 +252,18 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     // Handle audio play events
     const handlePlay = () => {
+      // Ensure WebAudio graph is active on iOS and resume context
+      try {
+        if (isIOS) {
+          ensureAudioGraph();
+          if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+            audioCtxRef.current.resume().catch(() => {});
+          }
+          if (gainNodeRef.current) {
+            gainNodeRef.current.gain.value = state.volume;
+          }
+        }
+      } catch {}
       setState(prev => ({
         ...prev,
         isPlaying: true,
@@ -363,7 +408,16 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Separate effect to handle volume changes without reloading audio
   useEffect(() => {
     if (!audioRef.current) return;
-    audioRef.current.volume = state.volume;
+    try {
+      if (isIOS) {
+        ensureAudioGraph();
+        if (gainNodeRef.current) {
+          gainNodeRef.current.gain.value = state.volume;
+        }
+      } else {
+        audioRef.current.volume = state.volume;
+      }
+    } catch {}
   }, [state.volume]);
 
   // Separate effect to handle loop changes
@@ -422,11 +476,25 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const setVolume = useCallback((volume: number) => {
     const newVolume = Math.max(0, Math.min(1, volume));
-    
     setState(prev => ({
       ...prev,
       volume: newVolume,
     }));
+    try {
+      if (isIOS) {
+        ensureAudioGraph();
+        if (gainNodeRef.current) gainNodeRef.current.gain.value = newVolume;
+      } else if (audioRef.current) {
+        audioRef.current.volume = newVolume;
+      }
+    } catch {}
+    // Persist latest volume to settings for consistency
+    try {
+      const raw = localStorage.getItem('zamar_settings');
+      const obj = raw ? JSON.parse(raw) : {};
+      obj.volume = Math.round(newVolume * 100);
+      localStorage.setItem('zamar_settings', JSON.stringify(obj));
+    } catch {}
   }, []);
 
   const nextSong = useCallback(() => {
