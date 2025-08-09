@@ -591,7 +591,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue={initialTab} key={location.search} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-12 gap-1 h-auto p-1">
+          <TabsList className="w-full overflow-x-auto p-1">
             <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
             
             <TabsTrigger value="songs" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
@@ -796,7 +796,7 @@ const Admin = () => {
           {/* Songs Management */}
           <TabsContent value="songs">
             <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 gap-1 h-auto p-1">
+              <TabsList className="w-full overflow-x-auto p-1">
                 <TabsTrigger value="all" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
                 <TabsTrigger value="custom" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
                 <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
@@ -1350,7 +1350,7 @@ const Admin = () => {
           {/* User Management (with sub-tabs) */}
           <TabsContent value="users">
             <Tabs defaultValue="manage" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 gap-1 h-auto p-1">
+              <TabsList className="w-full overflow-x-auto p-1">
                 <TabsTrigger value="manage" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
                 <TabsTrigger value="history" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Role History</TabsTrigger>
               </TabsList>
