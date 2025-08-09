@@ -505,11 +505,23 @@ const NotificationCenter = () => {
                                       e.stopPropagation();
                                       handleNotificationClick(notification);
                                     }}
-                                    className="shrink-0"
+                                    className="shrink-0 whitespace-nowrap"
                                   >
                                     {notification.type === 'message' ? 'Open Chat' : 'Review'}
                                   </Button>
                                 )}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteNotification(notification.id);
+                                  }}
+                                  className="shrink-0 whitespace-nowrap"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
+                                </Button>
                                 {!notification.is_read ? (
                                   <Button
                                     size="sm"
@@ -518,7 +530,7 @@ const NotificationCenter = () => {
                                       e.stopPropagation();
                                       markAsRead(notification.id);
                                     }}
-                                    className="shrink-0"
+                                    className="shrink-0 whitespace-nowrap"
                                   >
                                     <Check className="h-4 w-4 mr-1" />
                                     Mark Read
@@ -531,24 +543,12 @@ const NotificationCenter = () => {
                                       e.stopPropagation();
                                       markAsUnread(notification.id);
                                     }}
-                                    className="shrink-0"
+                                    className="shrink-0 whitespace-nowrap"
                                   >
                                     <Undo2 className="h-4 w-4 mr-1" />
                                     Mark Unread
                                   </Button>
                                 )}
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteNotification(notification.id);
-                                  }}
-                                  className="shrink-0"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-1" />
-                                  Delete
-                                </Button>
                               </div>
                             </div>
 
