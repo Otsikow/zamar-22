@@ -169,9 +169,9 @@ const NotificationCenter = () => {
       const senderUserId = notification.metadata?.sender_user_id || notification.user_id;
       console.log('Navigating to chat with user:', senderUserId);
       console.log('Full notification:', notification);
-      
-      // Navigate to admin chat inbox with user parameter
-      navigate(`/admin/chat-inbox?user=${senderUserId}`);
+      // Navigate to admin chat inbox with user and room parameters
+      const roomId = notification.metadata?.room_id;
+      navigate(`/admin/chat-inbox?user=${senderUserId}${roomId ? `&room=${roomId}` : ''}`);
     } else if (notification.type === 'song_request') {
       // Navigate to admin panel or request review
       navigate('/admin');
@@ -226,10 +226,11 @@ const NotificationCenter = () => {
 
   const getNotificationDisplayMessage = (notification: Notification) => {
     if (notification.type === 'message') {
-      // For message notifications, try to extract user name from metadata or user_id
       const senderId = notification.metadata?.sender_user_id || notification.user_id;
       const userName = getUserDisplayName(senderId);
-      return `New chat message from ${userName}`;
+      const preview: string | undefined = notification.metadata?.message_preview;
+      const previewText = preview ? `: ${preview.length > 120 ? preview.slice(0, 117) + '…' : preview}` : '';
+      return `New chat message from ${userName}${previewText}`;
     }
     return notification.message;
   };
@@ -399,11 +400,20 @@ const NotificationCenter = () => {
                         {getNotificationDisplayMessage(notification)}
                       </p>
                       
-                      {notification.type === 'message' && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Click to open chat conversation
-                        </p>
-                      )}
+                        {notification.type === 'message' && (
+                          <div className="mt-2 space-y-1">
+                            {notification.metadata?.sender_email && (
+                              <p className="text-xs text-muted-foreground">
+                                From: {notification.metadata.sender_email}
+                              </p>
+                            )}
+                            {notification.metadata?.message_preview && (
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                “{notification.metadata.message_preview}”
+                              </p>
+                            )}
+                          </div>
+                        )}
                     </div>
                   </div>
                 </CardContent>

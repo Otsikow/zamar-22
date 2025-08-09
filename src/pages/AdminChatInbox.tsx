@@ -152,10 +152,24 @@ const AdminChatInbox = () => {
 
       setChatRooms(roomsWithData);
       
-      // Auto-select room if user parameter is present
+      // Auto-select room if user or room parameter is present
       const targetUserId = searchParams.get('user');
-      if (targetUserId && roomsWithData.length > 0) {
-        const targetRoom = roomsWithData.find(room => room.user_id === targetUserId);
+      const targetRoomId = searchParams.get('room');
+      if ((targetUserId || targetRoomId) && roomsWithData.length > 0) {
+        let targetRoom: ChatRoom | undefined;
+
+        if (targetRoomId) {
+          const rawRoom = (rooms || []).find(r => r.id === targetRoomId);
+          if (rawRoom) {
+            // Select the consolidated conversation for that user
+            targetRoom = roomsWithData.find(r => r.user_id === rawRoom.user_id);
+          }
+        }
+
+        if (!targetRoom && targetUserId) {
+          targetRoom = roomsWithData.find(room => room.user_id === targetUserId) as ChatRoom | undefined;
+        }
+
         if (targetRoom && !selectedRoom) {
           selectRoom(targetRoom);
         }
@@ -302,6 +316,7 @@ const AdminChatInbox = () => {
     // Clear URL parameters when going back
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.delete('user');
+    newSearchParams.delete('room');
     setSearchParams(newSearchParams);
   };
 
