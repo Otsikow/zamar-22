@@ -211,20 +211,37 @@ export const LiveChats = () => {
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedRoom || !user) return;
 
+    const messageText = newMessage.trim();
     setLoading(true);
+
+    // Optimistically add message to UI
+    const optimisticMessage: ChatMessage = {
+      id: 'temp-' + Date.now(),
+      room_id: selectedRoom.id,
+      sender_id: user.id,
+      message: messageText,
+      seen: false,
+      sent_at: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, optimisticMessage]);
+    setNewMessage('');
+
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('chat_messages')
         .insert({
           room_id: selectedRoom.id,
           sender_id: user.id,
-          message: newMessage.trim()
-        });
+          message: messageText
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setNewMessage('');
-      
+      // Replace optimistic message with real one
+      setMessages(prev => prev.map(m => (m.id === optimisticMessage.id ? (data as any) : m)));
+
       // Update room's admin_id if not set
       if (!selectedRoom.admin_id) {
         await supabase
@@ -234,6 +251,9 @@ export const LiveChats = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      // Remove optimistic message and restore input
+      setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
+      setNewMessage(messageText);
     } finally {
       setLoading(false);
     }
@@ -372,6 +392,7 @@ export const LiveChats = () => {
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={handleKeyPress}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your reply..."
                     className="flex-1"
