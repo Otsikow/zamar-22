@@ -69,13 +69,13 @@ export default function HeroSection({
 
           {/* CTA */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild size="lg" className="rounded-full">
+            <Button asChild size="lg">
               <Link to={ctaHref}>
                 {ctaLabel}
                 <span className="ml-2">→</span>
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-full">
+            <Button asChild variant="outline" size="lg">
               <Link to={secondaryHref}>{secondaryLabel}</Link>
             </Button>
           </div>
