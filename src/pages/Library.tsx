@@ -442,9 +442,14 @@ const Library = () => {
                               </Link>
                             </Button>
                             {purchase.songs.audio_url && (
-                              <Button size="sm">
-                                <Download className="w-4 h-4 mr-2" />
-                                {t('library.download', 'Download')}
+                              <Button size="sm" asChild>
+                                <a
+                                  href={purchase.songs.audio_url ?? "#"}
+                                  download={`${purchase.songs.title}.mp3`}
+                                >
+                                  <Download className="w-4 h-4 mr-2" />
+                                  {t('library.download', 'Download')}
+                                </a>
                               </Button>
                             )}
                           </div>
