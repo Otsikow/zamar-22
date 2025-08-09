@@ -439,7 +439,7 @@ const Library = () => {
 
                           {/* Song Info */}
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug break-words">
                               {purchase.songs.title}
                             </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -520,7 +520,7 @@ const Library = () => {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug break-words">
                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
                             </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-2">
