@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList } from "lucide-react";
+import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
+import { useNowPlaying } from "@/contexts/NowPlayingContext";
 
 interface Purchase {
   id: string;
@@ -50,6 +51,16 @@ interface Playlist {
   created_at: string;
 }
 
+interface Favourite {
+  created_at: string;
+  songs: {
+    id: string;
+    title: string;
+    thumbnail_url: string | null;
+    audio_url: string | null;
+  } | null;
+}
+
 const Library = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,8 +71,10 @@ const Library = () => {
   const [requests, setRequests] = useState<CustomRequest[]>([]);
   const [customSongs, setCustomSongs] = useState<CustomSong[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("songs");
+  const { playQueue } = useNowPlaying();
 
   useEffect(() => {
     // Check authentication
@@ -78,14 +91,15 @@ const Library = () => {
       }
       setUser(session.user);
       
-      // Fetch user's purchases, requests, custom songs, and playlists
+      // Fetch user's purchases, requests, custom songs, playlists, and favourites
       await Promise.all([
         fetchPurchases(session.user.id),
         fetchRequests(session.user.id),
         fetchCustomSongs(session.user.id),
-        fetchPlaylists(session.user.id)
+        fetchPlaylists(session.user.id),
+        fetchFavourites(session.user.id),
       ]);
-      
+
       setIsLoading(false);
     };
 
@@ -231,6 +245,27 @@ const Library = () => {
     }
   };
 
+  const fetchFavourites = async (userId: string) => {
+    try {
+      // Cast to any to avoid type errors until Supabase types are refreshed
+      const { data, error } = await (supabase.from as any)("user_favourites")
+        .select(`
+          created_at,
+          songs:song_id (
+            id,
+            title,
+            thumbnail_url,
+            audio_url
+          )
+        `)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      setFavourites((data as Favourite[]) || []);
+    } catch (error: any) {
+      console.error("Error fetching favourites:", error);
+    }
+  };
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
@@ -321,6 +356,13 @@ const Library = () => {
                 {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
               </TabsTrigger>
               <TabsTrigger 
+                value="favourites"
+                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
+              >
+                <Heart className="w-4 h-4" />
+                {t('library.tabs.favourites', 'Favourites')} ({favourites.length})
+              </TabsTrigger>
+              <TabsTrigger 
                 value="playlists"
                 className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
               >
@@ -408,6 +450,88 @@ const Library = () => {
                               <Button size="sm">
                                 <Download className="w-4 h-4 mr-2" />
                                 {t('library.download', 'Download')}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Favourites Tab */}
+            <TabsContent value="favourites" className="mt-6">
+              {favourites.length === 0 ? (
+                <Card className="bg-gradient-card border-border">
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-amber-400 rounded-full flex items-center justify-center">
+                      <Heart className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-playfair text-foreground mb-2">
+                      {t('library.noFavourites', 'No favourites yet.')}
+                    </h3>
+                    <p className="text-muted-foreground font-inter">
+                      {t('library.noFavouritesDescription', 'Tap the heart on any song to save it here.')}
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-end">
+                    <Button size="sm" onClick={() => {
+                      const queue = favourites
+                        .map(f => f.songs)
+                        .filter((s): s is NonNullable<Favourite['songs']> => !!s && !!s.audio_url)
+                        .map(s => ({
+                          id: s.id,
+                          title: s.title,
+                          artist: 'Zamar',
+                          duration: 0,
+                          url: s.audio_url || undefined,
+                          cover: s.thumbnail_url || undefined,
+                        }));
+                      if (queue.length > 0) playQueue(queue, 0);
+                    }}>
+                      {t('library.playAll', 'Play All')}
+                    </Button>
+                  </div>
+                  {favourites.map((fav, idx) => (
+                    <Card key={idx} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+                            {fav.songs?.thumbnail_url ? (
+                              <img src={fav.songs.thumbnail_url} alt={fav.songs.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Music2 className="w-6 h-6 text-primary" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                              {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
+                            </h3>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              {t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            {fav.songs?.id && (
+                              <Button size="sm" variant="outline" asChild>
+                                <Link to={`/songs/${fav.songs.id}`}>
+                                  {t('library.view', 'View')}
+                                </Link>
+                              </Button>
+                            )}
+                            {fav.songs?.audio_url && (
+                              <Button size="sm" onClick={() => {
+                                playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: fav.songs!.thumbnail_url || undefined }], 0);
+                              }}>
+                                {t('library.play', 'Play')}
                               </Button>
                             )}
                           </div>
