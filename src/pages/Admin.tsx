@@ -24,6 +24,7 @@ import CustomSongUpload from "@/components/admin/CustomSongUpload";
 import SongAnalytics from "@/components/admin/SongAnalytics";
 import UserRoleManagement from "@/components/admin/UserRoleManagement";
 import RoleChangeHistory from "@/components/admin/RoleChangeHistory";
+import { LiveChats } from "@/components/admin/LiveChats";
 
 interface CustomSongRequest {
   id: string;
@@ -971,31 +972,7 @@ const Admin = () => {
 
           {/* Chat Inbox */}
           <TabsContent value="chat">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-primary" />
-                  Chat Management
-                </CardTitle>
-                <CardDescription>
-                  View and respond to user chat messages
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <MessageCircle className="h-12 w-12 mx-auto mb-4 text-primary/50" />
-                  <h3 className="text-lg font-semibold mb-2">Full Chat Inbox Available</h3>
-                  <p className="text-muted-foreground mb-4">
-                    For the complete chat management experience, use our dedicated full-screen chat inbox.
-                  </p>
-                  <Button asChild className="bg-primary hover:bg-primary/90">
-                    <Link to="/admin/chat-inbox">
-                      Open Full Chat Inbox
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <LiveChats />
           </TabsContent>
 
           {/* Lyrics Management */}
