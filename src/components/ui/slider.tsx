@@ -10,34 +10,21 @@ const Slider = React.forwardRef<
   <SliderPrimitive.Root
     ref={ref}
     className={cn(
-      "relative flex w-full touch-none select-none items-center cursor-pointer",
+      "relative flex w-full h-[12px] overflow-visible touch-none select-none items-center cursor-pointer",
       className
     )}
     {...props}
   >
     <SliderPrimitive.Track
-      className="relative w-full grow overflow-hidden rounded-full bg-primary/40"
-      style={{
-        height: '16px',
-      }}
+      className="relative w-full grow overflow-hidden rounded-full bg-muted shadow-inner h-[12px]"
     >
       <SliderPrimitive.Range
-        className="absolute rounded-full bg-primary"
-        style={{
-          height: '100%',
-        }}
+        className="absolute h-full rounded-full bg-primary ring-1 ring-primary/30"
       />
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb
-      className="block rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-grab active:cursor-grabbing hover:scale-110"
-      style={{
-        width: '26px',
-        height: '26px',
-        border: '2px solid hsl(var(--primary))',
-        backgroundColor: 'hsl(var(--primary))',
-        backgroundImage: 'radial-gradient(circle at center, hsl(0 0% 0%) 0 7px, rgba(0,0,0,0) 8px)',
-        boxShadow: '0 0 0 1px hsl(var(--primary)), 0 4px 12px hsl(var(--primary) / 0.35)',
-      }}
+      className="block h-5 w-5 md:h-6 md:w-6 rounded-full border-4 border-primary bg-background shadow-[0_0_0_2px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-50 transition-transform duration-150 hover:scale-105"
+      aria-label="Slider handle"
     />
   </SliderPrimitive.Root>
 ))
