@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Music, User } from 'lucide-react';
-
+import { Upload, Music } from 'lucide-react';
+import UserSearchSelect from '@/components/admin/UserSearchSelect';
 interface CustomSongRequest {
   id: string;
   occasion: string;
@@ -26,17 +26,11 @@ interface CustomSongRequest {
   } | null;
 }
 
-interface Profile {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
 
 const CustomSongUpload = () => {
   const { toast } = useToast();
   const [recentSongs, setRecentSongs] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  
   const [loading, setLoading] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     userId: '',
@@ -48,7 +42,6 @@ const CustomSongUpload = () => {
 
   useEffect(() => {
     fetchRecentSongs();
-    fetchProfiles();
   }, []);
 
   const fetchRecentSongs = async () => {
@@ -69,19 +62,6 @@ const CustomSongUpload = () => {
     }
   };
 
-  const fetchProfiles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .order('first_name');
-
-      if (error) throw error;
-      setProfiles(data || []);
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-    }
-  };
 
   const handleFileUpload = async (file: File, bucket: string): Promise<string | null> => {
     if (!file) return null;
@@ -186,24 +166,11 @@ const CustomSongUpload = () => {
             {/* Select User */}
             <div>
               <Label htmlFor="userId">Select User *</Label>
-              <Select 
-                value={uploadForm.userId} 
-                onValueChange={(value) => setUploadForm(prev => ({ ...prev, userId: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select user to deliver song to" />
-                </SelectTrigger>
-                <SelectContent>
-                  {profiles.map((profile) => (
-                    <SelectItem key={profile.id} value={profile.id}>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        {profile.first_name} {profile.last_name} ({profile.email})
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <UserSearchSelect
+                value={uploadForm.userId}
+                onChange={(id) => setUploadForm(prev => ({ ...prev, userId: id }))}
+                placeholder="Search by name or email"
+              />
             </div>
 
             {/* Song Title */}
