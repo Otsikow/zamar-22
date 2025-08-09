@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
   User, 
-  ListPlus, 
   Settings, 
   MessageCircle, 
   Heart, 
@@ -47,8 +46,7 @@ const More = () => {
   const menuItems = [
     { label: t("more.my_account", "My Account"), icon: User, action: () => navigate('/profile') },
     ...(isAdmin ? [{ label: t("more.dashboard", "Dashboard"), icon: LayoutDashboard, action: () => navigate('/admin') }] : []),
-    { label: t("more.create_playlist", "Create Playlist"), icon: ListPlus, action: () => navigate('/playlist/create') },
-    { label: t("more.manage_playlists", "Manage Playlists"), icon: Settings, action: () => navigate('/playlist/manage') },
+    { label: t("more.manage_playlists", "Manage Playlists"), icon: Settings, action: () => navigate('/manage-playlists') },
     { label: t("more.pricing", "Pricing"), icon: CreditCard, action: () => navigate('/pricing') },
     { label: t("more.referral_calculator", "Referral Calculator"), icon: DollarSign, action: () => navigate('/referral') },
     { label: t("more.testimonies", "Testimonies"), icon: MessageCircle, action: () => navigate('/testimonies') },

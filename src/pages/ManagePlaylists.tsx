@@ -34,6 +34,13 @@ const ManagePlaylists = () => {
     is_public: false
   });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    description: '',
+    is_public: false
+  });
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -133,6 +140,56 @@ const ManagePlaylists = () => {
     }
   };
 
+  const handleCreate = async () => {
+    if (!user) {
+      toast({
+        title: 'Authentication required',
+        description: 'You must be logged in to create a playlist',
+        variant: 'destructive'
+      });
+      return;
+    }
+    if (!createForm.name.trim()) {
+      toast({
+        title: 'Playlist name required',
+        description: 'Please enter a name for your playlist',
+        variant: 'destructive'
+      });
+      return;
+    }
+    setCreating(true);
+    try {
+      const { error } = await supabase
+        .from('playlists')
+        .insert({
+          name: createForm.name.trim(),
+          description: createForm.description.trim() || null,
+          is_public: createForm.is_public,
+          user_id: user!.id,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Playlist created',
+        description: 'Your playlist has been created.'
+      });
+
+      setIsCreateDialogOpen(false);
+      setCreateForm({ name: '', description: '', is_public: false });
+      fetchPlaylists();
+    } catch (error) {
+      console.error('Error creating playlist:', error);
+      toast({
+        title: 'Error creating playlist',
+        description: 'Please try again later',
+        variant: 'destructive'
+      });
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground pb-20">
@@ -161,7 +218,7 @@ const ManagePlaylists = () => {
             <p className="text-muted-foreground mt-1">Edit, delete, or view your playlists</p>
           </div>
           <Button
-            onClick={() => navigate('/playlist/create')}
+            onClick={() => setIsCreateDialogOpen(true)}
             className="bg-primary text-background hover:bg-primary/90"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -175,7 +232,7 @@ const ManagePlaylists = () => {
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground mb-4">You haven't created any playlists yet.</p>
               <Button
-                onClick={() => navigate('/playlist/create')}
+                onClick={() => setIsCreateDialogOpen(true)}
                 className="bg-primary text-background hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4 mr-2" />
