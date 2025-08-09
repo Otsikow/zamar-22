@@ -17,112 +17,107 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface AdminUser {
+interface ProfileRow {
+  id: string;
+  email: string;
+  first_name?: string | null;
+  last_name?: string | null;
+}
+
+interface AdminRow {
   id: string;
   user_id: string;
-  role: string;
+  role: Role;
   created_at: string;
-  profiles?: {
-    id: string;
-    email: string;
-    first_name?: string;
-    last_name?: string;
-  } | null;
 }
 
 const VALID_ROLES = ['listener', 'supporter', 'admin'] as const;
 type Role = typeof VALID_ROLES[number];
 
+interface UserWithRole {
+  profile: ProfileRow;
+  role: Role;
+  admin_user_id?: string; // present when a row exists in admin_users
+}
+
 const UserRoleManagement = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [updatingRoles, setUpdatingRoles] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchAdminUsers();
+    fetchAllUsersWithRoles();
   }, []);
 
-  const fetchAdminUsers = async () => {
+  const fetchAllUsersWithRoles = async () => {
     try {
       setLoading(true);
-      // First get admin users
-      const { data: adminUsersData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('id, user_id, role, created_at')
-        .order('created_at', { ascending: false });
+      const [{ data: profiles, error: pErr }, { data: adminRows, error: aErr }] = await Promise.all([
+        supabase.from('profiles').select('id, email, first_name, last_name').order('created_at', { ascending: false }),
+        supabase.from('admin_users').select('id, user_id, role, created_at')
+      ]);
+      if (pErr) throw pErr;
+      if (aErr) throw aErr;
 
-      if (adminError) throw adminError;
+      const roleMap = new Map<string, AdminRow>();
+      (adminRows as AdminRow[] | null)?.forEach(r => roleMap.set(r.user_id, r));
 
-      // Then get profiles for these users
-      const userIds = adminUsersData?.map(user => user.user_id) || [];
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, email, first_name, last_name')
-        .in('id', userIds);
+      const combined: UserWithRole[] = (profiles as ProfileRow[] | null)?.map(pr => {
+        const r = roleMap.get(pr.id);
+        return {
+          profile: pr,
+          role: (r?.role as Role) || 'listener',
+          admin_user_id: r?.id,
+        };
+      }) || [];
 
-      if (profilesError) throw profilesError;
-
-      // Combine the data
-      const combinedData = adminUsersData?.map(adminUser => ({
-        ...adminUser,
-        profiles: profilesData?.find(profile => profile.id === adminUser.user_id) || null
-      })) || [];
-
-      setAdminUsers(combinedData);
+      setUsers(combined);
     } catch (error) {
-      console.error('Error fetching admin users:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch admin users',
-        variant: 'destructive',
-      });
+      console.error('Error fetching users/roles:', error);
+      toast({ title: 'Error', description: 'Failed to fetch users', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUserRole = async (adminUserId: string, newRole: Role) => {
+  const updateUserRole = async (target: UserWithRole, newRole: Role) => {
     if (!VALID_ROLES.includes(newRole)) {
-      toast({
-        title: 'Error',
-        description: 'Invalid role selected',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Invalid role selected', variant: 'destructive' });
       return;
     }
 
-    setUpdatingRoles(prev => new Set(prev).add(adminUserId));
+    const userId = target.profile.id;
+    setUpdatingRoles(prev => new Set(prev).add(userId));
 
     try {
-      const { error } = await supabase
-        .from('admin_users')
-        .update({ role: newRole })
-        .eq('id', adminUserId);
+      if (target.admin_user_id) {
+        // Update existing record
+        const { error } = await supabase
+          .from('admin_users')
+          .update({ role: newRole })
+          .eq('id', target.admin_user_id);
+        if (error) throw error;
+      } else {
+        // Create role record for this user
+        const { error } = await supabase
+          .from('admin_users')
+          .insert({ user_id: userId, role: newRole });
+        if (error) throw error;
+      }
 
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'User role updated successfully',
-      });
-
-      // Refresh the data
-      await fetchAdminUsers();
+      toast({ title: 'Success', description: 'User role saved' });
+      await fetchAllUsersWithRoles();
     } catch (error) {
-      console.error('Error updating user role:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update user role',
-        variant: 'destructive',
-      });
+      console.error('Error saving user role:', error);
+      toast({ title: 'Error', description: 'Failed to save role', variant: 'destructive' });
     } finally {
       setUpdatingRoles(prev => {
         const next = new Set(prev);
-        next.delete(adminUserId);
+        next.delete(userId);
         return next;
       });
     }
@@ -154,23 +149,23 @@ const UserRoleManagement = () => {
     }
   };
 
-  const filteredUsers = adminUsers.filter(adminUser => {
-    const email = adminUser.profiles?.email || '';
-    const firstName = adminUser.profiles?.first_name || '';
-    const lastName = adminUser.profiles?.last_name || '';
+  const filteredUsers = users.filter(u => {
+    const email = u.profile.email || '';
+    const firstName = u.profile.first_name || '';
+    const lastName = u.profile.last_name || '';
     const fullName = `${firstName} ${lastName}`.trim();
 
-    const matchesSearch = 
+    const matchesSearch =
       email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fullName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesRole = roleFilter === 'all' || adminUser.role === roleFilter;
+    const matchesRole = roleFilter === 'all' || u.role === (roleFilter as Role);
 
     return matchesSearch && matchesRole;
   });
 
-  const roleCounts = adminUsers.reduce((acc, adminUser) => {
-    acc[adminUser.role] = (acc[adminUser.role] || 0) + 1;
+  const roleCounts = users.reduce((acc, u) => {
+    acc[u.role] = (acc[u.role] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
@@ -199,7 +194,7 @@ const UserRoleManagement = () => {
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Total Users</p>
-                <p className="text-2xl font-bold">{adminUsers.length}</p>
+                <p className="text-2xl font-bold">{users.length}</p>
               </div>
             </div>
           </CardContent>
@@ -276,7 +271,7 @@ const UserRoleManagement = () => {
               </SelectContent>
             </Select>
             <Button 
-              onClick={fetchAdminUsers} 
+              onClick={fetchAllUsersWithRoles} 
               variant="outline" 
               size="sm"
               disabled={loading}
@@ -304,16 +299,17 @@ const UserRoleManagement = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredUsers.map((adminUser) => {
-                    const isCurrentUser = user?.id === adminUser.user_id;
-                    const isUpdating = updatingRoles.has(adminUser.id);
+                  filteredUsers.map((u) => {
+                    const userId = u.profile.id;
+                    const isCurrentUser = user?.id === userId;
+                    const isUpdating = updatingRoles.has(userId);
                     
                     return (
-                      <TableRow key={adminUser.id}>
+                      <TableRow key={userId}>
                         <TableCell>
                           <div className="font-medium">
-                            {adminUser.profiles?.first_name && adminUser.profiles?.last_name
-                              ? `${adminUser.profiles.first_name} ${adminUser.profiles.last_name}`
+                            {u.profile.first_name && u.profile.last_name
+                              ? `${u.profile.first_name} ${u.profile.last_name}`
                               : 'No name set'}
                             {isCurrentUser && (
                               <Badge variant="outline" className="ml-2 text-xs">
@@ -323,20 +319,20 @@ const UserRoleManagement = () => {
                           </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {adminUser.profiles?.email || 'No email'}
+                          {u.profile.email || 'No email'}
                         </TableCell>
                         <TableCell>
-                          <Badge className={getRoleColor(adminUser.role)}>
+                          <Badge className={getRoleColor(u.role)}>
                             <div className="flex items-center gap-1">
-                              {getRoleIcon(adminUser.role)}
-                              {adminUser.role}
+                              {getRoleIcon(u.role)}
+                              {u.role}
                             </div>
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <Select
-                            value={adminUser.role}
-                            onValueChange={(newRole: Role) => updateUserRole(adminUser.id, newRole)}
+                            value={u.role}
+                            onValueChange={(newRole: Role) => updateUserRole(u, newRole)}
                             disabled={isCurrentUser || isUpdating}
                           >
                             <SelectTrigger className="w-32">
