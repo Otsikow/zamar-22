@@ -87,7 +87,7 @@ export const LiveChats = () => {
 
   const fetchChatRooms = async () => {
     try {
-      // First get all chat rooms
+      // Get all chat rooms
       const { data: rooms, error: roomsError } = await supabase
         .from('chat_rooms')
         .select('*')
@@ -102,35 +102,45 @@ export const LiveChats = () => {
 
       if (profilesError) throw profilesError;
 
-      // Get last message and unread count for each room
+      // Consolidate into one conversation per user
+      const roomsByUser = new Map<string, any>();
+      (rooms || []).forEach((room) => {
+        const existing = roomsByUser.get(room.user_id);
+        if (!existing || new Date(room.updated_at) > new Date(existing.updated_at)) {
+          roomsByUser.set(room.user_id, room);
+        }
+      });
+
       const roomsWithData = await Promise.all(
-        (rooms || []).map(async (room) => {
-          // Get last message
+        Array.from(roomsByUser.values()).map(async (room) => {
+          const allUserRooms = (rooms || []).filter(r => r.user_id === room.user_id);
+          const roomIds = allUserRooms.map(r => r.id);
+
+          // Last message across all rooms for the user
           const { data: lastMsg } = await supabase
             .from('chat_messages')
             .select('message, sent_at, sender_id')
-            .eq('room_id', room.id)
+            .in('room_id', roomIds)
             .order('sent_at', { ascending: false })
             .limit(1)
             .maybeSingle();
 
-          // Get unread count (messages from user that admin hasn't seen)
+          // Unread count across all rooms (messages from user not seen)
           const { count: unreadCount } = await supabase
             .from('chat_messages')
             .select('*', { count: 'exact', head: true })
-            .eq('room_id', room.id)
+            .in('room_id', roomIds)
             .eq('sender_id', room.user_id)
             .eq('seen', false);
 
-          // Find matching profile
           const userProfile = profiles?.find(p => p.id === room.user_id) || null;
 
           return {
             ...room,
             profiles: userProfile,
             last_message: lastMsg,
-            unread_count: unreadCount || 0
-          };
+            unread_count: unreadCount || 0,
+          } as ChatRoom;
         })
       );
 
@@ -142,17 +152,26 @@ export const LiveChats = () => {
 
   const fetchMessages = async (roomId: string) => {
     try {
+      const baseRoom = chatRooms.find(r => r.id === roomId);
+      if (!baseRoom) return;
+
+      // Load messages across ALL rooms for this user
+      const { data: userRooms } = await supabase
+        .from('chat_rooms')
+        .select('id')
+        .eq('user_id', baseRoom.user_id);
+
+      const roomIds = (userRooms || []).map(r => r.id).length > 0 ? (userRooms || []).map(r => r.id) : [roomId];
+
       const { data, error } = await supabase
         .from('chat_messages')
         .select('*')
-        .eq('room_id', roomId)
+        .in('room_id', roomIds)
         .order('sent_at', { ascending: true });
 
       if (error) throw error;
 
       setMessages(data || []);
-      
-      // Mark user messages as seen by admin
       await markMessagesAsSeen(roomId);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -164,16 +183,24 @@ export const LiveChats = () => {
       const room = chatRooms.find(r => r.id === roomId);
       if (!room) return;
 
+      // Mark messages as seen across ALL rooms for this user
+      const { data: allUserRooms } = await supabase
+        .from('chat_rooms')
+        .select('id')
+        .eq('user_id', room.user_id);
+
+      const userRoomIds = allUserRooms?.map(r => r.id) || [roomId];
+
       await supabase
         .from('chat_messages')
         .update({ seen: true })
-        .eq('room_id', roomId)
+        .in('room_id', userRoomIds)
         .eq('sender_id', room.user_id);
 
       // Update local state
       setChatRooms(prev =>
         prev.map(r =>
-          r.id === roomId ? { ...r, unread_count: 0 } : r
+          r.user_id === room.user_id ? { ...r, unread_count: 0 } : r
         )
       );
     } catch (error) {
@@ -235,7 +262,7 @@ export const LiveChats = () => {
   const totalUnreadCount = chatRooms.reduce((sum, room) => sum + room.unread_count, 0);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
       {/* Chat Rooms List */}
       <Card className="lg:col-span-1">
         <CardHeader>
