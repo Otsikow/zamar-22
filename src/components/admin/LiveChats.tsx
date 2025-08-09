@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,11 @@ export const LiveChats = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, selectedRoom]);
 
   useEffect(() => {
     if (!user) return;
@@ -383,6 +388,7 @@ export const LiveChats = () => {
                       </div>
                     </div>
                   ))}
+                  <div ref={bottomRef} />
                 </div>
               </ScrollArea>
 

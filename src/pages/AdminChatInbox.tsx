@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MessageCircle, Send, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,11 @@ const AdminChatInbox = () => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showChat, setShowChat] = useState(false); // For mobile view toggle
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, selectedRoom]);
 
   useEffect(() => {
     if (!user) return;
@@ -442,29 +447,32 @@ const AdminChatInbox = () => {
                           <p className="text-sm">No messages yet. Start the conversation!</p>
                         </div>
                       ) : (
-                        messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.sender_id === user?.id ? 'justify-end' : 'justify-start'
-                            }`}
-                          >
+                        <>
+                          {messages.map((message) => (
                             <div
-                              className={`max-w-[85%] sm:max-w-xs lg:max-w-md px-3 sm:px-4 py-2 rounded-lg text-sm ${
-                                message.sender_id === user?.id
-                                  ? 'bg-[#FFD700] text-black'
-                                  : 'bg-[#2a2a2a] text-white'
+                              key={message.id}
+                              className={`flex ${
+                                message.sender_id === user?.id ? 'justify-end' : 'justify-start'
                               }`}
                             >
-                              <p className="break-words">{message.message}</p>
-                              <p className={`text-xs mt-1 ${
-                                message.sender_id === user?.id ? 'text-black/70' : 'text-gray-400'
-                              }`}>
-                                {formatDistanceToNow(new Date(message.sent_at), { addSuffix: true })}
-                              </p>
+                              <div
+                                className={`max-w-[85%] sm:max-w-xs lg:max-w-md px-3 sm:px-4 py-2 rounded-lg text-sm ${
+                                  message.sender_id === user?.id
+                                    ? 'bg-[#FFD700] text-black'
+                                    : 'bg-[#2a2a2a] text-white'
+                                }`}
+                              >
+                                <p className="break-words">{message.message}</p>
+                                <p className={`text-xs mt-1 ${
+                                  message.sender_id === user?.id ? 'text-black/70' : 'text-gray-400'
+                                }`}>
+                                  {formatDistanceToNow(new Date(message.sent_at), { addSuffix: true })}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          ))}
+                          <div ref={bottomRef} />
+                        </>
                       )}
                     </div>
                   </ScrollArea>
