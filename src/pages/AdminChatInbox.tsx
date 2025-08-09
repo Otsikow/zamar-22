@@ -74,7 +74,7 @@ const AdminChatInbox = () => {
         () => {
           fetchChatRooms();
           if (selectedRoom) {
-            fetchMessages(selectedRoom.id);
+            fetchMessages(selectedRoom.id, selectedRoom.user_id);
           }
         }
       )
@@ -185,16 +185,33 @@ const AdminChatInbox = () => {
     }
   };
 
-  const fetchMessages = async (roomId: string) => {
+  const fetchMessages = async (roomId: string, userIdOverride?: string) => {
     try {
-      const selectedRoomData = chatRooms.find(r => r.id === roomId);
-      if (!selectedRoomData) return;
+      // Determine the user whose conversations we should aggregate
+      let targetUserId = userIdOverride;
+
+      if (!targetUserId) {
+        const selectedRoomData = chatRooms.find(r => r.id === roomId);
+        if (selectedRoomData) {
+          targetUserId = selectedRoomData.user_id;
+        } else {
+          // Fallback: fetch the room directly in case chatRooms hasn't updated yet
+          const { data: roomFromDb } = await supabase
+            .from('chat_rooms')
+            .select('user_id')
+            .eq('id', roomId)
+            .maybeSingle();
+          targetUserId = roomFromDb?.user_id;
+        }
+      }
+
+      if (!targetUserId) return;
 
       // Get ALL messages from ALL rooms for this user (to handle multiple rooms per user)
       const { data: allRooms } = await supabase
         .from('chat_rooms')
         .select('id')
-        .eq('user_id', selectedRoomData.user_id);
+        .eq('user_id', targetUserId);
 
       const roomIds = allRooms?.map(r => r.id) || [roomId];
 
@@ -313,7 +330,7 @@ const AdminChatInbox = () => {
   const selectRoom = (room: ChatRoom) => {
     setSelectedRoom(room);
     setShowChat(true); // Show chat on mobile
-    fetchMessages(room.id);
+    fetchMessages(room.id, room.user_id);
   };
 
   const goBackToRooms = () => {
