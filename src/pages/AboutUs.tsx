@@ -3,12 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import BackButton from "@/components/ui/back-button";
 import Footer from "@/components/sections/Footer";
 import { Music, Heart, Globe, Zap, Shield, Users } from "lucide-react";
-
 const AboutUs = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <BackButton onClick={() => navigate(-1)} />
         
@@ -54,7 +51,7 @@ const AboutUs = () => {
                     <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
                     <div>
                       <h3 className="font-inter font-semibold text-foreground mb-2">Custom Songs for All Occasions</h3>
-                      <p className="text-muted-foreground font-inter">Personalized songs created just for you — fast, affordable, and meaningful.</p>
+                      <p className="text-muted-foreground font-inter">Personalised songs created just for you — fast, affordable, and meaningful.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -172,8 +169,6 @@ const AboutUs = () => {
       </div>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default AboutUs;
