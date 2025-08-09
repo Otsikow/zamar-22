@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Heart, CreditCard, Calendar, Target, Music, Globe, Church, Info } from 
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const Donate = () => {
   const { toast } = useToast();
@@ -21,35 +22,71 @@ const Donate = () => {
 
   const presetAmounts = ["5", "10", "25", "50"];
   
-  const campaigns = [
+  const [campaignTotals, setCampaignTotals] = useState<Record<string, number>>({});
+
+  const campaignMeta = [
     {
       id: "translation",
       title: "Translation Fund",
       description: "Help us translate songs into different languages to reach more communities worldwide.",
       icon: <Globe className="w-6 h-6" />,
-      target: "£2,500",
-      current: "£1,200",
-      percentage: 48
+      target: 2500,
     },
     {
       id: "production",
       title: "Song Production",
       description: "Support the creation of new custom songs and professional recording equipment.",
       icon: <Music className="w-6 h-6" />,
-      target: "£5,000",
-      current: "£3,200",
-      percentage: 64
+      target: 5000,
     },
     {
       id: "outreach",
       title: "Outreach Projects",
       description: "Enable us to create free songs for churches, ministries, and communities in need.",
       icon: <Church className="w-6 h-6" />,
-      target: "£1,500",
-      current: "£800",
-      percentage: 53
+      target: 1500,
     }
   ];
+
+  const formatGBP = (n: number) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(n);
+
+  const campaigns = campaignMeta.map((meta) => {
+    const current = campaignTotals[meta.title] ?? 0; // keys from RPC are human titles like 'Translation Fund'
+    const percentage = Math.min(Math.round((current / meta.target) * 100), 100);
+    return {
+      ...meta,
+      current: formatGBP(current),
+      target: formatGBP(meta.target),
+      percentage,
+    };
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const { data, error } = await supabase.rpc('get_donations_by_campaign');
+      if (!error && data) {
+        const totals: Record<string, number> = {};
+        (data as any[]).forEach((row: any) => {
+          const name = row.campaign_name || 'General Fund';
+          totals[name] = Number(row.total_amount) || 0;
+        });
+        setCampaignTotals(totals);
+      }
+    };
+
+    loadStats();
+
+    const channel = supabase
+      .channel('donations-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'donations' }, () => {
+        loadStats();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleAmountSelect = (amount: string) => {
     setSelectedAmount(amount);
