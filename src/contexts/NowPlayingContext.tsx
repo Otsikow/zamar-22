@@ -149,12 +149,21 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0) {
-          // Determine next index (advance or wrap)
-          const isLast = prev.currentIndex >= prev.queue.length - 1;
-          const nextIndex = isLast ? 0 : prev.currentIndex + 1;
+          // Determine next index (respect shuffle and wrap in radio mode)
+          let nextIndex: number;
+          if (prev.isShuffling && prev.queue.length > 1) {
+            nextIndex = Math.floor(Math.random() * prev.queue.length);
+            if (nextIndex === prev.currentIndex) {
+              nextIndex = (nextIndex + 1) % prev.queue.length;
+            }
+            console.log('🔀 Shuffle advance to', prev.queue[nextIndex]?.title);
+          } else {
+            const isLast = prev.currentIndex >= prev.queue.length - 1;
+            nextIndex = isLast ? 0 : prev.currentIndex + 1;
+            console.log(isLast ? '🎵 End of queue, looping to first' : '🎵 Auto-advancing to next', prev.queue[nextIndex]?.title);
+          }
           const nextSong = prev.queue[nextIndex];
           nextUrl = nextSong?.url ?? null;
-          console.log(isLast ? '🎵 End of queue, looping to first' : '🎵 Auto-advancing to next', nextSong?.title);
           return {
             ...prev,
             currentSong: nextSong,
