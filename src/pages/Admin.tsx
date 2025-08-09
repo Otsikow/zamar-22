@@ -398,7 +398,12 @@ const Admin = () => {
       });
 
       setEditingSong(null);
-      fetchData();
+      const query = q.trim();
+      if (query) {
+        await fetchSongsSearch(query);
+      } else {
+        await fetchData();
+      }
     } catch (error) {
       console.error("Error updating song:", error);
       toast({
