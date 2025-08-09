@@ -84,16 +84,10 @@ export default function ReferralDashboard() {
       const { data: statsData, error: statsError } = await supabase
         .rpc('get_user_referral_stats', { target_user_id: user.id });
       
-      if (statsError) throw statsError;
-
-      const userStats = statsData?.[0] || {
-        total_referrals: 0,
-        active_referrals: 0,
-        inactive_referrals: 0,
-        total_earned: 0,
-        paid_earnings: 0,
-        pending_earnings: 0
-      };
+      let userStats: any = undefined;
+      if (!statsError && statsData?.[0]) {
+        userStats = statsData[0];
+      }
 
       // Fetch referral activity with user details
       const { data: referralsData, error: referralsError } = await supabase
@@ -135,6 +129,26 @@ export default function ReferralDashboard() {
         .order('earned_at', { ascending: false });
 
       if (earningsError) throw earningsError;
+
+      // Fallback: if RPC failed, compute stats locally from fetched tables
+      if (!userStats) {
+        const direct = (referralsData || []).filter((r: any) => r.generation === 1).length || 0;
+        const indirect = (referralsData || []).filter((r: any) => r.generation === 2).length || 0;
+        let totalEarned = 0, paid = 0, pending = 0;
+        (earningsData || []).forEach((e: any) => {
+          const amt = Number(e.amount) || 0;
+          totalEarned += amt;
+          if (e.status === 'paid') paid += amt; else pending += amt;
+        });
+        userStats = {
+          total_referrals: direct + indirect,
+          active_referrals: direct,
+          inactive_referrals: indirect,
+          total_earned: totalEarned,
+          paid_earnings: paid,
+          pending_earnings: pending
+        };
+      }
 
       // Process monthly earnings data
       const monthlyEarningsMap = new Map();

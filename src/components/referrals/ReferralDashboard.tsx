@@ -79,20 +79,44 @@ export const ReferralDashboard = () => {
     if (!user) return;
 
     try {
-      // Fetch user's referral statistics
+      // Try RPC first, then gracefully fall back to local aggregation
       const { data: statsData, error: statsError } = await supabase
         .rpc('get_user_referral_stats', { target_user_id: user.id });
-      
-      if (statsError) throw statsError;
 
-      const userStats = statsData?.[0] || {
-        total_referrals: 0,
-        active_referrals: 0,
-        inactive_referrals: 0,
-        total_earned: 0,
-        paid_earnings: 0,
-        pending_earnings: 0
-      };
+      let userStats: any | undefined =
+        !statsError && statsData?.[0] ? statsData[0] : undefined;
+
+      if (!userStats) {
+        // Fallback: compute from tables
+        const { data: referrals } = await supabase
+          .from('referrals')
+          .select('generation')
+          .eq('referrer_id', user.id);
+
+        const { data: earnings } = await supabase
+          .from('referral_earnings')
+          .select('amount,status')
+          .eq('user_id', user.id);
+
+        const direct = (referrals || []).filter((r: any) => r.generation === 1).length;
+        const indirect = (referrals || []).filter((r: any) => r.generation === 2).length;
+
+        let totalEarned = 0, paid = 0, pending = 0;
+        (earnings || []).forEach((e: any) => {
+          const amt = Number(e.amount) || 0;
+          totalEarned += amt;
+          if (e.status === 'paid') paid += amt; else pending += amt;
+        });
+
+        userStats = {
+          total_referrals: direct + indirect,
+          active_referrals: direct,
+          inactive_referrals: indirect,
+          total_earned: totalEarned,
+          paid_earnings: paid,
+          pending_earnings: pending
+        };
+      }
 
       setStats({
         totalReferrals: Number(userStats.total_referrals),

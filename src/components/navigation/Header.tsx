@@ -127,11 +127,17 @@ const Header = () => {
                       <span className="hidden sm:inline">{t('nav.account', 'Account')}</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+<DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
                       <Link to="/profile">
                         <User className="mr-2 h-4 w-4" />
                         {t('nav.profile', 'Profile')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        {t('nav.user_dashboard', 'Dashboard')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -144,7 +150,7 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/admin">
                           <LayoutDashboard className="mr-2 h-4 w-4" />
-                          {t('nav.dashboard', 'Dashboard')}
+                          {t('nav.admin', 'Admin')}
                         </Link>
                       </DropdownMenuItem>
                     )}
