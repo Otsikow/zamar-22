@@ -462,41 +462,115 @@ const NotificationCenter = () => {
                   {/* Items in group */}
                   <div className="space-y-3">
                     {group.items.map((notification) => (
-                      <div key={notification.id} className={`p-3 rounded-md border ${!notification.is_read ? 'border-yellow-600/60 bg-yellow-500/5' : 'border-border'}`}>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {notification.type.replace('_', ' ')}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                            </span>
+                      <div
+                        key={notification.id}
+                        className={`p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer ${
+                          !notification.is_read ? 'border-yellow-500/80 shadow-yellow-500/10' : 'border-gray-800'
+                        }`}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Status Dot & Icon */}
+                          <div className="flex flex-col items-center gap-2 pt-1">
+                            <div
+                              className={`w-3 h-3 rounded-full ${
+                                !notification.is_read ? 'bg-yellow-500' : 'bg-gray-400'
+                              }`}
+                            />
+                            <div className={`p-2 rounded-full ${getTypeColor(notification.type)} text-white`}>
+                              {getNotificationIcon(notification.type)}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            {(notification.type === 'message' || notification.type === 'song_request') && (
-                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}>
-                                {notification.type === 'message' ? 'Open Chat' : 'Review'}
-                              </Button>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {notification.type.replace('_', ' ')}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                                </span>
+                                {(notification.type === 'message' || notification.type === 'song_request') && (
+                                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {(notification.type === 'message' || notification.type === 'song_request') && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleNotificationClick(notification);
+                                    }}
+                                    className="shrink-0"
+                                  >
+                                    {notification.type === 'message' ? 'Open Chat' : 'Review'}
+                                  </Button>
+                                )}
+                                {!notification.is_read ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      markAsRead(notification.id);
+                                    }}
+                                    className="shrink-0"
+                                  >
+                                    <Check className="h-4 w-4 mr-1" />
+                                    Mark Read
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      markAsUnread(notification.id);
+                                    }}
+                                    className="shrink-0"
+                                  >
+                                    <Undo2 className="h-4 w-4 mr-1" />
+                                    Mark Unread
+                                  </Button>
+                                )}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteNotification(notification.id);
+                                  }}
+                                  className="shrink-0"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+
+                            <p className="text-foreground leading-relaxed">
+                              {getNotificationDisplayMessage(notification)}
+                            </p>
+
+                            {notification.type === 'message' && (
+                              <div className="mt-2 space-y-1">
+                                {notification.metadata?.sender_email && (
+                                  <p className="text-xs text-muted-foreground">
+                                    From: {notification.metadata.sender_email}
+                                  </p>
+                                )}
+                                {notification.metadata?.message_preview && (
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    “{notification.metadata.message_preview}”
+                                  </p>
+                                )}
+                              </div>
                             )}
-                            {!notification.is_read ? (
-                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}>
-                                <Check className="h-4 w-4 mr-1" /> Mark Read
-                              </Button>
-                            ) : (
-                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); markAsUnread(notification.id); }}>
-                                <Undo2 className="h-4 w-4 mr-1" /> Mark Unread
-                              </Button>
-                            )}
-                            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}>
-                              <Trash2 className="h-4 w-4 mr-1" /> Delete
-                            </Button>
                           </div>
-                        </div>
-                        <div className="mt-2 text-foreground">
-                          {getNotificationDisplayMessage(notification)}
-                          {notification.type === 'message' && notification.metadata?.message_preview && (
-                            <div className="text-xs text-muted-foreground mt-1">“{notification.metadata.message_preview}”</div>
-                          )}
                         </div>
                       </div>
                     ))}
