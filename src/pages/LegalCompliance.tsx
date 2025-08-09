@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const LegalCompliance = () => {
@@ -29,64 +29,13 @@ const LegalCompliance = () => {
     canonical.href = window.location.origin + "/legal";
   }, []);
 
-  // Search state & refs
-  const [query, setQuery] = useState("");
-  const [matches, setMatches] = useState({ terms: true, privacy: true, guidelines: true, cookies: true });
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const termsRef = useRef<HTMLDivElement | null>(null);
-  const privacyRef = useRef<HTMLDivElement | null>(null);
-  const guidelinesRef = useRef<HTMLDivElement | null>(null);
-  const cookiesRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const refs = [termsRef.current, privacyRef.current, guidelinesRef.current, cookiesRef.current].filter(Boolean) as HTMLElement[];
-
-    // Remove previous highlights
-    refs.forEach((el) => {
-      el.innerHTML = el.innerHTML.replace(/<mark class="hl">|<\/mark>/g, "");
-    });
-
-    if (!query) {
-      setMatches({ terms: true, privacy: true, guidelines: true, cookies: true });
-      return;
-    }
-
-    const q = query.toLowerCase();
-    const next = {
-      terms: !!termsRef.current?.innerText.toLowerCase().includes(q),
-      privacy: !!privacyRef.current?.innerText.toLowerCase().includes(q),
-      guidelines: !!guidelinesRef.current?.innerText.toLowerCase().includes(q),
-      cookies: !!cookiesRef.current?.innerText.toLowerCase().includes(q),
-    };
-    setMatches(next);
-
-    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`(${esc})`, "gi");
-    refs.forEach((el) => {
-      if (el.innerText.toLowerCase().includes(q)) {
-        el.innerHTML = el.innerHTML.replace(re, '<mark class="hl">$1</mark>');
-      }
-    });
-  }, [query]);
-
   return (
     <div className="dark">
-      <div id="top" ref={containerRef} className="container mx-auto max-w-4xl px-4 py-8">
+      <div id="top" className="container mx-auto max-w-4xl px-4 py-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-primary mb-2">Zamar Legal &amp; Compliance</h1>
           <p className="text-sm text-muted-foreground">Last Updated: 9 August 2025</p>
       </header>
-
-      <div className="mb-4">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search legal documents..."
-          aria-label="Search legal documents"
-          className="w-full p-2 rounded-md bg-secondary text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary"
-        />
-      </div>
-      <style>{`.hl{ background-color:hsl(var(--primary)); color:hsl(var(--primary-foreground)); padding:0 2px; border-radius:2px; }`}</style>
 
       <nav aria-label="Table of contents" className="bg-card border border-border rounded-xl p-4 mb-8">
         <h2 className="text-xl font-semibold mb-3">Table of Contents</h2>
@@ -115,12 +64,12 @@ const LegalCompliance = () => {
 
       <main>
         {/* Accordion Sections */}
-        <section id="terms" className={`mb-6 ${query && !matches.terms ? 'hidden' : ''}`}>
-          <Accordion type="multiple" {...(query ? { value: matches.terms ? ["terms"] : [] } : {})}>
+        <section id="terms" className="mb-6">
+          <Accordion type="multiple">
             <AccordionItem value="terms">
               <AccordionTrigger className="text-primary font-semibold">Terms of Service – Full Legal Text</AccordionTrigger>
               <AccordionContent>
-                <div ref={termsRef} data-searchable className="space-y-4">
+                <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-primary">1. Introduction</h3>
                   <p>Welcome to Zamar (“Zamar,” “we,” “us,” “our”). These Terms of Service (“Terms”) govern your access to and use of the Zamar platform, including our website, mobile applications, streaming, download services, and any related features (collectively, the “Service”). By using the Service, you agree to be bound by these Terms, our Privacy Policy, Community Guidelines, and Cookie Policy (together, the “Agreements”). If you do not agree, you must not use the Service.</p>
                   <p className="text-muted-foreground">Effective Date: 9 August 2025</p>
@@ -223,12 +172,12 @@ const LegalCompliance = () => {
           </Accordion>
         </section>
 
-        <section id="privacy" className={`mb-6 ${query && !matches.privacy ? 'hidden' : ''}`}>
-          <Accordion type="multiple" {...(query ? { value: matches.privacy ? ["privacy"] : [] } : {})}>
+        <section id="privacy" className="mb-6">
+          <Accordion type="multiple">
             <AccordionItem value="privacy">
               <AccordionTrigger className="text-primary font-semibold">Privacy Policy – Full Legal Text</AccordionTrigger>
               <AccordionContent>
-                <div ref={privacyRef} data-searchable className="space-y-4">
+                <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-primary">1. Introduction</h3>
                   <p>Zamar (“we,” “us,” “our”) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, share, and safeguard personal data when you use our Service. We comply with applicable data protection laws, including the EU/UK General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA) as amended by CPRA, Brazil’s LGPD, South Africa’s POPIA, and other local laws as applicable.</p>
                   <p className="text-muted-foreground">Effective Date: 9 August 2025</p>
@@ -304,12 +253,12 @@ const LegalCompliance = () => {
           </Accordion>
         </section>
 
-        <section id="guidelines" className={`mb-6 ${query && !matches.guidelines ? 'hidden' : ''}`}>
-          <Accordion type="multiple" {...(query ? { value: matches.guidelines ? ["guidelines"] : [] } : {})}>
+        <section id="guidelines" className="mb-6">
+          <Accordion type="multiple">
             <AccordionItem value="guidelines">
               <AccordionTrigger className="text-primary font-semibold">Community Guidelines – Full Legal Text</AccordionTrigger>
               <AccordionContent>
-                <div ref={guidelinesRef} data-searchable className="space-y-4">
+                <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-primary">1. Purpose</h3>
                   <p>These Community Guidelines (“Guidelines”) define acceptable behavior and content standards for all users of Zamar (Guests, Free Listeners, Supporters, and Admins). By using Zamar, you agree to comply with these Guidelines, our Terms of Service, and applicable laws.</p>
                   <p className="text-muted-foreground">Effective Date: 9 August 2025</p>
@@ -375,12 +324,12 @@ const LegalCompliance = () => {
           </Accordion>
         </section>
 
-        <section id="cookies" className={`mb-6 ${query && !matches.cookies ? 'hidden' : ''}`}>
-          <Accordion type="multiple" {...(query ? { value: matches.cookies ? ["cookies"] : [] } : {})}>
+        <section id="cookies" className="mb-6">
+          <Accordion type="multiple">
             <AccordionItem value="cookies">
               <AccordionTrigger className="text-primary font-semibold">Cookie Policy – Full Legal Text</AccordionTrigger>
               <AccordionContent>
-                <div ref={cookiesRef} data-searchable className="space-y-4">
+                <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-primary">1. Introduction</h3>
                   <p>This Cookie Policy explains how Zamar uses cookies and similar tracking technologies on our Service. It should be read alongside our Privacy Policy.</p>
                   <p className="text-muted-foreground">Effective Date: 9 August 2025</p>
