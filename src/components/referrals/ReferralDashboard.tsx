@@ -46,6 +46,8 @@ export const ReferralDashboard = () => {
     if (user) {
       generateReferralCode();
       fetchReferralStats();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -137,6 +139,22 @@ export const ReferralDashboard = () => {
             <div className="h-24 bg-muted rounded-lg"></div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="space-y-6">
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-primary">Sign in to view referrals</CardTitle>
+            <CardDescription>You need to be logged in to access your referral dashboard.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/auth')}>Go to Login</Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

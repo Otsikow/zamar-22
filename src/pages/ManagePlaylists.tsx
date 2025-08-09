@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit, Trash2, Eye, Plus } from 'lucide-react';
 
@@ -41,10 +42,14 @@ const ManagePlaylists = () => {
     is_public: false
   });
   const [creating, setCreating] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [playlistToDelete, setPlaylistToDelete] = useState<Playlist | null>(null);
 
   useEffect(() => {
     if (user) {
       fetchPlaylists();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -114,8 +119,6 @@ const ManagePlaylists = () => {
   };
 
   const handleDelete = async (playlist: Playlist) => {
-    if (!confirm(`Are you sure you want to delete "${playlist.name}"?`)) return;
-
     try {
       const { error } = await supabase
         .from('playlists')
@@ -195,6 +198,21 @@ const ManagePlaylists = () => {
       <div className="min-h-screen bg-background text-foreground pb-20">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-primary">Loading playlists...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background text-foreground pb-20">
+        <div className="container mx-auto px-4 py-8">
+          <Card className="border-primary/20">
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground mb-4">Please sign in to manage your playlists.</p>
+              <Button onClick={() => navigate('/auth')}>Go to Login</Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -286,7 +304,7 @@ const ManagePlaylists = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(playlist)}
+                        onClick={() => { setPlaylistToDelete(playlist); setDeleteDialogOpen(true); }}
                         className="text-destructive hover:bg-destructive/10"
                         title="Delete playlist"
                       >
@@ -359,6 +377,31 @@ const ManagePlaylists = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete playlist?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete "{playlistToDelete?.name}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (playlistToDelete) {
+                  handleDelete(playlistToDelete);
+                  setDeleteDialogOpen(false);
+                  setPlaylistToDelete(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

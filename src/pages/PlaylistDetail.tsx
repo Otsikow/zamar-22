@@ -52,6 +52,16 @@ const PlaylistDetail = () => {
     }
   }, [user, id]);
 
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      navigate('/library', { replace: true });
+    } else if (!user) {
+      setLoading(false);
+      navigate('/auth', { replace: true });
+    }
+  }, [user, id, navigate]);
+
   const fetchPlaylistData = async () => {
     try {
       // Fetch playlist details
