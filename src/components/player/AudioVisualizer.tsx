@@ -243,6 +243,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       }
 
       const barCount = bufferLength;
+      const baseline = heightPx;
       const barWidth = (width / barCount) * 2.5; // Wider spacing for distinct bars
       let x = 0;
       for (let i = 0; i < barCount; i++) {
@@ -274,21 +275,21 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         ctx.shadowBlur = Math.max(8, barWidth * 0.6);
 
         // Vertical gradient per bar
-        const gradient = ctx.createLinearGradient(0, heightPx, 0, heightPx - barHeight);
+        const gradient = ctx.createLinearGradient(0, baseline, 0, baseline - barHeight);
         gradient.addColorStop(0, barBase);
         gradient.addColorStop(1, barTop);
         ctx.fillStyle = gradient;
 
         // Rounded top bars look nicer
-        const y = heightPx - barHeight;
+        const y = baseline - barHeight;
         const radius = Math.min(4, barHeight / 2);
         ctx.beginPath();
-        ctx.moveTo(x, heightPx);
+        ctx.moveTo(x, baseline);
         ctx.lineTo(x, y + radius);
         ctx.quadraticCurveTo(x, y, x + radius, y);
         ctx.lineTo(x + barWidth - radius, y);
         ctx.quadraticCurveTo(x + barWidth, y, x + barWidth, y + radius);
-        ctx.lineTo(x + barWidth, heightPx);
+        ctx.lineTo(x + barWidth, baseline);
         ctx.closePath();
         ctx.fill();
 
