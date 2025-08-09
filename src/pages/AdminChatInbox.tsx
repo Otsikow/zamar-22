@@ -49,9 +49,11 @@ const AdminChatInbox = () => {
   const [loading, setLoading] = useState(false);
   const [showChat, setShowChat] = useState(false); // For mobile view toggle
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (selectedRoom) inputRef.current?.focus();
   }, [messages, selectedRoom]);
 
   useEffect(() => {
@@ -336,7 +338,17 @@ const AdminChatInbox = () => {
 
   const openFirstUnread = () => {
     const unreadRoom = chatRooms.find(r => r.unread_count > 0);
-    if (unreadRoom) selectRoom(unreadRoom);
+    if (unreadRoom) {
+      selectRoom(unreadRoom);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('user', unreadRoom.user_id);
+      newParams.set('room', unreadRoom.id);
+      setSearchParams(newParams);
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        inputRef.current?.focus();
+      }, 0);
+    }
   };
 
   return (
@@ -451,7 +463,7 @@ const AdminChatInbox = () => {
                 {/* Messages Area - Scrollable */}
                 <div className="flex-1 min-h-0 overflow-hidden">
                   <ScrollArea className="h-full">
-                    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 pb-8">{/* Added bottom padding to messages */}
+                    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 pb-32">{/* Added bottom padding to messages */}
                       {messages.length === 0 ? (
                         <div className="text-center text-gray-400 py-8">
                           <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -493,6 +505,7 @@ const AdminChatInbox = () => {
                 <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-[#1a1a1a] mb-36 md:mb-28 lg:mb-24 relative z-50">{/* Extra margin to clear mini player & bottom nav */}
                   <div className="flex space-x-2">
                     <Input
+                      ref={inputRef}
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
