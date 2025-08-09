@@ -51,7 +51,7 @@
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
   /* Sidebar */
   --sidebar-background: 0 0% 98%;
@@ -156,12 +156,12 @@
 @media (min-width:1024px){ .auto-grid{ gap:1.75rem; } }
 
 /* Cards */
-.card{ background:hsl(var(--card)); color:hsl(var(--card-foreground)); border:1px solid hsl(var(--border)); border-radius:20px; padding:1rem; box-shadow:var(--shadow-card); }
+.card{ background:hsl(var(--card)); color:hsl(var(--card-foreground)); border:1px solid hsl(var(--border)); border-radius:var(--radius); padding:1rem; box-shadow:var(--shadow-card); }
 @media (min-width:640px){ .card{ padding:1.25rem; } }
 @media (min-width:1024px){ .card{ padding:2rem; } }
 
 /* Buttons */
-.btn{ display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.75rem 1.25rem; border-radius:16px; font-weight:700; transition:transform .1s ease, filter .15s ease; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.75rem 1.25rem; border-radius:var(--radius); font-weight:700; transition:transform .1s ease, filter .15s ease; }
 .btn:active{ transform:scale(.985); }
 .btn-gold{ background:hsl(var(--primary)); color:hsl(var(--primary-foreground)); }
 .btn-gold:hover{ filter:brightness(.95); }
