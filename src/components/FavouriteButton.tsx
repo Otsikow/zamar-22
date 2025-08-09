@@ -55,11 +55,13 @@ export default function FavouriteButton({ songId, size = "sm", className }: Prop
           .eq("user_id", userId)
           .eq("song_id", songId);
         setIsFav(false);
+        window.dispatchEvent(new CustomEvent('favourites:changed', { detail: { songId, added: false } }));
         toast({ title: "Removed from Favourites" });
       } else {
         await (supabase.from as any)("user_favourites")
           .insert({ user_id: userId, song_id: songId });
         setIsFav(true);
+        window.dispatchEvent(new CustomEvent('favourites:changed', { detail: { songId, added: true } }));
         toast({ title: "Added to Favourites" });
       }
     } finally {

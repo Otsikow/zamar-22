@@ -117,6 +117,15 @@ const Library = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
+  // Refresh favourites when toggled elsewhere
+  useEffect(() => {
+    const handler = () => {
+      if (user?.id) fetchFavourites(user.id);
+    };
+    window.addEventListener('favourites:changed', handler as EventListener);
+    return () => window.removeEventListener('favourites:changed', handler as EventListener);
+  }, [user]);
+
   const fetchPurchases = async (userId: string) => {
     try {
       const { data, error } = await supabase
