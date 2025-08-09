@@ -96,7 +96,6 @@ const AdminChatInbox = () => {
       const { data: rooms, error: roomsError } = await supabase
         .from('chat_rooms')
         .select('*')
-        .neq('user_id', user?.id) // Prevent admin from chatting with themselves
         .order('updated_at', { ascending: false });
 
       if (roomsError) throw roomsError;
