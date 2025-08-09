@@ -29,7 +29,12 @@ const BackButton = ({
     } else if (to) {
       navigate(to);
     } else {
-      navigate(-1);
+      // Safe fallback: if no history to go back to, send home
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/');
+      }
     }
   };
 
