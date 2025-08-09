@@ -67,7 +67,7 @@ const AboutUs = () => {
                     <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
                     <div>
                       <h3 className="font-inter font-semibold text-foreground mb-2">Global Reach</h3>
-                      <p className="text-muted-foreground font-inter">We serve individuals, organizations, and communities around the world.</p>
+                      <p className="text-muted-foreground font-inter">We serve individuals, organisations, and communities around the world.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
