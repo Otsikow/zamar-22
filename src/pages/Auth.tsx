@@ -69,9 +69,9 @@ const Auth = () => {
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          setError("Invalid email or password. Please check your credentials and try again.");
+          setError(t('auth.invalid_credentials', 'Invalid email or password. Please check your credentials and try again.'));
         } else if (error.message.includes("Email not confirmed")) {
-          setError("Please check your email and click the confirmation link before signing in.");
+          setError(t('auth.email_not_confirmed', 'Please check your email and click the confirmation link before signing in.'));
         } else {
           setError(error.message);
         }
@@ -79,12 +79,12 @@ const Auth = () => {
       }
 
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+        title: t('auth.welcomeBack', 'Welcome back!'),
+        description: t('auth.loginSuccess', 'You have successfully logged in.'),
       });
     } catch (error) {
       console.error("Login error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      setError(t('errors.unexpected', 'An unexpected error occurred. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -97,13 +97,13 @@ const Auth = () => {
 
     // Validation
     if (signupForm.password !== signupForm.confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t('auth.passwords_no_match', 'Passwords do not match.'));
       setLoading(false);
       return;
     }
 
     if (signupForm.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError(t('auth.password_min_length', 'Password must be at least 6 characters long.'));
       setLoading(false);
       return;
     }
@@ -125,9 +125,9 @@ const Auth = () => {
 
       if (error) {
         if (error.message.includes("User already registered")) {
-          setError("This email is already registered. Please try logging in instead.");
+          setError(t('auth.user_already_registered', 'This email is already registered. Please try logging in instead.'));
         } else if (error.message.includes("Password should be at least 6 characters")) {
-          setError("Password must be at least 6 characters long.");
+          setError(t('auth.password_min_length', 'Password must be at least 6 characters long.'));
         } else {
           setError(error.message);
         }
@@ -135,8 +135,8 @@ const Auth = () => {
       }
 
       toast({
-        title: "Account created!",
-        description: "Please check your email for a confirmation link.",
+        title: t('auth.account_created', 'Account created!'),
+        description: t('auth.check_email', 'Please check your email for a confirmation link.'),
       });
 
       // Reset form
@@ -149,7 +149,7 @@ const Auth = () => {
       });
     } catch (error) {
       console.error("Signup error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      setError(t('errors.unexpected', 'An unexpected error occurred. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -336,19 +336,19 @@ const Auth = () => {
               {/* Additional Actions */}
               <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground">
-                  By signing up, you agree to our{" "}
+                  {t('auth.agree', 'By signing up, you agree to our')} {" "}
                   <Link 
                     to="/terms" 
                     className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
                   >
-                    terms of service
+                    {t('auth.terms_of_service', 'terms of service')}
                   </Link>
-                  {" "}and{" "}
+                  {" "}{t('auth.and', 'and')}{" "}
                   <Link 
                     to="/privacy" 
                     className="text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
                   >
-                    privacy policy
+                    {t('auth.privacy_policy', 'privacy policy')}
                   </Link>
                   .
                 </p>
@@ -362,9 +362,9 @@ const Auth = () => {
               <div className="flex items-center gap-3">
                 <Music className="h-5 w-5 text-primary" />
                 <div>
-                  <h4 className="font-semibold text-primary">Why create an account?</h4>
+                  <h4 className="font-semibold text-primary">{t('auth.whyCreateAccountTitle', 'Why create an account?')}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Access custom song requests, view your library, and track your orders.
+                    {t('auth.whyCreateAccountDescription', 'Access custom song requests, view your library, and track your orders.')}
                   </p>
                 </div>
               </div>

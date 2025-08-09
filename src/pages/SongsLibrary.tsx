@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
-
+import { useTranslation } from "@/contexts/TranslationContext";
 interface Song {
   id: string;
   title: string;
@@ -26,6 +26,7 @@ const SongsLibrary = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { playSong, togglePlayPause, state } = useNowPlaying();
+  const { t } = useTranslation();
   const [songs, setSongs] = useState<Song[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +36,6 @@ const SongsLibrary = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [availableGenres, setAvailableGenres] = useState<string[]>([]);
   const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
-
   // Fetch songs from Supabase
   useEffect(() => {
     const fetchSongs = async () => {
@@ -70,8 +70,8 @@ const SongsLibrary = () => {
         
       } catch (error: any) {
         toast({
-          title: "Error",
-          description: "Failed to load songs. Please try again.",
+          title: t('common.error', 'Error'),
+          description: t('songsLibrary.loadError', 'Failed to load songs. Please try again.'),
           variant: "destructive",
         });
         console.error("Error fetching songs:", error);
@@ -168,14 +168,13 @@ const SongsLibrary = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
               <Music2 className="w-10 h-10 md:w-12 md:h-12 text-primary" />
-              Songs{" "}
+              {t('songsLibrary.titleLine1', 'Songs')}{" "}
               <span className="text-transparent bg-gradient-primary bg-clip-text">
-                Library
+                {t('songsLibrary.titleLine2', 'Library')}
               </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
-              Discover our collection of faith-inspired music. Each song crafted with love, 
-              purpose, and Christian values.
+              {t('songsLibrary.subtitle', 'Discover our collection of faith-inspired music. Each song crafted with love, purpose, and Christian values.')}
             </p>
           </div>
 
@@ -186,7 +185,7 @@ const SongsLibrary = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary w-4 h-4" />
                 <Input
-                  placeholder="Search by title or tags..."
+                  placeholder={t('songsLibrary.searchPlaceholder', 'Search by title or tags...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-background border-border focus:border-primary/50"
@@ -202,7 +201,7 @@ const SongsLibrary = () => {
                   className="md:hidden"
                 >
                   <Filter className="w-4 h-4 mr-2" />
-                  Filters
+                  {t('songsLibrary.filters', 'Filters')}
                 </Button>
                 
                 {(searchTerm || selectedGenre !== "all" || selectedOccasion !== "all") && (
@@ -212,7 +211,7 @@ const SongsLibrary = () => {
                     onClick={clearFilters}
                     className="text-primary border-primary/30 hover:bg-primary/10"
                   >
-                    Clear Filters
+                    {t('songsLibrary.clearFilters', 'Clear Filters')}
                   </Button>
                 )}
               </div>
@@ -221,10 +220,10 @@ const SongsLibrary = () => {
               <div className={`grid md:grid-cols-2 gap-4 ${showFilters ? 'block' : 'hidden md:grid'}`}>
                 <Select value={selectedGenre} onValueChange={setSelectedGenre}>
                   <SelectTrigger className="bg-background border-border">
-                    <SelectValue placeholder="All Genres" />
+                    <SelectValue placeholder={t('songsLibrary.allGenres', 'All Genres')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Genres</SelectItem>
+                    <SelectItem value="all">{t('songsLibrary.allGenres', 'All Genres')}</SelectItem>
                     {availableGenres.map((genre) => (
                       <SelectItem key={genre} value={genre.toLowerCase()}>
                         {genre}
@@ -235,10 +234,10 @@ const SongsLibrary = () => {
 
                 <Select value={selectedOccasion} onValueChange={setSelectedOccasion}>
                   <SelectTrigger className="bg-background border-border">
-                    <SelectValue placeholder="All Occasions" />
+                    <SelectValue placeholder={t('songsLibrary.allOccasions', 'All Occasions')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Occasions</SelectItem>
+                    <SelectItem value="all">{t('songsLibrary.allOccasions', 'All Occasions')}</SelectItem>
                     {availableOccasions.map((occasion) => (
                       <SelectItem key={occasion} value={occasion.toLowerCase()}>
                         {occasion}
@@ -253,7 +252,11 @@ const SongsLibrary = () => {
           {/* Results Count */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-muted-foreground font-inter">
-              {isLoading ? "Loading..." : `${filteredSongs.length} song${filteredSongs.length !== 1 ? 's' : ''} found`}
+              {isLoading 
+                ? t('songsLibrary.loading', 'Loading...') 
+                : t('songsLibrary.songsFound', '{{count}} song{{plural}} found')
+                    .replace('{{count}}', String(filteredSongs.length))
+                    .replace('{{plural}}', filteredSongs.length !== 1 ? 's' : '')}
             </p>
           </div>
 
@@ -275,12 +278,12 @@ const SongsLibrary = () => {
           ) : filteredSongs.length === 0 ? (
             <div className="text-center py-16">
               <Music2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-playfair text-foreground mb-2">No Songs Found</h3>
+              <h3 className="text-xl font-playfair text-foreground mb-2">{t('songsLibrary.noSongsFound', 'No Songs Found')}</h3>
               <p className="text-muted-foreground font-inter mb-4">
-                Try adjusting your search terms or filters.
+                {t('songsLibrary.noSongsFoundDescription', 'Try adjusting your search terms or filters.')}
               </p>
               <Button variant="outline" onClick={clearFilters}>
-                Clear All Filters
+                {t('songsLibrary.clearAllFilters', 'Clear All Filters')}
               </Button>
             </div>
           ) : (
