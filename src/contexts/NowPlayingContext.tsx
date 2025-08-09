@@ -195,7 +195,7 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           };
         }
 
-        if ((prev.isQueueMode || getAutoPlayEnabled()) && prev.queue.length > 0) {
+        if (getAutoPlayEnabled() && prev.queue.length > 0) {
           // Determine next index (respect shuffle and wrap in radio mode)
           let nextIndex: number;
           if (prev.isShuffling && prev.queue.length > 1) {

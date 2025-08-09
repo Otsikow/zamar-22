@@ -86,7 +86,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
             analyser.fftSize = 256;
             analyser.smoothingTimeConstant = 0.85;
             mes.connect(analyser);
-            mes.connect(audioCtx.destination);
+            // mes.connect(audioCtx.destination); // Removed to prevent double-audio and bypassing volume
             sourceNode = mes;
             SOURCE_CACHE.set(audioEl, { audioCtx, source: mes, analyser });
           } catch (err) {
@@ -102,7 +102,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
           analyser.fftSize = 256;
           analyser.smoothingTimeConstant = 0.85;
           mes.connect(analyser);
-          mes.connect(audioCtx.destination);
+          // mes.connect(audioCtx.destination); // Removed to prevent double-audio and bypassing volume
           sourceNode = mes;
           SOURCE_CACHE.set(audioEl, { audioCtx, source: mes, analyser });
         } catch (err) {
