@@ -81,10 +81,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="mailto:hello@zamar.com" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   {t('footer.contact_us', 'Contact Us')}
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">

@@ -11,7 +11,6 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
-import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Import all pages
@@ -48,6 +47,7 @@ import { ReferralDashboard as ReferralDashboardComponent } from "./components/re
 import PublicPlaylists from "./pages/PublicPlaylists";
 import PublicPlaylistDetail from "./pages/PublicPlaylistDetail";
 import NotFound from "./pages/NotFound";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +78,7 @@ const App = () => (
                     <Route path="/songs" element={<SongsLibrary />} />
                     <Route path="/player/:id" element={<SongPlayer />} />
                     <Route path="/songs/:id" element={<SongDetail />} />
+                    <Route path="/contact" element={<Contact />} />
                     
                     {/* Protected Routes */}
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -112,14 +113,12 @@ const App = () => (
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
-                    {/* 404 Route */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
 
                 <BottomNav />
                 <MiniPlayer />
-                <FloatingChatButton />
                 </div>
               </NowPlayingProvider>
             </TranslationProvider>
