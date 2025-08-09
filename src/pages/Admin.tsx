@@ -593,16 +593,16 @@ const Admin = () => {
         <Tabs defaultValue={initialTab} key={location.search} className="w-full">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-12 gap-1 h-auto p-1">
             <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
-            <TabsTrigger value="custom-upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
+            
             <TabsTrigger value="songs" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Analytics</TabsTrigger>
-            <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
+            
             <TabsTrigger value="chat" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Chat</TabsTrigger>
             <TabsTrigger value="lyrics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Lyrics</TabsTrigger>
             <TabsTrigger value="donations" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
             <TabsTrigger value="testimonials" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
             <TabsTrigger value="users" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
-            <TabsTrigger value="role-history" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Role History</TabsTrigger>
+            
             <TabsTrigger value="ads" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
             <TabsTrigger value="referrals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
           </TabsList>
@@ -792,171 +792,188 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          {/* Custom Song Upload */}
-          <TabsContent value="custom-upload">
-            <CustomSongUpload />
-          </TabsContent>
 
           {/* Songs Management */}
           <TabsContent value="songs">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Music className="h-5 w-5 text-primary" />
-                  Manage Songs
-                </CardTitle>
-                <CardDescription>
-                  View, edit, and delete existing songs
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={q}
-                        onChange={(e) => setQ(e.target.value)}
-                        placeholder="Search title, genre, occasion, tags…"
-                        className="max-w-md"
-                      />
-                      {q && (
-                        <Button variant="outline" onClick={() => setQ("")}>Clear</Button>
-                      )}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {q ? (searchLoading ? 'Searching…' : `Showing ${searchResults.length} result(s)`) : `Showing ${allSongs.length} song(s)`}
-                    </div>
-                  </div>
-                  {(q ? searchResults : allSongs).map((song) => (
-                    <div key={song.id} className="border border-primary/20 rounded-lg p-4">
-                      {editingSong?.id === song.id ? (
-                        <form onSubmit={handleSongUpdate} className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="editTitle">Title</Label>
-                              <Input
-                                id="editTitle"
-                                value={editingSong.title}
-                                onChange={(e) => setEditingSong({...editingSong, title: e.target.value})}
-                                required
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="editGenre">Genre</Label>
-                              <Input
-                                id="editGenre"
-                                value={editingSong.genre || ""}
-                                onChange={(e) => setEditingSong({...editingSong, genre: e.target.value})}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="editOccasion">Occasion</Label>
-                              <Input
-                                id="editOccasion"
-                                value={editingSong.occasion || ""}
-                                onChange={(e) => setEditingSong({...editingSong, occasion: e.target.value})}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="editTags">Tags</Label>
-                              <Input
-                                id="editTags"
-                                value={Array.isArray(editingSong.tags) ? editingSong.tags.join(", ") : ""}
-                                onChange={(e) => setEditingSong({...editingSong, tags: e.target.value.split(",").map(tag => tag.trim())})}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Switch
-                              id="editFeatured"
-                              checked={editingSong.featured}
-                              onCheckedChange={(checked) => setEditingSong({...editingSong, featured: checked})}
-                            />
-                            <Label htmlFor="editFeatured">Featured Song</Label>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button type="submit" size="sm">
-                              Save Changes
-                            </Button>
-                            <Button 
-                              type="button" 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => setEditingSong(null)}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </form>
-                      ) : (
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-primary text-lg mb-2">
-                              {song.title}
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="text-muted-foreground">Genre: </span>
-                                <span>{song.genre || "Not specified"}</span>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">Occasion: </span>
-                                <span>{song.occasion || "Not specified"}</span>
-                              </div>
-                              <div className="md:col-span-2">
-                                <span className="text-muted-foreground">Tags: </span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {Array.isArray(song.tags) && song.tags.length > 0 ? (
-                                    song.tags.map((tag, index) => (
-                                      <Badge key={index} variant="outline" className="text-xs">
-                                        {tag}
-                                      </Badge>
-                                    ))
-                                  ) : (
-                                    <span className="text-muted-foreground text-sm">No tags</span>
-                                  )}
+            <Tabs defaultValue="all" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 gap-1 h-auto p-1">
+                <TabsTrigger value="all" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
+                <TabsTrigger value="custom" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
+                <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="all">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Music className="h-5 w-5 text-primary" />
+                      Manage Songs
+                    </CardTitle>
+                    <CardDescription>
+                      View, edit, and delete existing songs
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={q}
+                            onChange={(e) => setQ(e.target.value)}
+                            placeholder="Search title, genre, occasion, tags…"
+                            className="max-w-md"
+                          />
+                          {q && (
+                            <Button variant="outline" onClick={() => setQ("")}>Clear</Button>
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {q ? (searchLoading ? 'Searching…' : `Showing ${searchResults.length} result(s)`) : `Showing ${allSongs.length} song(s)`}
+                        </div>
+                      </div>
+                      {(q ? searchResults : allSongs).map((song) => (
+                        <div key={song.id} className="border border-primary/20 rounded-lg p-4">
+                          {editingSong?.id === song.id ? (
+                            <form onSubmit={handleSongUpdate} className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="editTitle">Title</Label>
+                                  <Input
+                                    id="editTitle"
+                                    value={editingSong.title}
+                                    onChange={(e) => setEditingSong({...editingSong, title: e.target.value})}
+                                    required
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="editGenre">Genre</Label>
+                                  <Input
+                                    id="editGenre"
+                                    value={editingSong.genre || ""}
+                                    onChange={(e) => setEditingSong({...editingSong, genre: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="editOccasion">Occasion</Label>
+                                  <Input
+                                    id="editOccasion"
+                                    value={editingSong.occasion || ""}
+                                    onChange={(e) => setEditingSong({...editingSong, occasion: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="editTags">Tags</Label>
+                                  <Input
+                                    id="editTags"
+                                    value={Array.isArray(editingSong.tags) ? editingSong.tags.join(", ") : ""}
+                                    onChange={(e) => setEditingSong({...editingSong, tags: e.target.value.split(",").map(tag => tag.trim())})}
+                                  />
                                 </div>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Featured: </span>
-                                <Badge variant={song.featured ? "default" : "secondary"}>
-                                  {song.featured ? "Yes" : "No"}
-                                </Badge>
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  id="editFeatured"
+                                  checked={editingSong.featured}
+                                  onCheckedChange={(checked) => setEditingSong({...editingSong, featured: checked})}
+                                />
+                                <Label htmlFor="editFeatured">Featured Song</Label>
                               </div>
-                              <div>
-                                <span className="text-muted-foreground">Created: </span>
-                                <span>{new Date(song.created_at).toLocaleDateString()}</span>
+                              <div className="flex gap-2">
+                                <Button type="submit" size="sm">
+                                  Save Changes
+                                </Button>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setEditingSong(null)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </form>
+                          ) : (
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-primary text-lg mb-2">
+                                  {song.title}
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <span className="text-muted-foreground">Genre: </span>
+                                    <span>{song.genre || "Not specified"}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Occasion: </span>
+                                    <span>{song.occasion || "Not specified"}</span>
+                                  </div>
+                                  <div className="md:col-span-2">
+                                    <span className="text-muted-foreground">Tags: </span>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {Array.isArray(song.tags) && song.tags.length > 0 ? (
+                                        song.tags.map((tag, index) => (
+                                          <Badge key={index} variant="outline" className="text-xs">
+                                            {tag}
+                                          </Badge>
+                                        ))
+                                      ) : (
+                                        <span className="text-muted-foreground text-sm">No tags</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Featured: </span>
+                                    <Badge variant={song.featured ? "default" : "secondary"}>
+                                      {song.featured ? "Yes" : "No"}
+                                    </Badge>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Created: </span>
+                                    <span>{new Date(song.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 ml-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setEditingSong(song)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleSongDelete(song.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex gap-2 ml-4">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingSong(song)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleSongDelete(song.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          )}
+                        </div>
+                      ))}
+                      {allSongs.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No songs found. Upload your first song using the Upload tab.
                         </div>
                       )}
                     </div>
-                  ))}
-                  {allSongs.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No songs found. Upload your first song using the Upload tab.
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="custom">
+                <CustomSongUpload />
+              </TabsContent>
+
+              <TabsContent value="requests">
+                <RequestReviewPanel 
+                  requests={requests} 
+                  onRequestAction={handleRequestAction}
+                />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           {/* Combined Analytics & Song Insights */}
@@ -967,13 +984,6 @@ const Admin = () => {
             />
           </TabsContent>
 
-          {/* Review Custom Song Requests */}
-          <TabsContent value="requests">
-            <RequestReviewPanel 
-              requests={requests} 
-              onRequestAction={handleRequestAction}
-            />
-          </TabsContent>
 
           {/* Chat Inbox */}
           <TabsContent value="chat">
@@ -1353,10 +1363,6 @@ const Admin = () => {
             </Tabs>
           </TabsContent>
 
-          {/* Role Change History */}
-          <TabsContent value="role-history">
-            <RoleChangeHistory />
-          </TabsContent>
 
           {/* Referrals Analytics */}
           <TabsContent value="referrals">
