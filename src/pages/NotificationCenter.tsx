@@ -416,10 +416,10 @@ const NotificationCenter = () => {
             </Card>
           ) : (
             grouped.map((group) => (
-              <Card key={group.senderId} className={`transition-all hover:shadow-md ${group.unread > 0 ? 'border-yellow-500 shadow-yellow-500/20' : ''}`}>
+              <Card key={group.senderId} className={`transition-all animate-fade-in hover:shadow-md ${group.unread > 0 ? 'border-yellow-500 shadow-yellow-500/20' : ''}`}>
                 <CardContent className="p-4 space-y-4">
                   {/* Group header */}
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <div className="bg-primary/10 rounded-full h-10 w-10 flex items-center justify-center">
                         <MessageCircle className="h-5 w-5 text-primary" />
@@ -435,12 +435,12 @@ const NotificationCenter = () => {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
+                    <div className="flex items-center gap-2 flex-wrap md:flex-nowrap md:justify-end">
+                      <Badge variant="outline" className="text-xs rounded-full px-2.5 py-1">
                         {group.items.length} total
                       </Badge>
                       {group.unread > 0 && (
-                        <Badge variant="destructive" className="bg-[#FFD700] text-black text-xs">
+                        <Badge variant="destructive" className="bg-[#FFD700] text-black text-xs rounded-full px-2.5 py-1">
                           {group.unread} unread
                         </Badge>
                       )}
