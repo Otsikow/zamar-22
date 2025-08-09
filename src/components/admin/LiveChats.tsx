@@ -34,6 +34,7 @@ interface ChatMessage {
   room_id: string;
   sender_id: string;
   message: string;
+  image_url?: string | null;
   seen: boolean;
   sent_at: string;
 }
@@ -303,6 +304,12 @@ export const LiveChats = () => {
     }
   };
 
+  const selectRoom = (room: ChatRoom) => {
+    setSelectedRoom(room);
+    fetchMessages(room.id);
+  };
+
+  const getUserDisplayName = (room: ChatRoom) => {
     const profile = room.profiles;
     if (profile?.first_name || profile?.last_name) {
       return `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
