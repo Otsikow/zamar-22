@@ -25,6 +25,9 @@ serve(async (req) => {
     const { name, email, subject, emailBody }: ContactEmailRequest = await req.json();
 
     const brand = "Zamar";
+    // Capture basic request context for admin visibility
+    const userAgent = req.headers.get("user-agent") ?? "Unknown";
+    const origin = req.headers.get("origin") ?? req.headers.get("referer") ?? "Unknown";
 
     // Send confirmation to sender
     const confirmation = await resend.emails.send({
@@ -47,14 +50,24 @@ serve(async (req) => {
       await resend.emails.send({
         from: `${brand} <onboarding@resend.dev>`,
         to: [adminEmail],
+        reply_to: [email],
         subject: `New contact form: ${subject ?? "No subject"}`,
         html: `
           <h3>New contact submission</h3>
           <p><strong>Name:</strong> ${name ?? "Unknown"}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
           <p><strong>Subject:</strong> ${subject ?? "(none)"}</p>
+          <p><strong>Source:</strong> ${origin}</p>
+          <p><strong>User-Agent:</strong> ${userAgent}</p>
+          <p><strong>Received At:</strong> ${new Date().toISOString()}</p>
+          <hr />
           <p><strong>Message:</strong></p>
           <p>${emailBody.replace(/\n/g, '<br/>')}</p>
+          <hr />
+          <p>
+            <a href="mailto:${email}" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#111;color:#fff;text-decoration:none;margin-right:8px">Reply via Email</a>
+            <a href="/admin" style="display:inline-block;padding:10px 14px;border-radius:8px;border:1px solid #ddd;text-decoration:none">Respond in Live Chat</a>
+          </p>
         `,
       });
     }
