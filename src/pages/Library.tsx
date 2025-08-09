@@ -347,7 +347,7 @@ const Library = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="relative flex w-full overflow-x-auto whitespace-nowrap gap-2 bg-card/60 border border-border rounded-full p-1 px-3 [scrollbar-width:none] [-ms-overflow-style:'none'] [&::-webkit-scrollbar]:hidden">
+            <TabsList aria-label="Library sections" className="relative flex w-full justify-start overflow-x-auto whitespace-nowrap gap-2 bg-card/60 border border-border rounded-full p-1 pl-4 pr-4 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:'none'] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
               <TabsTrigger 
                 value="songs" 
                 className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
