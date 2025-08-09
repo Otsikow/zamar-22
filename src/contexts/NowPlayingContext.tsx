@@ -52,11 +52,25 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const audioRef = useRef<HTMLAudioElement>(null);
   const timeUpdateIntervalRef = useRef<NodeJS.Timeout>();
   
+  // Initialize volume from saved settings (zamar_settings.volume is 0-100)
+  const getInitialVolume = () => {
+    try {
+      const raw = localStorage.getItem('zamar_settings');
+      if (!raw) return 0.8; // default 80%
+      const parsed = JSON.parse(raw);
+      const vol = Number(parsed.volume);
+      if (isFinite(vol)) return Math.max(0, Math.min(1, vol / 100));
+      return 0.8;
+    } catch {
+      return 0.8;
+    }
+  };
+  
   const [state, setState] = useState<NowPlayingState>({
     currentSong: null,
     isPlaying: false,
     currentTime: 0,
-    volume: 1,
+    volume: getInitialVolume(),
     queue: [],
     currentIndex: -1,
     isLooping: false,

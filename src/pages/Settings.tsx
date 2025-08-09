@@ -20,6 +20,7 @@ import {
   Moon,
   Smartphone
 } from 'lucide-react';
+import { useNowPlaying } from '@/contexts/NowPlayingContext';
 
 interface SettingsData {
   notifications: boolean;
@@ -51,6 +52,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { setVolume } = useNowPlaying();
   const [settings, setSettings] = useState<SettingsData>({
     notifications: true,
     autoPlay: false,
@@ -64,7 +66,11 @@ const Settings = () => {
     // Load settings from localStorage
     const savedSettings = localStorage.getItem('zamar_settings');
     if (savedSettings) {
-      setSettings({ ...settings, ...JSON.parse(savedSettings) });
+      const parsed = JSON.parse(savedSettings);
+      setSettings(prev => ({ ...prev, ...parsed }));
+      if (typeof parsed.volume === 'number') {
+        setVolume(Math.max(0, Math.min(1, parsed.volume / 100)));
+      }
     }
   }, []);
 
@@ -101,6 +107,7 @@ const Settings = () => {
       };
       setSettings(defaultSettings);
       localStorage.setItem('zamar_settings', JSON.stringify(defaultSettings));
+      setVolume(Math.max(0, Math.min(1, defaultSettings.volume / 100)));
       
       toast({
       title: t('settings.toast.reset_title', 'Settings reset'),
@@ -135,7 +142,10 @@ const Settings = () => {
                 <Label>{t('settings.audio.default_volume', 'Default Volume')}: {settings.volume}%</Label>
                 <Slider
                   value={[settings.volume]}
-                  onValueChange={(value) => updateSetting('volume', value[0])}
+                  onValueChange={(value) => {
+                    updateSetting('volume', value[0]);
+                    setVolume(Math.max(0, Math.min(1, value[0] / 100)));
+                  }}
                   max={100}
                   step={5}
                   className="w-full"
