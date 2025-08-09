@@ -356,43 +356,29 @@ const Library = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList aria-label="Library sections" className="relative flex w-full justify-start overflow-x-auto whitespace-nowrap gap-2 bg-card/60 border border-border rounded-full p-1 pl-4 pr-4 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:'none'] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory">
-              <TabsTrigger 
-                value="songs" 
-                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
-              >
+            <TabsList aria-label="Library sections">
+              <TabsTrigger value="songs">
                 <Music2 className="w-4 h-4" />
                 {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
               </TabsTrigger>
-              <TabsTrigger 
-                value="favourites"
-                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
-              >
+              <TabsTrigger value="favourites">
                 <Heart className="w-4 h-4" />
                 {t('library.tabs.favourites', 'Favourites')} ({favourites.length})
               </TabsTrigger>
-              <TabsTrigger 
-                value="playlists"
-                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
-              >
+              <TabsTrigger value="playlists">
                 <ClipboardList className="w-4 h-4" />
                 {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
               </TabsTrigger>
-              <TabsTrigger 
-                value="custom"
-                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
-              >
+              <TabsTrigger value="custom">
                 <Gift className="w-4 h-4" />
                 {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
               </TabsTrigger>
-              <TabsTrigger 
-                value="requests"
-                className="shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm rounded-full border border-transparent data-[state=active]:bg-primary data-[state=active]:text-black data-[state=active]:border-primary transition-colors"
-              >
+              <TabsTrigger value="requests">
                 <Calendar className="w-4 h-4" />
                 {t('library.tabs.myRequests', 'My Requests')} ({requests.length})
               </TabsTrigger>
             </TabsList>
+
 
             {/* My Songs Tab */}
             <TabsContent value="songs" className="mt-6">
@@ -566,11 +552,8 @@ const Library = () => {
                     <p className="text-muted-foreground font-inter mb-6">
                       {t('library.noPlaylistsDescription', 'Create your first playlist to organize your favorite songs.')}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button asChild className="bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 text-white">
-                        <Link to="/playlist/create">{t('library.createPlaylist', 'Create Playlist')}</Link>
-                      </Button>
-                      <Button variant="outline" asChild>
+                    <div className="flex justify-center">
+                      <Button asChild>
                         <Link to="/manage-playlists">{t('library.managePlaylists', 'Manage Playlists')}</Link>
                       </Button>
                     </div>
