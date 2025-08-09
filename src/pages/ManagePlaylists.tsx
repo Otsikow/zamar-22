@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit, Trash2, Eye, Plus } from 'lucide-react';
@@ -372,6 +372,65 @@ const ManagePlaylists = () => {
                 disabled={!editForm.name.trim()}
               >
                 Update Playlist
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-primary">Create New Playlist</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="create-name">Playlist Name</Label>
+              <Input
+                id="create-name"
+                value={createForm.name}
+                onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                className="border-primary/30 focus:border-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="create-description">Description</Label>
+              <Textarea
+                id="create-description"
+                value={createForm.description}
+                onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
+                className="border-primary/30 focus:border-primary"
+                rows={3}
+              />
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
+              <div className="space-y-1">
+                <Label htmlFor="create-public">Make Public</Label>
+                <p className="text-xs text-muted-foreground">
+                  Allow others to discover and view this playlist
+                </p>
+              </div>
+              <Switch
+                id="create-public"
+                checked={createForm.is_public}
+                onCheckedChange={(checked) => setCreateForm(prev => ({ ...prev, is_public: checked }))}
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreate}
+                className="flex-1"
+                disabled={!createForm.name.trim() || creating}
+              >
+                {creating ? 'Creating...' : 'Create Playlist'}
               </Button>
             </div>
           </div>
