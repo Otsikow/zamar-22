@@ -186,11 +186,12 @@ const UserRoleManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      {/* Summary Cards - Click to filter */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Total Users */}
+        <Card onClick={() => setRoleFilter('all')} className="cursor-pointer hover:border-primary/50 transition-colors">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Total Users</p>
@@ -199,10 +200,11 @@ const UserRoleManagement = () => {
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
+
+        {/* Admins */}
+        <Card onClick={() => setRoleFilter('admin')} className="cursor-pointer hover:border-primary/50 transition-colors">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Crown className="h-5 w-5 text-destructive" />
               <div>
                 <p className="text-sm font-medium">Admins</p>
@@ -211,22 +213,11 @@ const UserRoleManagement = () => {
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
+
+        {/* Listeners */}
+        <Card onClick={() => setRoleFilter('listener')} className="cursor-pointer hover:border-primary/50 transition-colors">
           <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Heart className="h-5 w-5 text-primary" />
-              <div>
-                <p className="text-sm font-medium">Supporters</p>
-                <p className="text-2xl font-bold">{roleCounts.supporter || 0}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Listeners</p>
