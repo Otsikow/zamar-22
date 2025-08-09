@@ -32,7 +32,7 @@ const MiniPlayer: React.FC = () => {
   return (
     <div className="fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border z-40 animate-fade-in">
       {/* Interactive Progress Slider */}
-      <div className="px-0 py-0">
+      <div className="px-0 py-0 relative z-0">
         <PlayerSlider
           variant="progress"
           value={[state.currentTime || 0]}
@@ -45,7 +45,7 @@ const MiniPlayer: React.FC = () => {
       </div>
       
       {/* Player Content */}
-      <div className="flex items-center gap-3 px-4 py-3">
+      <div className="relative z-10 flex items-center gap-3 px-4 py-3">
         {/* Song Cover */}
         <div className="w-10 h-10 bg-accent rounded-md flex-shrink-0 flex items-center justify-center overflow-hidden">
           <img 

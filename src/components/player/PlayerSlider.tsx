@@ -20,7 +20,7 @@ export default function PlayerSlider({
   return (
     <SliderPrimitive.Root
       className={cn(
-        "relative flex w-full touch-none select-none items-center",
+        "relative flex w-full h-[12px] overflow-visible touch-none select-none items-center",
         className
       )}
       {...props}
