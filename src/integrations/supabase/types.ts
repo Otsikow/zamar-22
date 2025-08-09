@@ -877,7 +877,22 @@ export type Database = {
           song_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_favourites_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favourites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
