@@ -334,6 +334,11 @@ const AdminChatInbox = () => {
 
   const totalUnreadCount = chatRooms.reduce((sum, room) => sum + room.unread_count, 0);
 
+  const openFirstUnread = () => {
+    const unreadRoom = chatRooms.find(r => r.unread_count > 0);
+    if (unreadRoom) selectRoom(unreadRoom);
+  };
+
   return (
     <div className="min-h-screen bg-[#111] text-white pb-32">{/* Added bottom padding for mini player + nav */}
       <div className="pt-16 pb-8 h-screen flex flex-col">{/* Adjusted padding for proper spacing */}
@@ -345,7 +350,13 @@ const AdminChatInbox = () => {
           </div>
           <p className="text-gray-400 text-sm sm:text-base">Manage customer support conversations</p>
           {totalUnreadCount > 0 && (
-            <Badge variant="destructive" className="mt-2 bg-[#FFD700] text-black">
+            <Badge 
+              variant="destructive" 
+              className="mt-2 bg-[#FFD700] text-black cursor-pointer hover:opacity-90"
+              onClick={openFirstUnread}
+              title="Click to open the first unread conversation"
+              role="button"
+            >
               {totalUnreadCount} unread messages
             </Badge>
           )}
