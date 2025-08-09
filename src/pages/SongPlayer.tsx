@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, Heart, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
+import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
 import PlayerSlider from "@/components/player/PlayerSlider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { extractScriptureFromLyrics } from "@/lib/utils";
+import FavouriteButton from "@/components/FavouriteButton";
 
 interface Song {
   id: string;
@@ -192,7 +193,10 @@ const SongPlayer = () => {
 
           {/* Song Header */}
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-2">{song.title}</h1>
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-2">{song.title}</h1>
+              {song.id && <FavouriteButton songId={song.id} size="md" />}
+            </div>
             <div className="flex flex-wrap gap-2 mb-4">
               <Badge variant="secondary">{song.genre}</Badge>
               <Badge variant="secondary">{song.occasion}</Badge>
