@@ -157,7 +157,7 @@ const LegalCompliance = () => {
                   <h3 className="text-lg font-semibold text-primary">18. Contact</h3>
                   <p><b>Zamar Legal Department</b><br />
                     Email: <a className="text-primary hover:underline" href="mailto:info@zamarsongs.com">info@zamarsongs.com</a><br />
-                    Address: Seaview Business Centre, TS10 1AZ
+                    Address: Seaview Business Centre, TS10 1AZ, England
                   </p>
                 </div>
               </AccordionContent>
@@ -238,7 +238,7 @@ const LegalCompliance = () => {
                   <h3 className="text-lg font-semibold text-primary">14. Contact</h3>
                   <p><b>Data Protection Officer – Zamar</b><br />
                     Email: <a className="text-primary hover:underline" href="mailto:info@zamarsongs.com">info@zamarsongs.com</a><br />
-                    Address: Seaview Business Centre, TS10 1AZ
+                    Address: Seaview Business Centre, TS10 1AZ, England
                   </p>
                 </div>
               </AccordionContent>
@@ -309,7 +309,7 @@ const LegalCompliance = () => {
                   <h3 className="text-lg font-semibold text-primary">12. Contact</h3>
                   <p><b>Community Team – Zamar</b><br />
                     Email: <a className="text-primary hover:underline" href="mailto:info@zamarsongs.com">info@zamarsongs.com</a><br />
-                    Address: Seaview Business Centre, TS10 1AZ
+                    Address: Seaview Business Centre, TS10 1AZ, England
                   </p>
                 </div>
               </AccordionContent>
@@ -364,7 +364,7 @@ const LegalCompliance = () => {
                   <h3 className="text-lg font-semibold text-primary">10. Contact</h3>
                   <p><b>Data Protection Officer – Zamar</b><br />
                     Email: <a className="text-primary hover:underline" href="mailto:info@zamarsongs.com">info@zamarsongs.com</a><br />
-                    Address: Seaview Business Centre, TS10 1AZ
+                    Address: Seaview Business Centre, TS10 1AZ, England
                   </p>
                 </div>
               </AccordionContent>
