@@ -47,6 +47,7 @@ import { ReferralDashboard as ReferralDashboardComponent } from "./components/re
 import PublicPlaylists from "./pages/PublicPlaylists";
 import PublicPlaylistDetail from "./pages/PublicPlaylistDetail";
 import NotFound from "./pages/NotFound";
+import LegalCompliance from "./pages/LegalCompliance";
 import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/terms" element={<Terms />} />
+                    <Route path="/legal" element={<LegalCompliance />} />
                     <Route path="/about" element={<AboutUs />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/testimonies" element={<Testimonies />} />
