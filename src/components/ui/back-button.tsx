@@ -26,20 +26,28 @@ const BackButton = ({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else if (to) {
+      return;
+    }
+    if (to) {
       navigate(to);
+      return;
+    }
+
+    // Determine if we can safely go back within the SPA history
+    const hasSpaHistory = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0;
+    const hasSameOriginReferrer = typeof document !== 'undefined' && document.referrer.startsWith(window.location.origin);
+
+    if (hasSpaHistory || hasSameOriginReferrer) {
+      navigate(-1);
     } else {
-      // Safe fallback: if no history to go back to, send home
-      if (window.history.length > 1) {
-        navigate(-1);
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     }
   };
 
   return (
     <Button
+      type="button"
+      aria-label="Go back"
       variant={variant}
       size={size}
       className={cn(
