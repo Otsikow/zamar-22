@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
 const LegalCompliance = () => {
   useEffect(() => {
     // SEO
@@ -12,12 +11,8 @@ const LegalCompliance = () => {
       m.content = "Zamar Legal & Compliance: Terms of Service, Privacy Policy, Community Guidelines, and Cookie Policy.";
       document.head.appendChild(m);
     } else {
-      metaDesc.setAttribute(
-        "content",
-        "Zamar Legal & Compliance: Terms of Service, Privacy Policy, Community Guidelines, and Cookie Policy."
-      );
+      metaDesc.setAttribute("content", "Zamar Legal & Compliance: Terms of Service, Privacy Policy, Community Guidelines, and Cookie Policy.");
     }
-
     const canonicalId = "legal-canonical";
     let canonical = document.querySelector(`link[rel="canonical"]#${canonicalId}`) as HTMLLinkElement | null;
     if (!canonical) {
@@ -28,9 +23,7 @@ const LegalCompliance = () => {
     }
     canonical.href = window.location.origin + "/legal";
   }, []);
-
-  return (
-    <div className="dark">
+  return <div className="dark">
       <div id="top" className="container mx-auto max-w-4xl px-4 py-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-primary mb-2">Zamar Legal &amp; Compliance</h1>
@@ -385,7 +378,7 @@ const LegalCompliance = () => {
           <p>
             Email: <a href="mailto:info@zamarsongs.com" className="text-primary hover:underline">info@zamarsongs.com</a>
           </p>
-          <p>Address: Seaview Business Centre, TS10 1AZ</p>
+          <p>Address: Seaview Business Centre, England TS10 1AZ</p>
         </section>
 
         <p className="mt-8">
@@ -393,8 +386,6 @@ const LegalCompliance = () => {
         </p>
       </main>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default LegalCompliance;
