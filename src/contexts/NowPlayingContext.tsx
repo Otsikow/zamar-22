@@ -408,10 +408,17 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const nextSong = useCallback(() => {
     setState(prev => {
-      if (prev.queue.length === 0 || prev.currentIndex >= prev.queue.length - 1) {
+      if (prev.queue.length === 0) {
         return prev;
       }
-      const nextIndex = prev.currentIndex + 1;
+      let nextIndex = prev.currentIndex + 1;
+      if (nextIndex >= prev.queue.length) {
+        if (prev.isQueueMode) {
+          nextIndex = 0; // wrap around in radio/queue mode
+        } else {
+          return prev;
+        }
+      }
       return {
         ...prev,
         currentSong: prev.queue[nextIndex],
@@ -424,10 +431,17 @@ export const NowPlayingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const previousSong = useCallback(() => {
     setState(prev => {
-      if (prev.queue.length === 0 || prev.currentIndex <= 0) {
+      if (prev.queue.length === 0) {
         return prev;
       }
-      const prevIndex = prev.currentIndex - 1;
+      let prevIndex = prev.currentIndex - 1;
+      if (prevIndex < 0) {
+        if (prev.isQueueMode) {
+          prevIndex = Math.max(prev.queue.length - 1, 0); // wrap around
+        } else {
+          return prev;
+        }
+      }
       return {
         ...prev,
         currentSong: prev.queue[prevIndex],

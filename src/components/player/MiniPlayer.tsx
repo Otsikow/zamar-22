@@ -109,7 +109,7 @@ const MiniPlayer: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={nextSong}
-            disabled={state.currentIndex >= state.queue.length - 1}
+            disabled={state.queue.length === 0}
             className="w-8 h-8 p-0 hover:bg-accent"
           >
             <SkipForward className="w-4 h-4" />
