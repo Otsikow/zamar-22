@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, MessageCircle, Music, Heart, Check, CheckCheck, ExternalLink } from 'lucide-react';
+import { Bell, MessageCircle, Music, Heart, Check, CheckCheck, ExternalLink, Trash2, Undo2 } from 'lucide-react';
 
 interface Notification {
   id: string;
@@ -157,6 +157,81 @@ const NotificationCenter = () => {
     }
   };
 
+  const markAsUnread = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: false })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      setNotifications(prev => 
+        prev.map(notif => 
+          notif.id === notificationId 
+            ? { ...notif, is_read: false }
+            : notif
+        )
+      );
+
+      toast({ title: 'Updated', description: 'Notification marked as unread' });
+    } catch (error) {
+      console.error('Error marking notification as unread:', error);
+      toast({ title: 'Error', description: 'Failed to mark as unread', variant: 'destructive' });
+    }
+  };
+
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      toast({ title: 'Deleted', description: 'Notification removed' });
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast({ title: 'Error', description: 'Failed to delete notification', variant: 'destructive' });
+    }
+  };
+
+  const markGroupAsRead = async (senderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .or(`user_id.eq.${senderId},metadata->>sender_user_id.eq.${senderId}`)
+        .eq('is_read', false);
+      if (error) throw error;
+      setNotifications(prev => prev.map(n => {
+        const key = (n.metadata?.sender_user_id || n.user_id);
+        return key === senderId ? { ...n, is_read: true } : n;
+      }));
+    } catch (error) {
+      console.error('Error marking group as read:', error);
+    }
+  };
+
+  const markGroupAsUnread = async (senderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: false })
+        .or(`user_id.eq.${senderId},metadata->>sender_user_id.eq.${senderId}`)
+        .eq('is_read', true);
+      if (error) throw error;
+      setNotifications(prev => prev.map(n => {
+        const key = (n.metadata?.sender_user_id || n.user_id);
+        return key === senderId ? { ...n, is_read: false } : n;
+      }));
+    } catch (error) {
+      console.error('Error marking group as unread:', error);
+    }
+  };
+
   const handleNotificationClick = async (notification: Notification) => {
     // Mark as read first
     if (!notification.is_read) {
@@ -215,6 +290,22 @@ const NotificationCenter = () => {
     if (filter === 'unread') return !notification.is_read;
     return notification.type === filter;
   });
+
+  // Group notifications by sender (prefer metadata.sender_user_id, fallback to user_id)
+  const grouped = Object.values(
+    filteredNotifications.reduce((acc, n) => {
+      const senderId = n.metadata?.sender_user_id || n.user_id || 'unknown';
+      if (!acc[senderId]) acc[senderId] = { senderId, items: [] as Notification[] };
+      acc[senderId].items.push(n);
+      return acc;
+    }, {} as Record<string, { senderId: string; items: Notification[] }>)
+  ).map(g => {
+    // sort items by created_at desc inside each group
+    g.items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const latestAt = g.items[0]?.created_at || new Date(0).toISOString();
+    const unread = g.items.filter(i => !i.is_read).length;
+    return { ...g, latestAt, unread };
+  }).sort((a, b) => new Date(b.latestAt).getTime() - new Date(a.latestAt).getTime());
 
   const getUserDisplayName = (userId: string) => {
     const profile = userProfiles[userId];
@@ -306,9 +397,9 @@ const NotificationCenter = () => {
           </Button>
         </div>
 
-        {/* Notifications List */}
+        {/* Grouped Notifications */}
         <div className="space-y-4">
-          {filteredNotifications.length === 0 ? (
+          {grouped.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Bell className="h-12 w-12 text-muted-foreground mb-4" />
@@ -324,97 +415,91 @@ const NotificationCenter = () => {
               </CardContent>
             </Card>
           ) : (
-            filteredNotifications.map((notification) => (
-              <Card 
-                key={notification.id} 
-                className={`transition-all hover:shadow-md cursor-pointer ${
-                  !notification.is_read 
-                    ? 'border-yellow-500 shadow-lg shadow-yellow-500/20' 
-                    : ''
-                } ${
-                  notification.type === 'message' ? 'hover:border-green-500/50' : ''
-                }`}
-                onClick={() => handleNotificationClick(notification)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    {/* Status Dot & Icon */}
-                    <div className="flex flex-col items-center gap-2">
-                      <div 
-                        className={`w-3 h-3 rounded-full ${
-                          !notification.is_read ? 'bg-yellow-500' : 'bg-gray-400'
-                        }`}
-                      />
-                      <div className={`p-2 rounded-full ${getTypeColor(notification.type)} text-white`}>
-                        {getNotificationIcon(notification.type)}
+            grouped.map((group) => (
+              <Card key={group.senderId} className={`transition-all hover:shadow-md ${group.unread > 0 ? 'border-yellow-500 shadow-yellow-500/20' : ''}`}>
+                <CardContent className="p-4 space-y-4">
+                  {/* Group header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 rounded-full h-10 w-10 flex items-center justify-center">
+                        <MessageCircle className="h-5 w-5 text-primary" />
                       </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {notification.type.replace('_', ' ')}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                          </span>
-                          {(notification.type === 'message' || notification.type === 'song_request') && (
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                          )}
+                      <div>
+                        <div className="font-semibold">
+                          {getUserDisplayName(group.senderId)}
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          {(notification.type === 'message' || notification.type === 'song_request') && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleNotificationClick(notification);
-                              }}
-                              className="shrink-0"
-                            >
-                              {notification.type === 'message' ? 'Open Chat' : 'Review'}
-                            </Button>
-                          )}
-                          {!notification.is_read && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                markAsRead(notification.id);
-                              }}
-                              className="shrink-0"
-                            >
-                              <Check className="h-4 w-4 mr-1" />
-                              Mark Read
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <p className="text-foreground leading-relaxed">
-                        {getNotificationDisplayMessage(notification)}
-                      </p>
-                      
-                        {notification.type === 'message' && (
-                          <div className="mt-2 space-y-1">
-                            {notification.metadata?.sender_email && (
-                              <p className="text-xs text-muted-foreground">
-                                From: {notification.metadata.sender_email}
-                              </p>
-                            )}
-                            {notification.metadata?.message_preview && (
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                “{notification.metadata.message_preview}”
-                              </p>
-                            )}
+                        {userProfiles[group.senderId]?.email && (
+                          <div className="text-xs text-muted-foreground">
+                            {userProfiles[group.senderId]?.email}
                           </div>
                         )}
+                      </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {group.items.length} total
+                      </Badge>
+                      {group.unread > 0 && (
+                        <Badge variant="destructive" className="bg-[#FFD700] text-black text-xs">
+                          {group.unread} unread
+                        </Badge>
+                      )}
+                      <Button size="sm" variant="outline" onClick={() => navigate(`/admin/chat-inbox?user=${group.senderId}`)}>
+                        Open Chat
+                      </Button>
+                      {group.unread > 0 ? (
+                        <Button size="sm" variant="outline" onClick={() => markGroupAsRead(group.senderId)}>
+                          <Check className="h-4 w-4 mr-1" /> Mark all read
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" onClick={() => markGroupAsUnread(group.senderId)}>
+                          <Undo2 className="h-4 w-4 mr-1" /> Mark all unread
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Items in group */}
+                  <div className="space-y-3">
+                    {group.items.map((notification) => (
+                      <div key={notification.id} className={`p-3 rounded-md border ${!notification.is_read ? 'border-yellow-600/60 bg-yellow-500/5' : 'border-border'}`}>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {notification.type.replace('_', ' ')}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {(notification.type === 'message' || notification.type === 'song_request') && (
+                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}>
+                                {notification.type === 'message' ? 'Open Chat' : 'Review'}
+                              </Button>
+                            )}
+                            {!notification.is_read ? (
+                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}>
+                                <Check className="h-4 w-4 mr-1" /> Mark Read
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); markAsUnread(notification.id); }}>
+                                <Undo2 className="h-4 w-4 mr-1" /> Mark Unread
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}>
+                              <Trash2 className="h-4 w-4 mr-1" /> Delete
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-foreground">
+                          {getNotificationDisplayMessage(notification)}
+                          {notification.type === 'message' && notification.metadata?.message_preview && (
+                            <div className="text-xs text-muted-foreground mt-1">“{notification.metadata.message_preview}”</div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
