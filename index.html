@@ -11,6 +11,11 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://*.supabase.co https://*.supabase.in ws: wss:; media-src 'self' https://*.supabase.co blob: data:; worker-src 'self' blob:; upgrade-insecure-requests;" />
 
     <meta property="og:title" content="Zamar - Custom Songs for Every Occasion" />
     <meta property="og:description" content="Custom Songs for Weddings, Birthdays, Churches, Campaigns & Businesses - Faith-Based Platform" />
@@ -37,15 +42,35 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+
           navigator.serviceWorker.register('/sw.js')
             .then(registration => {
               console.log('SW registered:', registration);
-              // Check for updates
+
+              // If there's an already waiting service worker, activate it immediately
+              if (registration.waiting) {
+                try { registration.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+              }
+
+              // Listen for updates
               registration.addEventListener('updatefound', () => {
-                console.log('New service worker available');
+                const newWorker = registration.installing;
+                if (!newWorker) return;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('New content available; refreshing soon…');
+                    // skipWaiting is called inside SW install; controllerchange will trigger reload
+                  }
+                });
               });
             })
-            .catch(registrationError => console.log('SW registration failed:', registrationError));
+            .catch(err => console.log('SW registration failed:', err));
         });
       }
 
