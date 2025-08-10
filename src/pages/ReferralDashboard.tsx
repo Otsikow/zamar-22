@@ -274,9 +274,19 @@ export default function ReferralDashboard() {
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center md:text-left">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Referral Dashboard</h1>
-          <p className="text-muted-foreground">Track your referrals and earnings</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" asChild>
+              <a href="/dashboard" aria-label="Back to Dashboard">← Back</a>
+            </Button>
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl font-bold text-foreground mb-1">Referral Dashboard</h1>
+              <p className="text-muted-foreground">Track your referrals and earnings</p>
+            </div>
+          </div>
+          <Button variant="outline" asChild>
+            <a href="/referral-calculator" aria-label="Open Referral Earnings Calculator">Referral Earnings Calculator</a>
+          </Button>
         </div>
 
         {/* Section 1: Summary Cards */}
