@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
-import { ReferralTracker } from '@/components/referrals/ReferralTracker';
+import { ReferralTracker, handleReferralSignup } from '@/components/referrals/ReferralTracker';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ const Auth = () => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: signupForm.email,
         password: signupForm.password,
         options: {
@@ -132,6 +132,15 @@ const Auth = () => {
           setError(error.message);
         }
         return;
+      }
+
+      // Track referral relationship if a referral code was present
+      try {
+        if (data?.user?.id) {
+          await handleReferralSignup(data.user.id);
+        }
+      } catch (e) {
+        console.error('Referral tracking failed after signup:', e);
       }
 
       toast({
