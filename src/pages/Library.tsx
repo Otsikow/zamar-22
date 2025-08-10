@@ -409,12 +409,12 @@ const Library = () => {
                       <CardContent className="p-6">
                         <div className="flex items-center gap-4">
                           {/* Thumbnail */}
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                             {purchase.songs.thumbnail_url ? (
                               <img 
                                 src={purchase.songs.thumbnail_url} 
                                 alt={purchase.songs.title}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain p-1 bg-transparent"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
@@ -501,9 +501,9 @@ const Library = () => {
                     <Card key={idx} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
                       <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                             {fav.songs?.thumbnail_url ? (
-                              <img src={fav.songs.thumbnail_url} alt={fav.songs.title} className="w-full h-full object-cover" />
+                              <img src={fav.songs.thumbnail_url} alt={fav.songs.title} className="w-full h-full object-contain p-1 bg-transparent" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <Music2 className="w-6 h-6 text-primary" />

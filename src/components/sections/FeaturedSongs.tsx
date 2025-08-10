@@ -107,11 +107,11 @@ const FeaturedSongs = () => {
           {songs.map((song) => (
             <Card key={song.id} className="group bg-card border-border hover:shadow-elegant transition-all duration-300 hover:scale-105 cursor-pointer"
                   onClick={() => handlePlaySong(song)}>
-              <div className="relative aspect-square bg-muted rounded-t-lg overflow-hidden">
+              <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
                 <img 
                   src="/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png" 
                   alt={song.title}
-                  className="w-full h-full object-contain p-4 bg-gradient-to-br from-amber-50 to-amber-100"
+                  className="w-full h-full object-contain p-4 bg-transparent"
                 />
                 <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
                   <FavouriteButton songId={song.id} />

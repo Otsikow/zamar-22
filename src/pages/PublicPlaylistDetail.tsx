@@ -195,12 +195,12 @@ const PublicPlaylistDetail = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                       {playlistSong.songs.thumbnail_url ? (
                         <img 
                           src={playlistSong.songs.thumbnail_url} 
                           alt={playlistSong.songs.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1 bg-transparent"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

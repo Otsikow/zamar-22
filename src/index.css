@@ -62,6 +62,9 @@
   --sidebar-accent-foreground: 240 5.9% 10%;
   --sidebar-border: 220 13% 91%;
   --sidebar-ring: 217.2 91.2% 59.8%;
+
+  /* Media surfaces */
+  --thumbnail-bg: 0 0% 0%;
 }
 
 /* Dark theme (activated by .dark on <html>) */
@@ -113,6 +116,9 @@
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-border: 225 10% 15%;
   --sidebar-ring: 45 93% 47%;
+
+  /* Media surfaces */
+  --thumbnail-bg: 0 0% 0%;
 }
 
 /* Make the whole app auto-theme without touching every component */

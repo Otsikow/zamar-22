@@ -270,12 +270,12 @@ const PlaylistDetail = () => {
                         <Card key={song.id} className="border-primary/20">
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+                              <div className="w-12 h-12 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                                 {song.thumbnail_url ? (
                                   <img 
                                     src={song.thumbnail_url} 
                                     alt={song.title}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain p-1 bg-transparent"
                                   />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
@@ -332,13 +332,13 @@ const PlaylistDetail = () => {
         <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             {/* Thumbnail */}
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-accent flex-shrink-0">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
               <AspectRatio ratio={1}>
                 {playlistSong.songs.thumbnail_url ? (
                   <img
                     src={playlistSong.songs.thumbnail_url}
                     alt={playlistSong.songs.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1 bg-transparent"
                     loading="lazy"
                   />
                 ) : (

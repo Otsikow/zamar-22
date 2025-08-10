@@ -262,7 +262,7 @@ const SongDetail = () => {
           {/* Song Details */}
           <div className="grid md:grid-cols-2 gap-12 mb-12">
             {/* Album Art */}
-            <div className="aspect-square rounded-lg overflow-hidden bg-gradient-subtle">
+            <div className="aspect-square rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
               {song.thumbnail_url ? (
                 <img 
                   src={song.thumbnail_url} 
@@ -518,12 +518,12 @@ const SongDetail = () => {
                       onClick={() => window.location.href = `/songs/${relatedSong.id}`}
                     >
                       <CardContent className="p-0">
-                        <div className="aspect-square rounded-t-lg overflow-hidden bg-accent">
+                        <div className="aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
                           {relatedSong.thumbnail_url ? (
                             <img 
                               src={relatedSong.thumbnail_url} 
                               alt={relatedSong.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain p-1 bg-transparent"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
