@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -187,12 +187,12 @@ export const ReferralDashboard = () => {
     <div className="space-y-6">
       {/* Header actions */}
       <div className="flex items-center justify-between">
-        <Button variant="outline" asChild>
-          <a href="/dashboard" aria-label="Back to Dashboard">← Back</a>
-        </Button>
-        <Button variant="outline" asChild>
-          <a href="/referral-calculator" aria-label="Open Referral Earnings Calculator">Referral Earnings Calculator</a>
-        </Button>
+          <Button variant="outline" asChild>
+            <Link to="/dashboard" aria-label="Back to Dashboard">← Back</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/referral-calculator" aria-label="Open Referral Earnings Calculator">Referral Earnings Calculator</Link>
+          </Button>
       </div>
       {/* Welcome Banner */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10">

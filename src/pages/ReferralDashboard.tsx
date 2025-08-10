@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Copy, Users, DollarSign, TrendingUp, Eye, Share2, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { addWWWToReferralLink } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface ReferralStats {
   totalReferrals: number;
@@ -298,7 +299,7 @@ export default function ReferralDashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-3">
             <Button variant="outline" asChild>
-              <a href="/dashboard" aria-label="Back to Dashboard">← Back</a>
+              <Link to="/dashboard" aria-label="Back to Dashboard">← Back</Link>
             </Button>
             <div className="text-center md:text-left">
               <h1 className="text-3xl font-bold text-foreground mb-1">Referral Dashboard</h1>
@@ -306,7 +307,7 @@ export default function ReferralDashboard() {
             </div>
           </div>
           <Button variant="outline" asChild>
-            <a href="/referral-calculator" aria-label="Open Referral Earnings Calculator">Referral Earnings Calculator</a>
+            <Link to="/referral-calculator" aria-label="Open Referral Earnings Calculator">Referral Earnings Calculator</Link>
           </Button>
         </div>
 

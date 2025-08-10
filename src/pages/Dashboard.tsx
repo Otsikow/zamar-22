@@ -300,7 +300,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full">
-                <Link to="/request">Create Song</Link>
+                <Link to="/request-song">Create Song</Link>
               </Button>
             </CardContent>
           </Card>
