@@ -63,6 +63,27 @@ export default function ReferralDashboard() {
   const [selectedGeneration, setSelectedGeneration] = useState('all');
 
   useEffect(() => {
+    document.title = "Referral Dashboard | Zamar";
+    const desc = "View live referral counts, earnings, and payouts.";
+    let metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = desc;
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const href = window.location.origin + '/referrals/dashboard';
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = href;
+  }, []);
+
+  useEffect(() => {
     if (user) {
       generateReferralCode();
       fetchReferralStats();

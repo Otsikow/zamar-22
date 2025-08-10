@@ -39,6 +39,27 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Music Analytics | Zamar";
+    const desc = "Track plays, top songs, and listeners with Zamar analytics.";
+    let metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = desc;
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const href = window.location.origin + '/analytics';
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = href;
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
       setLoading(true);
