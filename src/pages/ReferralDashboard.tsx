@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Copy, Users, DollarSign, TrendingUp, Eye, Share2, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ReferralTestingPanel } from '@/components/referrals/ReferralTestingPanel';
 import { addWWWToReferralLink } from '@/lib/utils';
 
 interface ReferralStats {
@@ -525,8 +524,6 @@ export default function ReferralDashboard() {
           </CardContent>
         </Card>
 
-        {/* Testing Panel */}
-        <ReferralTestingPanel />
 
         {/* Status Notice */}
         <Card className="border-primary/20 bg-muted/20">
