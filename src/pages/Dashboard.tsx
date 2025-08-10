@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Music, PlayCircle, Library, Users, TrendingUp, Clock } from "lucide-react";
+import { Music, PlayCircle, Library, Users, TrendingUp, Clock, Wallet } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -287,7 +287,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="group hover:shadow-lg transition-all duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -335,6 +335,23 @@ const Dashboard = () => {
             <CardContent>
               <Button variant="outline" asChild className="w-full">
                 <Link to="/analytics">View Analytics</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="group hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-primary" />
+                My Referral Earnings
+              </CardTitle>
+              <CardDescription>
+                View referrals, earnings, and payouts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" asChild className="w-full">
+                <Link to="/referrals/dashboard">View Earnings</Link>
               </Button>
             </CardContent>
           </Card>
