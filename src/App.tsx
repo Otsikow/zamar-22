@@ -50,7 +50,7 @@ import NotFound from "./pages/NotFound";
 import LegalCompliance from "./pages/LegalCompliance";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
-
+import PwaInstallBanner from "@/components/PwaInstallBanner";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -122,6 +122,7 @@ const App = () => (
                   </Routes>
                 </main>
 
+                <PwaInstallBanner />
                 <BottomNav />
                 <MiniPlayer />
                 </div>
