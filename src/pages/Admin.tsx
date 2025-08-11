@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Music, Users, FileText, TrendingUp, Play, Download, Globe, BookOpen, Heart, Edit, Trash2, MessageCircle } from "lucide-react";
+import { Upload, Music, Users, FileText, TrendingUp, Play, Pause, Download, Globe, BookOpen, Heart, Edit, Trash2, MessageCircle } from "lucide-react";
 import BackButton from "@/components/ui/back-button";
 import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import RequestReviewPanel from "@/components/admin/RequestReviewPanel";
@@ -25,7 +25,9 @@ import SongAnalytics from "@/components/admin/SongAnalytics";
 import UserRoleManagement from "@/components/admin/UserRoleManagement";
 import RoleChangeHistory from "@/components/admin/RoleChangeHistory";
 import { LiveChats } from "@/components/admin/LiveChats";
-
+import zamarLogo from "@/assets/zamar-logo.png";
+import { useNowPlaying } from "@/contexts/NowPlayingContext";
+import AdManagerList from "@/components/admin/AdManagerList";
 interface CustomSongRequest {
   id: string;
   occasion: string;
@@ -81,6 +83,26 @@ interface Donation {
 
 const Admin = () => {
   const { toast } = useToast();
+  const { state, playSong, togglePlayPause } = useNowPlaying();
+
+  const handlePreviewSong = (song: any) => {
+    const nowPlayingSong = {
+      id: song.id,
+      title: song.title,
+      artist: song.genre || "Zamar",
+      duration: 180,
+      url: song.audio_url || undefined,
+      cover: zamarLogo,
+    };
+
+    if (!nowPlayingSong.url) return;
+
+    if (state.currentSong?.id === song.id) {
+      togglePlayPause();
+    } else {
+      playSong(nowPlayingSong);
+    }
+  };
   const [requests, setRequests] = useState<CustomSongRequest[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [songPlays, setSongPlays] = useState<SongPlay[]>([]);
@@ -893,8 +915,6 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
-
           {/* Songs Management */}
           <TabsContent value="songs">
             <Tabs defaultValue="all" className="w-full">
@@ -1040,6 +1060,19 @@ const Admin = () => {
                                 </div>
                               </div>
                                 <div className="flex gap-2 ml-4">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!song.audio_url}
+                                    onClick={() => handlePreviewSong(song)}
+                                    aria-label={state.currentSong?.id === song.id && state.isPlaying ? "Pause preview" : "Play preview"}
+                                  >
+                                    {state.currentSong?.id === song.id && state.isPlaying ? (
+                                      <Pause className="h-4 w-4" />
+                                    ) : (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                  </Button>
                                   <Dialog>
                                     <DialogTrigger asChild>
                                       <Button variant="outline" size="sm">
@@ -1626,6 +1659,10 @@ const Admin = () => {
                     Create Ad
                   </Button>
                 </form>
+
+                <div className="mt-8">
+                  <AdManagerList />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
