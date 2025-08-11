@@ -88,7 +88,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         .from("songs")
         .select("genre, occasion")
         .not("audio_url", "is", null)
-        .range(0, 99);
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching categories:", error);
@@ -118,7 +118,6 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         .select("*")
         .eq(type, category)
         .not("audio_url", "is", null)
-        .range(0, 99)
         .order("created_at", { ascending: false });
 
 
@@ -173,7 +172,6 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         .from("songs")
         .select("*")
         .not("audio_url", "is", null)
-        .range(0, 99)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

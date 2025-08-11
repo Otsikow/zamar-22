@@ -6,8 +6,8 @@ const OFFLINE_URL = '/offline.html';
 const CORE_ASSETS = [
   '/',
   '/manifest.json',
-  '/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png',
-  '/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png',
+  '/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png',
+  '/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png',
   OFFLINE_URL,
 ];
 

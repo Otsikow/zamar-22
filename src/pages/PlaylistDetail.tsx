@@ -9,7 +9,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Music2, Search, Plus, Trash2, Play, Eye, Pause } from 'lucide-react';
-import zamarLogo from '@/assets/zamar-logo.png';
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 import { useNowPlaying } from '@/contexts/NowPlayingContext';
 
 interface Playlist {

@@ -14,7 +14,7 @@ import SyncedLyricsViewer from "@/components/player/SyncedLyricsViewer";
 import Footer from "@/components/sections/Footer";
 import { extractScriptureFromLyrics } from "@/lib/utils";
 import FavouriteButton from "@/components/FavouriteButton";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Song {
   id: string;

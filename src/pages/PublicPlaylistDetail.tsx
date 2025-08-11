@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Music2, Play, Eye, User, Calendar } from 'lucide-react';
-import zamarLogo from '@/assets/zamar-logo.png';
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Playlist {
   id: string;

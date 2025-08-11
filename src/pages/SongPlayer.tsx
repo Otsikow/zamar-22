@@ -14,7 +14,7 @@ import PlayerSlider from "@/components/player/PlayerSlider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { extractScriptureFromLyrics } from "@/lib/utils";
 import FavouriteButton from "@/components/FavouriteButton";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 import AdSlot from "@/components/ads/AdSlot";
 
 interface Song {
