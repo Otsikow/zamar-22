@@ -28,6 +28,7 @@ import { LiveChats } from "@/components/admin/LiveChats";
 import zamarLogo from "@/assets/zamar-logo.png";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import AdManagerList from "@/components/admin/AdManagerList";
+import AdApprovalTabs from "@/components/admin/AdApprovalTabs";
 interface CustomSongRequest {
   id: string;
   occasion: string;
@@ -1705,8 +1706,9 @@ const Admin = () => {
                   </Button>
                 </form>
 
-                <div className="mt-8">
+                <div className="mt-8 space-y-8">
                   <AdManagerList />
+                  <AdApprovalTabs />
                 </div>
               </CardContent>
             </Card>
