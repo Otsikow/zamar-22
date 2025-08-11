@@ -48,6 +48,7 @@ import PublicPlaylists from "./pages/PublicPlaylists";
 import PublicPlaylistDetail from "./pages/PublicPlaylistDetail";
 import NotFound from "./pages/NotFound";
 import LegalCompliance from "./pages/LegalCompliance";
+import GDPRPolicy from "./pages/GDPRPolicy";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
@@ -71,7 +72,8 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/terms" element={<Terms />} />
-                    <Route path="/legal" element={<LegalCompliance />} />
+                     <Route path="/legal" element={<LegalCompliance />} />
+                     <Route path="/legal/gdpr" element={<GDPRPolicy />} />
                     <Route path="/about" element={<AboutUs />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/testimonies" element={<Testimonies />} />

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 const LegalCompliance = () => {
   useEffect(() => {
     // SEO
@@ -40,6 +41,10 @@ const LegalCompliance = () => {
           <li>
             <a href="#privacy" className="text-primary hover:underline">Privacy Policy</a>
             <span className="ml-1 text-muted-foreground">– How we collect and protect your data</span>
+          </li>
+          <li>
+            <Link to="/legal/gdpr" className="text-primary hover:underline">Zamar Data Protection & GDPR Privacy Policy</Link>
+            <span className="ml-1 text-muted-foreground">– Full GDPR-compliant policy</span>
           </li>
           <li>
             <a href="#guidelines" className="text-primary hover:underline">Community Guidelines</a>
