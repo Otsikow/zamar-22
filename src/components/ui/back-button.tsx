@@ -11,6 +11,7 @@ interface BackButtonProps {
   variant?: 'ghost' | 'outline' | 'default';
   size?: 'sm' | 'lg' | 'icon';
   showOnDesktop?: boolean;
+  label?: string;
 }
 
 const BackButton = ({ 
@@ -19,7 +20,8 @@ const BackButton = ({
   className, 
   variant = 'default', 
   size = 'sm',
-  showOnDesktop = false 
+  showOnDesktop = false,
+  label
 }: BackButtonProps) => {
   const navigate = useNavigate();
 
@@ -47,14 +49,14 @@ const BackButton = ({
   return (
     <Button
       type="button"
-      aria-label="Go back"
+      aria-label={label ?? "Go back"}
       variant={variant}
       size={size}
       className={cn(
         "transition-colors",
         !showOnDesktop && "lg:hidden",
-        size === 'sm' && "p-2 h-8 w-8",
-        size === 'lg' && "p-4 h-12 w-12",
+        size === 'sm' && (label ? "h-8 px-3" : "p-2 h-8 w-8"),
+        size === 'lg' && (label ? "h-12 px-4" : "p-4 h-12 w-12"),
         size === 'icon' && "p-3 h-10 w-10",
         className
       )}
@@ -65,6 +67,7 @@ const BackButton = ({
         size === 'lg' && "h-6 w-6",
         size === 'icon' && "h-5 w-5"
       )} />
+      {label && <span className="ml-2 text-sm font-medium">{label}</span>}
     </Button>
   );
 };

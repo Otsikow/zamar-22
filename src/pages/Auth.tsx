@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -232,9 +233,8 @@ const Auth = () => {
                       <Label htmlFor="login-password">{t('auth.password', 'Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
+                        <PasswordInput
                           id="login-password"
-                          type="password"
                           placeholder="••••••••"
                           value={loginForm.password}
                           onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
@@ -303,9 +303,8 @@ const Auth = () => {
                       <Label htmlFor="signup-password">{t('auth.password', 'Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
+                        <PasswordInput
                           id="signup-password"
-                          type="password"
                           placeholder="••••••••"
                           value={signupForm.password}
                           onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
@@ -319,9 +318,8 @@ const Auth = () => {
                       <Label htmlFor="signup-confirmPassword">{t('auth.confirm_password', 'Confirm Password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
+                        <PasswordInput
                           id="signup-confirmPassword"
-                          type="password"
                           placeholder="••••••••"
                           value={signupForm.confirmPassword}
                           onChange={(e) => setSignupForm({ ...signupForm, confirmPassword: e.target.value })}

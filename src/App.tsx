@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
+import GlobalBack from "@/components/navigation/GlobalBack";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Import all pages
@@ -70,6 +71,7 @@ const App = () => (
                 <WelcomeOnSignIn />
                 
                 <main className="flex-1 pt-16 pb-20">
+                  <GlobalBack />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
