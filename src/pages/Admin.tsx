@@ -164,6 +164,12 @@ const Admin = () => {
     language: "English",
   });
 
+  // Add lyrics form for song dialog
+  const [newLyricForm, setNewLyricForm] = useState({
+    text: "",
+    language: "English",
+  });
+
   // Ad form state
   const [adForm, setAdForm] = useState({
     title: "",
@@ -525,6 +531,28 @@ const Admin = () => {
     } catch (error) {
       console.error("Error deleting lyrics:", error);
       toast({ title: "Error", description: "Failed to delete lyrics", variant: "destructive" });
+    }
+  };
+
+  // Create new lyrics for a song from the song row dialog
+  const handleLyricCreateForSong = async (songId: string) => {
+    if (!newLyricForm.text.trim()) {
+      toast({ title: "Lyrics required", description: "Please enter lyrics text before saving.", variant: "destructive" });
+      return;
+    }
+    try {
+      const { error } = await supabase.from("lyrics").insert({
+        song_id: songId,
+        text: newLyricForm.text,
+        language: newLyricForm.language,
+      });
+      if (error) throw error;
+      toast({ title: "Success", description: "Lyrics added successfully" });
+      setNewLyricForm({ text: "", language: "English" });
+      await fetchData();
+    } catch (error) {
+      console.error("Error adding lyrics:", error);
+      toast({ title: "Error", description: "Failed to add lyrics", variant: "destructive" });
     }
   };
 
@@ -1027,7 +1055,37 @@ const Admin = () => {
                                       </DialogHeader>
                                       <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                                         {lyrics.filter((l) => l.song_id === song.id).length === 0 ? (
-                                          <div className="text-sm text-muted-foreground">No lyrics yet for this song.</div>
+                                          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLyricCreateForSong(song.id); }}>
+                                            <div>
+                                              <Label htmlFor={`new-lang-${song.id}`}>Language</Label>
+                                              <Select value={newLyricForm.language} onValueChange={(value) => setNewLyricForm({ ...newLyricForm, language: value })}>
+                                                <SelectTrigger id={`new-lang-${song.id}`}>
+                                                  <SelectValue placeholder="Select a language" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  <SelectItem value="English">English</SelectItem>
+                                                  <SelectItem value="Spanish">Spanish</SelectItem>
+                                                  <SelectItem value="French">French</SelectItem>
+                                                  <SelectItem value="German">German</SelectItem>
+                                                  <SelectItem value="Portuguese">Portuguese</SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                            <div>
+                                              <Label htmlFor={`new-lyrics-${song.id}`}>Lyrics Text</Label>
+                                              <Textarea
+                                                id={`new-lyrics-${song.id}`}
+                                                rows={8}
+                                                placeholder="Enter song lyrics..."
+                                                value={newLyricForm.text}
+                                                onChange={(e) => setNewLyricForm({ ...newLyricForm, text: e.target.value })}
+                                              />
+                                            </div>
+                                            <div className="flex gap-2">
+                                              <Button type="submit" size="sm">Save Lyrics</Button>
+                                              <Button type="button" size="sm" variant="outline" onClick={() => setNewLyricForm({ text: "", language: "English" })}>Cancel</Button>
+                                            </div>
+                                          </form>
                                         ) : (
                                           lyrics
                                             .filter((l) => l.song_id === song.id)
