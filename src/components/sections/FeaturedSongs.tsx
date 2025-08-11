@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -66,7 +67,7 @@ const FeaturedSongs = () => {
       artist: song.genre,
       duration: 180, // Default duration, will be updated when audio loads
       url: song.audio_url || "", // Use audio URL from database
-      cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png" // Use new thumbnail for all songs
+      cover: song.thumbnail_url || zamarLogo // Use song thumbnail or Zamar logo fallback
     };
     
     console.log('🎵 Calling playSong with URL:', songWithAudio.url);
@@ -109,7 +110,7 @@ const FeaturedSongs = () => {
                   onClick={() => handlePlaySong(song)}>
               <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
                 <img 
-                  src="/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png" 
+                  src={song.thumbnail_url || zamarLogo} 
                   alt={song.title}
                   className="w-full h-full object-contain p-4 bg-transparent"
                 />

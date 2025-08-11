@@ -14,6 +14,7 @@ import SyncedLyricsViewer from "@/components/player/SyncedLyricsViewer";
 import Footer from "@/components/sections/Footer";
 import { extractScriptureFromLyrics } from "@/lib/utils";
 import FavouriteButton from "@/components/FavouriteButton";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -263,17 +264,11 @@ const SongDetail = () => {
           <div className="grid md:grid-cols-2 gap-12 mb-12">
             {/* Album Art */}
             <div className="aspect-square rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
-              {song.thumbnail_url ? (
-                <img 
-                  src={song.thumbnail_url} 
-                  alt={song.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Music2 className="w-24 h-24 text-primary" />
-                </div>
-              )}
+              <img 
+                src={song.thumbnail_url || zamarLogo} 
+                alt={song.title}
+                className="w-full h-full object-contain p-1 bg-transparent"
+              />
             </div>
 
             {/* Song Info */}
@@ -519,17 +514,11 @@ const SongDetail = () => {
                     >
                       <CardContent className="p-0">
                         <div className="aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
-                          {relatedSong.thumbnail_url ? (
-                            <img 
-                              src={relatedSong.thumbnail_url} 
-                              alt={relatedSong.title}
-                              className="w-full h-full object-contain p-1 bg-transparent"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Music2 className="w-8 h-8 text-primary" />
-                            </div>
-                          )}
+                          <img 
+                            src={relatedSong.thumbnail_url || zamarLogo} 
+                            alt={relatedSong.title}
+                            className="w-full h-full object-contain p-1 bg-transparent"
+                          />
                         </div>
                         <div className="p-3">
                           <h4 className="font-playfair font-semibold text-foreground text-sm mb-1 line-clamp-1">

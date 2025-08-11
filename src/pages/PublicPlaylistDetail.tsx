@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Music2, Play, Eye, User, Calendar } from 'lucide-react';
+import zamarLogo from '@/assets/zamar-logo.png';
 
 interface Playlist {
   id: string;
@@ -196,17 +197,11 @@ const PublicPlaylistDetail = () => {
                   <div className="flex items-center gap-4">
                     {/* Thumbnail */}
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                      {playlistSong.songs.thumbnail_url ? (
-                        <img 
-                          src={playlistSong.songs.thumbnail_url} 
-                          alt={playlistSong.songs.title}
-                          className="w-full h-full object-contain p-1 bg-transparent"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Music2 className="w-6 h-6 text-primary" />
-                        </div>
-                      )}
+                      <img 
+                        src={playlistSong.songs.thumbnail_url || zamarLogo} 
+                        alt={playlistSong.songs.title}
+                        className="w-full h-full object-contain p-1 bg-transparent"
+                      />
                     </div>
 
                     {/* Song Info */}

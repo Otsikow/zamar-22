@@ -9,6 +9,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Music2, Search, Plus, Trash2, Play, Eye } from 'lucide-react';
+import zamarLogo from '@/assets/zamar-logo.png';
 
 interface Playlist {
   id: string;
@@ -271,17 +272,11 @@ const PlaylistDetail = () => {
                           <CardContent className="p-4">
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                                {song.thumbnail_url ? (
-                                  <img 
-                                    src={song.thumbnail_url} 
-                                    alt={song.title}
-                                    className="w-full h-full object-contain p-1 bg-transparent"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Music2 className="w-4 h-4 text-primary" />
-                                  </div>
-                                )}
+                                 <img 
+                                   src={song.thumbnail_url || zamarLogo} 
+                                   alt={song.title}
+                                   className="w-full h-full object-contain p-1 bg-transparent"
+                                 />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-medium text-foreground truncate">{song.title}</h3>
@@ -333,20 +328,14 @@ const PlaylistDetail = () => {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             {/* Thumbnail */}
             <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-              <AspectRatio ratio={1}>
-                {playlistSong.songs.thumbnail_url ? (
+                <AspectRatio ratio={1}>
                   <img
-                    src={playlistSong.songs.thumbnail_url}
+                    src={playlistSong.songs.thumbnail_url || zamarLogo}
                     alt={playlistSong.songs.title}
                     className="w-full h-full object-contain p-1 bg-transparent"
                     loading="lazy"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Music2 className="w-6 h-6 text-primary" />
-                  </div>
-                )}
-              </AspectRatio>
+                </AspectRatio>
             </div>
 
             {/* Song Info */}

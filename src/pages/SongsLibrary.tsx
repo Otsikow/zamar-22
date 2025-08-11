@@ -12,6 +12,7 @@ import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -139,7 +140,7 @@ const SongsLibrary = () => {
         artist: "Zamar Artists",
         duration: 180, // Mock duration
         url: song.audio_url || undefined,
-        cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png", // Use new thumbnail
+         cover: song.thumbnail_url || zamarLogo, // Use song thumbnail or Zamar logo
       };
       
       // Create queue from all filtered songs  
@@ -149,7 +150,7 @@ const SongsLibrary = () => {
         artist: "Zamar Artists",
         duration: 180,
         url: s.audio_url || undefined,
-        cover: "/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png", // Use new thumbnail
+         cover: s.thumbnail_url || zamarLogo, // Use song thumbnail or Zamar logo
       }));
       
       playSong(nowPlayingSong, queue);
@@ -300,7 +301,7 @@ const SongsLibrary = () => {
                      {/* Thumbnail */}
                      <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
                        <img 
-                         src="/lovable-uploads/06166d3e-4587-43fa-a895-e4ed180ce6b6.png"
+                         src={song.thumbnail_url || zamarLogo}
                          alt={song.title}
                          className="w-full h-full object-contain p-3 bg-transparent group-hover:scale-105 transition-transform duration-300"
                        />
