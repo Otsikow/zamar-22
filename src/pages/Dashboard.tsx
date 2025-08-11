@@ -23,7 +23,8 @@ interface RecentActivity {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<DashboardStats>({
+  const displayName = (user?.user_metadata?.full_name as string) || (user?.user_metadata?.name as string) || (user?.user_metadata?.first_name as string) || (user?.email?.split('@')[0] as string) || 'there';
+const [stats, setStats] = useState<DashboardStats>({
     mySongs: 0,
     totalPlays: 0,
     pendingRequests: 0,
@@ -227,8 +228,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 pt-20 pb-32">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your music hub. Manage your songs, track requests, and explore your music journey.</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Welcome back, {displayName}</h1>
+          <p className="text-muted-foreground">Here’s your music hub. Manage your songs, track requests, and explore your music journey.</p>
         </div>
 
         {/* Quick Stats */}

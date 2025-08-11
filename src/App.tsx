@@ -52,6 +52,7 @@ import GDPRPolicy from "./pages/GDPRPolicy";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
+import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -66,6 +67,7 @@ const App = () => (
               <NowPlayingProvider>
                 <div className="flex flex-col min-h-screen bg-background">
                 <Header />
+                <WelcomeOnSignIn />
                 
                 <main className="flex-1 pt-16 pb-20">
                   <Routes>
