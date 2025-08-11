@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import PlayerSlider from '@/components/player/PlayerSlider';
 import { useNowPlaying } from '@/contexts/NowPlayingContext';
 import { useNavigate } from 'react-router-dom';
-import zamarLogo from '@/assets/zamar-logo.png';
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 const MiniPlayer: React.FC = () => {
   const { state, togglePlayPause, nextSong, previousSong, seekTo, toggleShuffle, toggleLoop } = useNowPlaying();

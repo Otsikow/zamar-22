@@ -81,7 +81,7 @@ const Header = () => {
           <div className="container-responsive py-2 sm:py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
+              <img src="/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
               <span className="text-lg sm:text-xl font-bold text-primary font-playfair">Zamar</span>
             </Link>
             <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
@@ -97,7 +97,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
+            <img src="/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
             <span className="hidden xs:inline text-base sm:text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
           </Link>
 

@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 import AdSlot from "@/components/ads/AdSlot";
 
 interface Purchase {

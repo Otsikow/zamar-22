@@ -12,7 +12,7 @@ import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Song {
   id: string;
@@ -46,7 +46,6 @@ const SongsLibrary = () => {
         const { data, error } = await supabase
           .from("songs")
           .select("*")
-          .range(0, 99)
           .order("created_at", { ascending: false });
 
         if (error) throw error;

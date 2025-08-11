@@ -26,7 +26,7 @@ import PlayerSlider from "@/components/player/PlayerSlider";
 // Visualizer powered by Web Audio API
 import { Volume2 } from "lucide-react";
 import AudioVisualizer from "@/components/player/AudioVisualizer";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Song {
   id: string;

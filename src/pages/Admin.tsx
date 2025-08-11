@@ -25,7 +25,7 @@ import SongAnalytics from "@/components/admin/SongAnalytics";
 import UserRoleManagement from "@/components/admin/UserRoleManagement";
 import RoleChangeHistory from "@/components/admin/RoleChangeHistory";
 import { LiveChats } from "@/components/admin/LiveChats";
-import zamarLogo from "@/assets/zamar-logo.png";
+const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import AdManagerList from "@/components/admin/AdManagerList";
 import AdApprovalTabs from "@/components/admin/AdApprovalTabs";
