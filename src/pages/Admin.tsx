@@ -1278,9 +1278,6 @@ const Admin = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="custom">
-                <CustomSongUpload />
-              </TabsContent>
 
               <TabsContent value="requests">
                 <RequestReviewPanel 
