@@ -157,6 +157,13 @@ const Admin = () => {
     language: "English"
   });
 
+  // Edit lyrics state
+  const [editingLyric, setEditingLyric] = useState<Lyric | null>(null);
+  const [editingLyricForm, setEditingLyricForm] = useState({
+    text: "",
+    language: "English",
+  });
+
   // Ad form state
   const [adForm, setAdForm] = useState({
     title: "",
@@ -482,6 +489,42 @@ const Admin = () => {
         description: "Failed to add lyrics",
         variant: "destructive",
       });
+    }
+  };
+
+  // Update existing lyrics
+  const handleLyricUpdate = async (lyricId: string) => {
+    try {
+      const { error } = await supabase
+        .from("lyrics")
+        .update({
+          text: editingLyricForm.text,
+          language: editingLyricForm.language,
+        })
+        .eq("id", lyricId);
+
+      if (error) throw error;
+
+      toast({ title: "Success", description: "Lyrics updated successfully" });
+      setEditingLyric(null);
+      await fetchData();
+    } catch (error) {
+      console.error("Error updating lyrics:", error);
+      toast({ title: "Error", description: "Failed to update lyrics", variant: "destructive" });
+    }
+  };
+
+  // Delete existing lyrics
+  const handleLyricDelete = async (lyricId: string) => {
+    if (!confirm("Delete these lyrics? This cannot be undone.")) return;
+    try {
+      const { error } = await supabase.from("lyrics").delete().eq("id", lyricId);
+      if (error) throw error;
+      toast({ title: "Deleted", description: "Lyrics deleted." });
+      await fetchData();
+    } catch (error) {
+      console.error("Error deleting lyrics:", error);
+      toast({ title: "Error", description: "Failed to delete lyrics", variant: "destructive" });
     }
   };
 
