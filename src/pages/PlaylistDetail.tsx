@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Music2, Search, Plus, Trash2, Play, Eye } from 'lucide-react';
+import { ArrowLeft, Music2, Search, Plus, Trash2, Play, Eye, Pause } from 'lucide-react';
 import zamarLogo from '@/assets/zamar-logo.png';
+import { useNowPlaying } from '@/contexts/NowPlayingContext';
 
 interface Playlist {
   id: string;
@@ -39,6 +40,8 @@ const PlaylistDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  const { playSong, togglePlayPause, state } = useNowPlaying();
   
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [playlistSongs, setPlaylistSongs] = useState<PlaylistSong[]>([]);
@@ -179,6 +182,23 @@ const PlaylistDetail = () => {
       });
     }
   };
+  
+  const handlePreviewSong = (song: Song) => {
+    if (!song.audio_url) return;
+    if (state.currentSong?.id === song.id) {
+      togglePlayPause();
+      return;
+    }
+    const nowPlayingSong = {
+      id: song.id,
+      title: song.title,
+      artist: song.genre || 'Zamar',
+      duration: 180,
+      url: song.audio_url || undefined,
+      cover: zamarLogo,
+    };
+    playSong(nowPlayingSong, [nowPlayingSong]);
+  };
 
   const filteredSongs = allSongs.filter(song => {
     const matchesSearch = song.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -284,12 +304,28 @@ const PlaylistDetail = () => {
                                   <p className="text-sm text-muted-foreground">{song.genre}</p>
                                 )}
                               </div>
-                              <Button
-                                size="sm"
-                                onClick={() => addSongToPlaylist(song.id)}
-                              >
-                                Add
-                              </Button>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  onClick={() => handlePreviewSong(song)}
+                                  disabled={!song.audio_url}
+                                  aria-label="Preview song"
+                                  className="shrink-0"
+                                >
+                                  {state.currentSong?.id === song.id && state.isPlaying ? (
+                                    <Pause className="w-4 h-4" />
+                                  ) : (
+                                    <Play className="w-4 h-4" />
+                                  )}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => addSongToPlaylist(song.id)}
+                                >
+                                  Add
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
