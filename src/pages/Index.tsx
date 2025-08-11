@@ -4,12 +4,13 @@ import LiveCounter from "@/components/sections/LiveCounter";
 import Footer from "@/components/sections/Footer";
 import VideoShowcase from "@/components/sections/VideoShowcase";
 import heroImage from "@/assets/hero-music.jpg";
-
+import WelcomeBanner from "@/components/auth/WelcomeBanner";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="pb-20">
         <HeroSection bgImageUrl={heroImage} />
+        <WelcomeBanner />
         <FeaturedSongs />
         <LiveCounter />
         <VideoShowcase />
