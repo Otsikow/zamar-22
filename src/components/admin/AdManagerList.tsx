@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Trash2, Save, X, RefreshCw } from "lucide-react";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface Ad {
   id: string;
@@ -33,6 +34,7 @@ const AdManagerList = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Ad | null>(null);
   const [editForm, setEditForm] = useState({ title: "", target_url: "", frequency: 1, placement: "home_hero", start_date: "", end_date: "" });
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
 
   const loadAds = async () => {
     setLoading(true);
@@ -50,21 +52,33 @@ const AdManagerList = () => {
   }, []);
 
   const handleToggleActive = async (ad: Ad) => {
+    if (!isAdmin) {
+      toast({ title: "Permission denied", description: "You must be an admin to update ads.", variant: "destructive" });
+      return;
+    }
     const next = !(ad.is_active ?? true);
     const { error } = await supabase.from("ads").update({ is_active: next }).eq("id", ad.id);
     if (error) {
-      toast({ title: "Error", description: "Could not update status", variant: "destructive" });
+      console.error("Toggle ad error", error);
+      const msg = (error as any)?.message || "Could not update status";
+      toast({ title: "Error", description: msg, variant: "destructive" });
       return;
     }
     setAds((prev) => prev.map((a) => (a.id === ad.id ? { ...a, is_active: next } : a)));
   };
 
   const handleDelete = async (ad: Ad) => {
+    if (!isAdmin) {
+      toast({ title: "Permission denied", description: "You must be an admin to delete ads.", variant: "destructive" });
+      return;
+    }
     const confirm = window.confirm(`Delete ad “${ad.title}”?`);
     if (!confirm) return;
     const { error } = await supabase.from("ads").delete().eq("id", ad.id);
     if (error) {
-      toast({ title: "Error", description: "Could not delete ad", variant: "destructive" });
+      console.error("Delete ad error", error);
+      const msg = (error as any)?.message || "Could not delete ad";
+      toast({ title: "Error", description: msg, variant: "destructive" });
       return;
     }
     setAds((prev) => prev.filter((a) => a.id !== ad.id));
@@ -85,6 +99,10 @@ const AdManagerList = () => {
 
   const saveEdit = async () => {
     if (!editing) return;
+    if (!isAdmin) {
+      toast({ title: "Permission denied", description: "You must be an admin to edit ads.", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase
       .from("ads")
       .update({
@@ -97,7 +115,9 @@ const AdManagerList = () => {
       })
       .eq("id", editing.id);
     if (error) {
-      toast({ title: "Error", description: "Could not save changes", variant: "destructive" });
+      console.error("Save ad error", error);
+      const msg = (error as any)?.message || "Could not save changes";
+      toast({ title: "Error", description: msg, variant: "destructive" });
       return;
     }
     setAds((prev) =>
