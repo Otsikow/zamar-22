@@ -591,7 +591,41 @@ const Admin = () => {
     acc[campaign] = (acc[campaign] || 0) + donation.amount;
     return acc;
   }, {} as Record<string, number>);
-
+  
+  // Song duration handling for admin list
+  const [durations, setDurations] = useState<Record<string, number>>({});
+  const formatDuration = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  };
+  const loadDuration = (song: any) => {
+    if (!song?.audio_url || durations[song.id]) return;
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.crossOrigin = 'anonymous';
+    audio.src = song.audio_url;
+    const onLoaded = () => {
+      if (!isNaN(audio.duration)) {
+        setDurations(prev => ({ ...prev, [song.id]: Math.floor(audio.duration) }));
+      }
+      cleanup();
+    };
+    const onError = () => { cleanup(); };
+    const cleanup = () => {
+      audio.removeEventListener('loadedmetadata', onLoaded);
+      audio.removeEventListener('error', onError);
+    };
+    audio.addEventListener('loadedmetadata', onLoaded);
+    audio.addEventListener('error', onError);
+  };
+  useEffect(() => {
+    (allSongs || []).forEach(loadDuration);
+  }, [allSongs]);
+  useEffect(() => {
+    (searchResults || []).forEach(loadDuration);
+  }, [searchResults]);
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -950,6 +984,10 @@ const Admin = () => {
                                     <span className="text-muted-foreground">Occasion: </span>
                                     <span>{song.occasion || "Not specified"}</span>
                                   </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Length: </span>
+                                    <span>{durations[song.id] ? formatDuration(durations[song.id]) : "—"}</span>
+                                  </div>
                                   <div className="md:col-span-2">
                                     <span className="text-muted-foreground">Tags: </span>
                                     <div className="flex flex-wrap gap-1 mt-1">
@@ -1143,12 +1181,38 @@ const Admin = () => {
                              </DialogTitle>
                            </DialogHeader>
                            <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                             <div className="mb-4">
-                               <Badge variant="outline" className="mr-2">{lyric.language}</Badge>
-                               <span className="text-xs text-muted-foreground">
-                                 Added on {new Date(lyric.created_at).toLocaleDateString()}
-                               </span>
-                             </div>
+                              <div className="mb-4 flex items-center justify-between">
+                                <div>
+                                  <Badge variant="outline" className="mr-2">{lyric.language}</Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    Added on {new Date(lyric.created_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setEditingLyric(lyric);
+                                      setEditingLyricForm({
+                                        text: lyric.text || "",
+                                        language: lyric.language || "English",
+                                      });
+                                    }}
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit Lyrics
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => handleLyricDelete(lyric.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                  </Button>
+                                </div>
+                              </div>
                              {lyric.text ? (
                                <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/20 p-4 rounded-lg">
                                  {lyric.text}
