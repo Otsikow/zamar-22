@@ -295,12 +295,12 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
       {state.isQueueMode && currentSong && (
         <Card className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 to-background shadow-md">
           <CardContent className="p-5 sm:p-6">
-            <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
               <div className="w-12 h-12 bg-primary/15 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Music className="w-6 h-6 text-primary" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0 max-w-none">
-                <h3 className="font-playfair font-bold text-xl md:text-2xl leading-tight break-normal whitespace-normal hyphens-none">{currentSong.title}</h3>
+                <h3 className="font-playfair font-bold text-2xl md:text-3xl leading-tight whitespace-normal hyphens-none line-clamp-3">{currentSong.title}</h3>
                 <p className="text-muted-foreground text-sm">{currentSong.artist}</p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <Badge variant="outline" className="text-xs rounded-full bg-background/60">
@@ -312,7 +312,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 </div>
               </div>
               <TooltipProvider>
-                <div className="flex items-center gap-1 bg-muted/40 border rounded-full p-1 shadow-sm flex-shrink-0">
+                <div className="flex items-center gap-1 bg-muted/40 border rounded-full p-1 shadow-sm flex-shrink-0 w-full sm:w-auto justify-center">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button onClick={previousSong} variant="ghost" size="sm" aria-label="Previous" className="h-8 w-8 p-0 rounded-full">
