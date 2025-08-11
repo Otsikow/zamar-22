@@ -29,6 +29,7 @@ import zamarLogo from "@/assets/zamar-logo.png";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import AdManagerList from "@/components/admin/AdManagerList";
 import AdApprovalTabs from "@/components/admin/AdApprovalTabs";
+import GrantAdminOnce from "@/components/admin/GrantAdminOnce";
 interface CustomSongRequest {
   id: string;
   occasion: string;
@@ -741,6 +742,10 @@ const Admin = () => {
             </Link>
           </div>
         </div>
+
+        {/* First-time admin grant helper */}
+        <GrantAdminOnce />
+
 
         <Tabs defaultValue={initialTab} key={location.search} className="w-full">
           <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-2 p-1">
