@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ad_logs: {
+        Row: {
+          ad_id: string
+          created_at: string
+          id: string
+          ip: unknown | null
+          placement: string | null
+          referrer: string | null
+          type: string
+          ua: string | null
+        }
+        Insert: {
+          ad_id: string
+          created_at?: string
+          id?: string
+          ip?: unknown | null
+          placement?: string | null
+          referrer?: string | null
+          type: string
+          ua?: string | null
+        }
+        Update: {
+          ad_id?: string
+          created_at?: string
+          id?: string
+          ip?: unknown | null
+          placement?: string | null
+          referrer?: string | null
+          type?: string
+          ua?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -65,33 +98,54 @@ export type Database = {
       ads: {
         Row: {
           ad_type: string
+          clicks: number
           created_at: string
+          end_date: string | null
           frequency: number | null
           id: string
+          impressions: number
           is_active: boolean | null
           media_url: string | null
+          paid: boolean
+          placement: string | null
+          start_date: string | null
+          status: string
           target_url: string | null
           title: string
           updated_at: string
         }
         Insert: {
           ad_type: string
+          clicks?: number
           created_at?: string
+          end_date?: string | null
           frequency?: number | null
           id?: string
+          impressions?: number
           is_active?: boolean | null
           media_url?: string | null
+          paid?: boolean
+          placement?: string | null
+          start_date?: string | null
+          status?: string
           target_url?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           ad_type?: string
+          clicks?: number
           created_at?: string
+          end_date?: string | null
           frequency?: number | null
           id?: string
+          impressions?: number
           is_active?: boolean | null
           media_url?: string | null
+          paid?: boolean
+          placement?: string | null
+          start_date?: string | null
+          status?: string
           target_url?: string | null
           title?: string
           updated_at?: string

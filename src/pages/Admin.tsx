@@ -199,6 +199,9 @@ const Admin = () => {
     targetUrl: "",
     isActive: true,
     frequency: 1,
+    placement: "home_hero" as "home_hero" | "sidebar_300x250" | "player_728x90",
+    startDate: "",
+    endDate: "",
     bannerFile: null as File | null,
     audioFile: null as File | null
   });
@@ -580,8 +583,29 @@ const Admin = () => {
 
   const handleAdCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
+      let mediaUrl: string | null = null;
+
+      if (adForm.adType === "banner" && adForm.bannerFile) {
+        const fileName = `${Date.now()}_${adForm.bannerFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("ads")
+          .upload(fileName, adForm.bannerFile);
+        if (uploadErr) throw uploadErr;
+        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        mediaUrl = pub.publicUrl;
+      }
+
+      if (adForm.adType === "audio" && adForm.audioFile) {
+        const fileName = `${Date.now()}_${adForm.audioFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("ads")
+          .upload(fileName, adForm.audioFile);
+        if (uploadErr) throw uploadErr;
+        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        mediaUrl = pub.publicUrl;
+      }
+
       const { error } = await supabase
         .from("ads")
         .insert({
@@ -589,15 +613,16 @@ const Admin = () => {
           ad_type: adForm.adType,
           target_url: adForm.targetUrl,
           is_active: adForm.isActive,
-          frequency: adForm.frequency
+          frequency: adForm.frequency,
+          media_url: mediaUrl,
+          placement: adForm.placement,
+          start_date: adForm.startDate || null,
+          end_date: adForm.endDate || null,
         });
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Ad created successfully",
-      });
+      toast({ title: "Success", description: "Ad created successfully" });
 
       setAdForm({
         title: "",
@@ -605,16 +630,15 @@ const Admin = () => {
         targetUrl: "",
         isActive: true,
         frequency: 1,
+        placement: "home_hero",
+        startDate: "",
+        endDate: "",
         bannerFile: null,
-        audioFile: null
+        audioFile: null,
       });
     } catch (error) {
       console.error("Error creating ad:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create ad",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to create ad", variant: "destructive" });
     }
   };
 
@@ -1596,6 +1620,19 @@ const Admin = () => {
                       </Select>
                     </div>
                     <div>
+                      <Label htmlFor="placement">Placement</Label>
+                      <Select value={adForm.placement} onValueChange={(value) => setAdForm({...adForm, placement: value as any})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose placement" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="home_hero">Home Hero</SelectItem>
+                          <SelectItem value="sidebar_300x250">Sidebar 300x250</SelectItem>
+                          <SelectItem value="player_728x90">Player 728x90</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
                       <Label htmlFor="targetUrl">Target URL</Label>
                       <Input
                         id="targetUrl"
@@ -1605,16 +1642,24 @@ const Admin = () => {
                         placeholder="https://example.com"
                       />
                     </div>
-                     <div>
-                       <Label htmlFor="frequency">Frequency</Label>
-                       <Input
-                         id="frequency"
-                         type="number"
-                         min="1"
-                         value={adForm.frequency}
-                         onChange={(e) => setAdForm({...adForm, frequency: parseInt(e.target.value) || 1})}
-                       />
-                     </div>
+                    <div>
+                      <Label htmlFor="frequency">Frequency</Label>
+                      <Input
+                        id="frequency"
+                        type="number"
+                        min="1"
+                        value={adForm.frequency}
+                        onChange={(e) => setAdForm({...adForm, frequency: parseInt(e.target.value) || 1})}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="startDate">Start Date</Label>
+                      <Input id="startDate" type="date" value={adForm.startDate} onChange={(e) => setAdForm({...adForm, startDate: e.target.value})} />
+                    </div>
+                    <div>
+                      <Label htmlFor="endDate">End Date</Label>
+                      <Input id="endDate" type="date" value={adForm.endDate} onChange={(e) => setAdForm({...adForm, endDate: e.target.value})} />
+                    </div>
                    </div>
                    
                    {/* File Upload Section */}

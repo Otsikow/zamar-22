@@ -5,12 +5,14 @@ import Footer from "@/components/sections/Footer";
 import VideoShowcase from "@/components/sections/VideoShowcase";
 import heroImage from "@/assets/hero-music.jpg";
 import WelcomeBanner from "@/components/auth/WelcomeBanner";
+import AdSlot from "@/components/ads/AdSlot";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <main className="pb-20">
         <HeroSection bgImageUrl={heroImage} />
         <WelcomeBanner />
+        <AdSlot placement="home_hero" className="container mx-auto my-6" />
         <FeaturedSongs />
         <LiveCounter />
         <VideoShowcase />

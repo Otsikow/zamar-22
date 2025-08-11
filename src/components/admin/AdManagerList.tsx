@@ -17,6 +17,12 @@ interface Ad {
   media_url: string | null;
   frequency: number | null;
   is_active: boolean | null;
+  placement?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  status?: string | null;
+  impressions?: number | null;
+  clicks?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -26,7 +32,7 @@ const AdManagerList = () => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Ad | null>(null);
-  const [editForm, setEditForm] = useState({ title: "", target_url: "", frequency: 1 });
+  const [editForm, setEditForm] = useState({ title: "", target_url: "", frequency: 1, placement: "home_hero", start_date: "", end_date: "" });
 
   const loadAds = async () => {
     setLoading(true);
@@ -71,6 +77,9 @@ const AdManagerList = () => {
       title: ad.title,
       target_url: ad.target_url || "",
       frequency: ad.frequency || 1,
+      placement: ad.placement || "home_hero",
+      start_date: ad.start_date || "",
+      end_date: ad.end_date || "",
     });
   };
 
@@ -78,14 +87,33 @@ const AdManagerList = () => {
     if (!editing) return;
     const { error } = await supabase
       .from("ads")
-      .update({ title: editForm.title, target_url: editForm.target_url, frequency: editForm.frequency })
+      .update({
+        title: editForm.title,
+        target_url: editForm.target_url,
+        frequency: editForm.frequency,
+        placement: editForm.placement,
+        start_date: editForm.start_date || null,
+        end_date: editForm.end_date || null,
+      })
       .eq("id", editing.id);
     if (error) {
       toast({ title: "Error", description: "Could not save changes", variant: "destructive" });
       return;
     }
     setAds((prev) =>
-      prev.map((a) => (a.id === editing.id ? { ...a, title: editForm.title, target_url: editForm.target_url, frequency: editForm.frequency } : a))
+      prev.map((a) =>
+        a.id === editing.id
+          ? {
+              ...a,
+              title: editForm.title,
+              target_url: editForm.target_url,
+              frequency: editForm.frequency,
+              placement: editForm.placement,
+              start_date: editForm.start_date,
+              end_date: editForm.end_date,
+            }
+          : a
+      )
     );
     setEditing(null);
     toast({ title: "Saved", description: "Ad updated" });
@@ -119,10 +147,18 @@ const AdManagerList = () => {
                   <div className="flex items-center gap-2">
                     <span className="text-primary text-sm uppercase tracking-wide">{ad.ad_type}</span>
                     <span className="text-xs text-muted-foreground">• {new Date(ad.created_at).toLocaleDateString()}</span>
+                    {ad.placement && (
+                      <span className="text-xs text-muted-foreground">• {ad.placement.split('_').join(' ')}</span>
+                    )}
                   </div>
                   <div className="mt-1 font-semibold truncate">{ad.title}</div>
                   <div className="text-sm text-muted-foreground truncate">{ad.target_url || "—"}</div>
                   <div className="mt-1 text-xs text-muted-foreground">Frequency: {ad.frequency ?? 1}</div>
+                  {(ad.start_date || ad.end_date) && (
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {ad.start_date || '—'} → {ad.end_date || '—'}
+                    </div>
+                  )}
                 </div>
 
                 {ad.ad_type === "banner" && ad.media_url && (
@@ -176,6 +212,27 @@ const AdManagerList = () => {
                               value={editForm.frequency}
                               onChange={(e) => setEditForm({ ...editForm, frequency: parseInt(e.target.value || "1", 10) })}
                             />
+                          </div>
+                          <div>
+                            <Label htmlFor="placement">Placement</Label>
+                            <select id="placement" className="w-full h-10 rounded-md border border-input bg-background px-3" value={editForm.placement}
+                              onChange={(e) => setEditForm({ ...editForm, placement: e.target.value })}>
+                              <option value="home_hero">Home Hero</option>
+                              <option value="sidebar_300x250">Sidebar 300x250</option>
+                              <option value="player_728x90">Player 728x90</option>
+                            </select>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="start_date">Start Date</Label>
+                              <Input id="start_date" type="date" value={editForm.start_date}
+                                onChange={(e) => setEditForm({ ...editForm, start_date: e.target.value })} />
+                            </div>
+                            <div>
+                              <Label htmlFor="end_date">End Date</Label>
+                              <Input id="end_date" type="date" value={editForm.end_date}
+                                onChange={(e) => setEditForm({ ...editForm, end_date: e.target.value })} />
+                            </div>
                           </div>
                           <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => setEditing(null)}>

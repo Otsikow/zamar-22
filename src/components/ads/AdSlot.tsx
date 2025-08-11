@@ -1,0 +1,64 @@
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Ad {
+  id: string;
+  title: string;
+  ad_type: string;
+  target_url: string | null;
+  media_url: string | null;
+  placement: string | null;
+  start_date: string | null;
+  end_date: string | null;
+}
+
+type AdSlotProps = {
+  placement: "home_hero" | "sidebar_300x250" | "player_728x90" | string;
+  className?: string;
+};
+
+const withinWindow = (ad: Ad) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const afterStart = !ad.start_date || ad.start_date <= today;
+  const beforeEnd = !ad.end_date || ad.end_date >= today;
+  return afterStart && beforeEnd;
+};
+
+export default function AdSlot({ placement, className }: AdSlotProps) {
+  const [ads, setAds] = useState<Ad[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("ads")
+        .select("id,title,ad_type,target_url,media_url,placement,start_date,end_date")
+        .eq("is_active", true)
+        .eq("ad_type", "banner")
+        .eq("placement", placement)
+        .order("created_at", { ascending: false });
+      setAds((data as Ad[]) || []);
+      setLoading(false);
+    };
+    load();
+  }, [placement]);
+
+  const ad = useMemo(() => ads.find(withinWindow) || ads[0], [ads]);
+
+  if (loading || !ad) return null;
+  if (!ad.media_url) return null;
+
+  return (
+    <aside className={className} aria-label="sponsored banner">
+      <a href={ad.target_url ?? "#"} target="_blank" rel="noopener nofollow sponsored" aria-label={`Sponsored: ${ad.title}`}>
+        <img
+          src={ad.media_url}
+          alt={`Sponsored banner: ${ad.title}`}
+          className="w-full h-auto rounded-md border border-border object-contain"
+          loading="lazy"
+        />
+      </a>
+    </aside>
+  );
+}
