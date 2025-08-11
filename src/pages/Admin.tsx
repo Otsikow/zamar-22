@@ -668,20 +668,17 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue={initialTab} key={location.search} className="w-full">
-          <TabsList className="w-full overflow-x-auto p-1">
-            <TabsTrigger value="upload" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
-            
-            <TabsTrigger value="songs" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
-            <TabsTrigger value="analytics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Analytics</TabsTrigger>
-            
-            <TabsTrigger value="chat" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Chat</TabsTrigger>
-            <TabsTrigger value="lyrics" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Lyrics</TabsTrigger>
-            <TabsTrigger value="donations" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
-            <TabsTrigger value="testimonials" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
-            
-            <TabsTrigger value="ads" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
-            <TabsTrigger value="referrals" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-2 p-1">
+            <TabsTrigger value="upload" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
+            <TabsTrigger value="songs" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
+            <TabsTrigger value="analytics" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Analytics</TabsTrigger>
+            <TabsTrigger value="chat" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Chat</TabsTrigger>
+            <TabsTrigger value="lyrics" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Lyrics</TabsTrigger>
+            <TabsTrigger value="donations" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
+            <TabsTrigger value="testimonials" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
+            <TabsTrigger value="users" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
+            <TabsTrigger value="ads" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
+            <TabsTrigger value="referrals" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
           </TabsList>
 
           {/* Upload New Song */}
@@ -873,10 +870,10 @@ const Admin = () => {
           {/* Songs Management */}
           <TabsContent value="songs">
             <Tabs defaultValue="all" className="w-full">
-              <TabsList className="w-full overflow-x-auto p-1">
-                <TabsTrigger value="all" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
-                <TabsTrigger value="custom" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
-                <TabsTrigger value="requests" className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
+              <TabsList className="w-full grid grid-cols-3 gap-2 p-1">
+                <TabsTrigger value="all" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
+                <TabsTrigger value="custom" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Custom Songs</TabsTrigger>
+                <TabsTrigger value="requests" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Requests</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all">
