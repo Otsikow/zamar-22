@@ -13,7 +13,7 @@ export default function PwaInstallBanner() {
   if (!shouldShowUi) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md rounded-2xl shadow-lg border border-border bg-background/90 backdrop-blur p-4 text-foreground">
+    <div className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-[70] w-[95%] max-w-md rounded-2xl shadow-lg border border-border bg-background/90 backdrop-blur p-4 text-foreground">
       <div className="flex items-start gap-3">
         <img
           src="/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png"
