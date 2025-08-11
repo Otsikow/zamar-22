@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'zamar-v3-20250810';
+const CACHE_VERSION = 'zamar-v4-20250811';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
@@ -6,8 +6,8 @@ const OFFLINE_URL = '/offline.html';
 const CORE_ASSETS = [
   '/',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png',
+  '/lovable-uploads/eea63e8f-61ca-4fd6-9db2-366e8d4ee1b9.png',
   OFFLINE_URL,
 ];
 
