@@ -34,6 +34,8 @@ const AdManagerList = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Ad | null>(null);
   const [editForm, setEditForm] = useState({ title: "", target_url: "", frequency: 1, placement: "home_hero", start_date: "", end_date: "" });
+  const [newBannerFile, setNewBannerFile] = useState<File | null>(null);
+  const [newAudioFile, setNewAudioFile] = useState<File | null>(null);
   const { isAdmin, loading: adminLoading } = useIsAdmin();
 
   const loadAds = async () => {
@@ -95,48 +97,66 @@ const AdManagerList = () => {
       start_date: ad.start_date || "",
       end_date: ad.end_date || "",
     });
+    setNewBannerFile(null);
+    setNewAudioFile(null);
   };
-
   const saveEdit = async () => {
     if (!editing) return;
     if (!isAdmin) {
       toast({ title: "Permission denied", description: "You must be an admin to edit ads.", variant: "destructive" });
       return;
     }
-    const { error } = await supabase
-      .from("ads")
-      .update({
+
+    try {
+      let mediaUrl: string | null = null;
+
+      if (editing.ad_type === "banner" && newBannerFile) {
+        const fileName = `${Date.now()}_${newBannerFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("ads")
+          .upload(fileName, newBannerFile);
+        if (uploadErr) throw uploadErr;
+        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        mediaUrl = pub.publicUrl;
+      }
+
+      if (editing.ad_type === "audio" && newAudioFile) {
+        const fileName = `${Date.now()}_${newAudioFile.name}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("ads")
+          .upload(fileName, newAudioFile);
+        if (uploadErr) throw uploadErr;
+        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        mediaUrl = pub.publicUrl;
+      }
+
+      const updates: any = {
         title: editForm.title,
         target_url: editForm.target_url,
         frequency: editForm.frequency,
         placement: editForm.placement,
         start_date: editForm.start_date || null,
         end_date: editForm.end_date || null,
-      })
-      .eq("id", editing.id);
-    if (error) {
-      console.error("Save ad error", error);
-      const msg = (error as any)?.message || "Could not save changes";
-      toast({ title: "Error", description: msg, variant: "destructive" });
-      return;
+      };
+      if (mediaUrl !== null) {
+        updates.media_url = mediaUrl;
+      }
+
+      const { error } = await supabase.from("ads").update(updates).eq("id", editing.id);
+      if (error) throw error;
+
+      setAds((prev) =>
+        prev.map((a) => (a.id === editing.id ? { ...a, ...updates } : a))
+      );
+
+      setEditing(null);
+      setNewBannerFile(null);
+      setNewAudioFile(null);
+      toast({ title: "Saved", description: "Ad updated" });
+    } catch (err) {
+      console.error("Save ad error", err);
+      toast({ title: "Error", description: "Could not save changes", variant: "destructive" });
     }
-    setAds((prev) =>
-      prev.map((a) =>
-        a.id === editing.id
-          ? {
-              ...a,
-              title: editForm.title,
-              target_url: editForm.target_url,
-              frequency: editForm.frequency,
-              placement: editForm.placement,
-              start_date: editForm.start_date,
-              end_date: editForm.end_date,
-            }
-          : a
-      )
-    );
-    setEditing(null);
-    toast({ title: "Saved", description: "Ad updated" });
   };
 
   const empty = useMemo(() => !loading && ads.length === 0, [loading, ads.length]);
@@ -204,7 +224,7 @@ const AdManagerList = () => {
                     <Label htmlFor={`active-${ad.id}`}>Active</Label>
                   </div>
                   <div className="flex gap-2">
-                    <Dialog>
+                    <Dialog open={editing?.id === ad.id} onOpenChange={(open) => (open ? startEdit(ad) : setEditing(null))}>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm" onClick={() => startEdit(ad)}>
                           <Edit className="h-4 w-4 mr-2" /> Edit
@@ -254,6 +274,42 @@ const AdManagerList = () => {
                                 onChange={(e) => setEditForm({ ...editForm, end_date: e.target.value })} />
                             </div>
                           </div>
+                          {editing?.ad_type === "banner" && (
+                            <div>
+                              <Label htmlFor={`banner-${ad.id}`}>Banner image</Label>
+                              {editing?.media_url && (
+                                <div className="mt-2">
+                                  <img
+                                    src={editing.media_url}
+                                    alt={`${editForm.title} current banner`}
+                                    className="h-20 object-contain border border-border rounded-md"
+                                  />
+                                </div>
+                              )}
+                              <Input
+                                id={`banner-${ad.id}`}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setNewBannerFile(e.target.files?.[0] || null)}
+                              />
+                              <p className="text-xs text-muted-foreground mt-1">PNG/JPG/SVG. Max 5MB.</p>
+                            </div>
+                          )}
+
+                          {editing?.ad_type === "audio" && (
+                            <div>
+                              <Label htmlFor={`audio-${ad.id}`}>Audio file</Label>
+                              {editing?.media_url && <audio className="w-full my-2" controls src={editing.media_url} />}
+                              <Input
+                                id={`audio-${ad.id}`}
+                                type="file"
+                                accept="audio/*"
+                                onChange={(e) => setNewAudioFile(e.target.files?.[0] || null)}
+                              />
+                              <p className="text-xs text-muted-foreground mt-1">MP3/WAV. Max 10MB.</p>
+                            </div>
+                          )}
+
                           <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => setEditing(null)}>
                               <X className="h-4 w-4 mr-2" /> Cancel
