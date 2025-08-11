@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Purchase {
   id: string;
@@ -410,17 +411,11 @@ const Library = () => {
                         <div className="flex items-center gap-4">
                           {/* Thumbnail */}
                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                             {purchase.songs.thumbnail_url ? (
-                               <img 
-                                 src={purchase.songs.thumbnail_url} 
-                                 alt={purchase.songs.title}
-                                 className="w-full h-full object-contain p-1 bg-transparent"
-                               />
-                             ) : (
-                               <div className="w-full h-full flex items-center justify-center">
-                                 <Music2 className="w-6 h-6 text-primary" />
-                               </div>
-                             )}
+                             <img 
+                               src={zamarLogo} 
+                               alt={purchase.songs.title}
+                               className="w-full h-full object-contain p-1 bg-transparent"
+                             />
                           </div>
 
                           {/* Song Info */}
@@ -490,7 +485,7 @@ const Library = () => {
                           artist: 'Zamar',
                           duration: 0,
                           url: s.audio_url || undefined,
-                          cover: s.thumbnail_url || undefined,
+                          cover: zamarLogo,
                         }));
                       if (queue.length > 0) playQueue(queue, 0);
                     }}>
@@ -501,13 +496,9 @@ const Library = () => {
                     <Card key={idx} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
                       <CardContent className="p-6">
                         <div className="flex items-center gap-4">
-                          {fav.songs?.thumbnail_url ? (
-                            <img src={fav.songs.thumbnail_url} alt={fav.songs.title} className="w-full h-full object-contain p-1 bg-transparent" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Music2 className="w-6 h-6 text-primary" />
-                            </div>
-                          )}
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
+                            <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
+                          </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug whitespace-normal break-normal">
                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
@@ -526,9 +517,9 @@ const Library = () => {
                               </Button>
                             )}
                             {fav.songs?.audio_url && (
-                              <Button size="sm" onClick={() => {
-                                playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: fav.songs!.thumbnail_url || undefined }], 0);
-                              }}>
+                               <Button size="sm" onClick={() => {
+                                playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
+                               }}>
                                 {t('library.play', 'Play')}
                               </Button>
                             )}

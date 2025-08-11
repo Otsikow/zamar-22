@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -66,7 +67,7 @@ const FeaturedSongs = () => {
       artist: song.genre,
       duration: 180, // Default duration, will be updated when audio loads
       url: song.audio_url || "", // Use audio URL from database
-      cover: song.thumbnail_url || undefined // Use song thumbnail if present
+      cover: zamarLogo
     };
     
     console.log('🎵 Calling playSong with URL:', songWithAudio.url);
@@ -108,17 +109,11 @@ const FeaturedSongs = () => {
             <Card key={song.id} className="group bg-card border-border hover:shadow-elegant transition-all duration-300 hover:scale-105 cursor-pointer"
                   onClick={() => handlePlaySong(song)}>
               <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
-                {song.thumbnail_url ? (
-                  <img 
-                    src={song.thumbnail_url}
-                    alt={song.title}
-                    className="w-full h-full object-contain p-4 bg-transparent"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Music className="w-8 h-8 text-primary" />
-                  </div>
-                )}
+                <img 
+                  src={zamarLogo}
+                  alt={song.title}
+                  className="w-full h-full object-contain p-4 bg-transparent"
+                />
                 <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
                   <FavouriteButton songId={song.id} />
                 </div>

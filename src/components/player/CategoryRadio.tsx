@@ -26,6 +26,7 @@ import PlayerSlider from "@/components/player/PlayerSlider";
 // Visualizer powered by Web Audio API
 import { Volume2 } from "lucide-react";
 import AudioVisualizer from "@/components/player/AudioVisualizer";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -139,7 +140,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         artist: "Zamar Artists",
         duration: 240, // Will be updated when audio loads
         url: song.audio_url,
-        cover: song.thumbnail_url || undefined,
+        cover: zamarLogo,
       }));
 
       // Start continuous playback
@@ -192,7 +193,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         artist: "Zamar Artists",
         duration: 240,
         url: song.audio_url,
-        cover: song.thumbnail_url || undefined,
+        cover: zamarLogo,
       }));
 
       playQueue(queue, 0);
@@ -254,7 +255,7 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
           artist: "Zamar Artists",
           duration: 240,
           url: song.audio_url,
-          cover: song.thumbnail_url || undefined,
+          cover: zamarLogo,
         }));
 
         const toAppend = shuffleArrayLocal(newSongs);

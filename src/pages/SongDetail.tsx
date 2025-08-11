@@ -133,7 +133,7 @@ const SongDetail = () => {
         artist: "Zamar Artists",
         duration: duration,
         url: song.audio_url,
-        cover: song.thumbnail_url || undefined,
+        cover: zamarLogo,
       };
       playSong(nowPlayingSong);
     }
@@ -265,7 +265,7 @@ const SongDetail = () => {
             {/* Album Art */}
             <div className="aspect-square rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
               <img 
-                src={song.thumbnail_url || zamarLogo} 
+                src={zamarLogo} 
                 alt={song.title}
                 className="w-full h-full object-contain p-1 bg-transparent"
               />
@@ -515,7 +515,7 @@ const SongDetail = () => {
                       <CardContent className="p-0">
                         <div className="aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
                           <img 
-                            src={relatedSong.thumbnail_url || zamarLogo} 
+                            src={zamarLogo} 
                             alt={relatedSong.title}
                             className="w-full h-full object-contain p-1 bg-transparent"
                           />

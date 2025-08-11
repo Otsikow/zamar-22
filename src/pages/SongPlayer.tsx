@@ -14,6 +14,7 @@ import PlayerSlider from "@/components/player/PlayerSlider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { extractScriptureFromLyrics } from "@/lib/utils";
 import FavouriteButton from "@/components/FavouriteButton";
+import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -130,7 +131,7 @@ const SongPlayer = () => {
         artist: "Zamar Artists",
         duration: 240,
         url: song.audio_url,
-        cover: song.thumbnail_url || undefined,
+        cover: zamarLogo,
       };
       playSong(nowPlayingSong);
     }
