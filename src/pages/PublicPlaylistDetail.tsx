@@ -198,7 +198,7 @@ const PublicPlaylistDetail = () => {
                     {/* Thumbnail */}
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                       <img 
-                        src={playlistSong.songs.thumbnail_url || zamarLogo} 
+                        src={zamarLogo} 
                         alt={playlistSong.songs.title}
                         className="w-full h-full object-contain p-1 bg-transparent"
                       />

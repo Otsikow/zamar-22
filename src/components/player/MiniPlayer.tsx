@@ -49,8 +49,8 @@ const MiniPlayer: React.FC = () => {
         {/* Song Cover */}
         <div className="w-10 h-10 bg-[hsl(var(--thumbnail-bg))] rounded-md flex-shrink-0 flex items-center justify-center overflow-hidden">
           <img 
-            src={state.currentSong.cover || zamarLogo} 
-            alt="Album cover" 
+            src={zamarLogo} 
+            alt="Zamar logo" 
             className="w-full h-full object-contain p-1 rounded-md"
           />
         </div>
