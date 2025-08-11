@@ -12,7 +12,6 @@ import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
-import zamarLogo from "@/assets/zamar-logo.png";
 
 interface Song {
   id: string;
@@ -140,7 +139,7 @@ const SongsLibrary = () => {
         artist: "Zamar Artists",
         duration: 180, // Mock duration
         url: song.audio_url || undefined,
-         cover: song.thumbnail_url || zamarLogo, // Use song thumbnail or Zamar logo
+         cover: song.thumbnail_url || undefined, // Use song thumbnail if available
       };
       
       // Create queue from all filtered songs  
@@ -149,8 +148,8 @@ const SongsLibrary = () => {
         title: s.title,
         artist: "Zamar Artists",
         duration: 180,
-        url: s.audio_url || undefined,
-         cover: s.thumbnail_url || zamarLogo, // Use song thumbnail or Zamar logo
+         url: s.audio_url || undefined,
+         cover: s.thumbnail_url || undefined, // Use song thumbnail if available
       }));
       
       playSong(nowPlayingSong, queue);
@@ -300,11 +299,17 @@ const SongsLibrary = () => {
                   <CardContent className="p-0">
                      {/* Thumbnail */}
                      <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
-                       <img 
-                         src={song.thumbnail_url || zamarLogo}
-                         alt={song.title}
-                         className="w-full h-full object-contain p-3 bg-transparent group-hover:scale-105 transition-transform duration-300"
-                       />
+                       {song.thumbnail_url ? (
+                         <img 
+                           src={song.thumbnail_url}
+                           alt={song.title}
+                           className="w-full h-full object-contain p-3 bg-transparent group-hover:scale-105 transition-transform duration-300"
+                         />
+                       ) : (
+                         <div className="w-full h-full flex items-center justify-center">
+                           <Music2 className="w-6 h-6 text-primary" />
+                         </div>
+                       )}
                        <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
                          <FavouriteButton songId={song.id} />
                        </div>
