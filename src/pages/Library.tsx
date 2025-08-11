@@ -11,6 +11,7 @@ import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationCont
 import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import zamarLogo from "@/assets/zamar-logo.png";
+import AdSlot from "@/components/ads/AdSlot";
 
 interface Purchase {
   id: string;
@@ -353,6 +354,13 @@ const Library = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
               {t('library.subtitle', 'Track your custom song requests and access your completed songs.')}
             </p>
+          </div>
+
+          {/* Sidebar ad for desktop */}
+          <div className="hidden lg:block w-full">
+            <div className="max-w-[300px] ml-auto mb-6">
+              <AdSlot placement="sidebar_300x250" />
+            </div>
           </div>
 
           {/* Tabs */}

@@ -15,6 +15,7 @@ import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { extractScriptureFromLyrics } from "@/lib/utils";
 import FavouriteButton from "@/components/FavouriteButton";
 import zamarLogo from "@/assets/zamar-logo.png";
+import AdSlot from "@/components/ads/AdSlot";
 
 interface Song {
   id: string;
@@ -277,6 +278,9 @@ const SongPlayer = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Player Ad Slot */}
+          <AdSlot placement="player_728x90" className="my-6" />
 
           {/* Lesson Tip Banner */}
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-8">
