@@ -1014,22 +1014,143 @@ const Admin = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex gap-2 ml-4">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setEditingSong(song)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleSongDelete(song.id)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
+                                <div className="flex gap-2 ml-4">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button variant="outline" size="sm">
+                                        <BookOpen className="h-4 w-4 mr-2" />
+                                        Edit Lyrics
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-2xl max-h-[80vh]">
+                                      <DialogHeader>
+                                        <DialogTitle className="text-xl font-semibold text-primary">
+                                          {song.title} - Lyrics
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                                        {lyrics.filter((l) => l.song_id === song.id).length === 0 ? (
+                                          <div className="text-sm text-muted-foreground">No lyrics yet for this song.</div>
+                                        ) : (
+                                          lyrics
+                                            .filter((l) => l.song_id === song.id)
+                                            .map((lyric) => (
+                                              <div key={lyric.id} className="border border-primary/20 rounded-lg p-4">
+                                                <div className="mb-2 flex items-center justify-between">
+                                                  <div>
+                                                    <Badge variant="outline" className="mr-2">{lyric.language}</Badge>
+                                                    <span className="text-xs text-muted-foreground">
+                                                      Added on {new Date(lyric.created_at).toLocaleDateString()}
+                                                    </span>
+                                                  </div>
+                                                  <div className="flex gap-2">
+                                                    <Button
+                                                      size="sm"
+                                                      variant="outline"
+                                                      onClick={() => {
+                                                        setEditingLyric(lyric);
+                                                        setEditingLyricForm({
+                                                          text: lyric.text || "",
+                                                          language: lyric.language || "English",
+                                                        });
+                                                      }}
+                                                    >
+                                                      <Edit className="h-4 w-4 mr-2" />
+                                                      Edit
+                                                    </Button>
+                                                    <Button
+                                                      size="sm"
+                                                      variant="destructive"
+                                                      onClick={() => handleLyricDelete(lyric.id)}
+                                                    >
+                                                      <Trash2 className="h-4 w-4 mr-2" />
+                                                      Delete
+                                                    </Button>
+                                                  </div>
+                                                </div>
+
+                                                {editingLyric?.id === lyric.id ? (
+                                                  <div className="space-y-3 mt-3">
+                                                    <div>
+                                                      <Label htmlFor={`edit-lang-${lyric.id}`}>Language</Label>
+                                                      <Select
+                                                        value={editingLyricForm.language}
+                                                        onValueChange={(value) =>
+                                                          setEditingLyricForm({ ...editingLyricForm, language: value })
+                                                        }
+                                                      >
+                                                        <SelectTrigger id={`edit-lang-${lyric.id}`}>
+                                                          <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                          <SelectItem value="English">English</SelectItem>
+                                                          <SelectItem value="Spanish">Spanish</SelectItem>
+                                                          <SelectItem value="French">French</SelectItem>
+                                                          <SelectItem value="German">German</SelectItem>
+                                                          <SelectItem value="Portuguese">Portuguese</SelectItem>
+                                                        </SelectContent>
+                                                      </Select>
+                                                    </div>
+                                                    <div>
+                                                      <Label htmlFor={`edit-text-${lyric.id}`}>Lyrics Text</Label>
+                                                      <Textarea
+                                                        id={`edit-text-${lyric.id}`}
+                                                        value={editingLyricForm.text}
+                                                        onChange={(e) =>
+                                                          setEditingLyricForm({ ...editingLyricForm, text: e.target.value })
+                                                        }
+                                                        rows={6}
+                                                      />
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                      <Button size="sm" onClick={() => handleLyricUpdate(lyric.id)}>Save</Button>
+                                                      <Button size="sm" variant="outline" onClick={() => setEditingLyric(null)}>
+                                                        Cancel
+                                                      </Button>
+                                                    </div>
+                                                  </div>
+                                                ) : (
+                                                  <>
+                                                    {lyric.text ? (
+                                                      <div className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/20 p-4 rounded-lg">
+                                                        {lyric.text}
+                                                      </div>
+                                                    ) : (
+                                                      <p className="text-muted-foreground">No lyrics text available.</p>
+                                                    )}
+                                                    {lyric.pdf_url && (
+                                                      <div className="mt-4">
+                                                        <Button variant="outline" asChild>
+                                                          <a href={lyric.pdf_url} target="_blank" rel="noopener noreferrer">
+                                                            <Download className="h-4 w-4 mr-2" />
+                                                            Download PDF
+                                                          </a>
+                                                        </Button>
+                                                      </div>
+                                                    )}
+                                                  </>
+                                                )}
+                                              </div>
+                                            ))
+                                        )}
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setEditingSong(song)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleSongDelete(song.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                             </div>
                           )}
                         </div>
