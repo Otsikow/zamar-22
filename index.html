@@ -2,17 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      (function () {
-        try {
-          var host = window.location.hostname;
-          if (host === 'zamarsongs.com') {
-            var newUrl = window.location.protocol + '//' + 'www.zamarsongs.com' + window.location.pathname + window.location.search + window.location.hash;
-            window.location.replace(newUrl);
-          }
-        } catch (e) {}
-      })();
-    </script>
+    <!-- Host redirect disabled to allow both apex and www during DNS/SSL propagation -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Zamar - Custom Songs for Every Occasion</title>
     <meta name="description" content="Custom Songs for Weddings, Birthdays, Churches, Campaigns & Businesses - Faith-Based Platform" />
