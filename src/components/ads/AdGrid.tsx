@@ -70,7 +70,7 @@ function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
   )}`;
 
   return (
-    <article ref={containerRef} className="group" aria-label={`sponsored item: ${ad.title}`}>
+    <article ref={containerRef} className="group h-full" aria-label={`sponsored item: ${ad.title}`}>
       <a
         href={redirectUrl}
         target="_blank"
@@ -78,18 +78,20 @@ function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
         aria-label={`Sponsored: ${ad.title}`}
         className="block h-full"
       >
-        <Card className="overflow-hidden p-0 transition-shadow duration-200 hover:shadow-card/80">
-          <div className={cn("w-full bg-muted/40 border-b border-border/60")}
-               aria-hidden="true">
+        <Card className="h-full flex flex-col overflow-hidden p-0 transition-shadow duration-200 hover:shadow-card/80">
+          <div
+            className={cn("w-full bg-muted/40 border-b border-border/60 flex items-center justify-center")}
+            aria-hidden="true"
+          >
             <img
               src={ad.media_url}
               alt={`Sponsored banner: ${ad.title}`}
-              className="w-full h-28 sm:h-32 object-contain"
+              className="w-full h-32 object-contain"
               loading="lazy"
             />
           </div>
-          <div className="p-2 sm:p-3">
-            <h3 className="text-sm font-medium line-clamp-2 text-foreground/90">
+          <div className="p-3 mt-auto">
+            <h3 className="text-sm font-medium line-clamp-2 text-foreground/90 min-h-[40px]">
               {ad.title}
             </h3>
           </div>
@@ -136,7 +138,7 @@ export default function AdGrid({ placement, limit = 4, className, title }: AdGri
       ) : (
         <h2 className="sr-only">Sponsored ads</h2>
       )}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr items-stretch">
         {visibleAds.map((ad) => (
           <AdCard key={ad.id} ad={ad} placement={placement} />
         ))}

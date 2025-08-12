@@ -109,44 +109,44 @@ export default function AdApprovalTabs() {
       {items.map(ad => (
         <Card key={ad.id} className="bg-card border-border">
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={ad.status} />
-                  <span className="text-xs text-muted-foreground">{ad.placement?.split("_").join(" ") || "—"}</span>
-                  <span className="text-xs text-muted-foreground">• {new Date(ad.created_at).toLocaleDateString()}</span>
-                </div>
-                <div className="mt-1 font-semibold truncate">{ad.title}</div>
-                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
-                  <Calendar className="w-3 h-3" /> {fmt(ad.start_date)} → {fmt(ad.end_date)}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
-                  <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" /> {ad.impressions ?? 0} imps</span>
-                  <span>{ad.clicks ?? 0} clicks</span>
-                </div>
-              </div>
-
-              {ad.ad_type === "banner" && ad.media_url && (
-                <img src={ad.media_url} alt={`${ad.title} banner`} className="w-full md:w-48 h-24 object-contain rounded-md border border-border" loading="lazy" />
-              )}
-
-              <div className="md:w-64">
-                <AdStatsMini adId={ad.id} />
-              </div>
-
-              <div className="flex gap-2 md:flex-col md:items-end">
-                {(ad.status || "").toLowerCase() === "pending" ? (
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => approve(ad)}><CheckCircle2 className="w-4 h-4 mr-1" />Approve</Button>
-                    <Button size="sm" variant="destructive" onClick={() => reject(ad)}><XCircle className="w-4 h-4 mr-1" />Reject</Button>
+              <div className="grid gap-4 md:grid-cols-[1fr,12rem,10rem,auto] items-center">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={ad.status} />
+                    <span className="text-xs text-muted-foreground">{ad.placement?.split("_").join(" ") || "—"}</span>
+                    <span className="text-xs text-muted-foreground">• {new Date(ad.created_at).toLocaleDateString()}</span>
                   </div>
-                ) : (
-                  <Button size="sm" variant="outline" onClick={() => pauseToggle(ad)}>
-                    {(ad.is_active ?? true) ? (<><Pause className="w-4 h-4 mr-1"/>Pause</>) : (<><Play className="w-4 h-4 mr-1"/>Resume</>)}
-                  </Button>
+                  <div className="mt-1 font-semibold truncate">{ad.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+                    <Calendar className="w-3 h-3" /> {fmt(ad.start_date)} → {fmt(ad.end_date)}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" /> {ad.impressions ?? 0} imps</span>
+                    <span>{ad.clicks ?? 0} clicks</span>
+                  </div>
+                </div>
+
+                {ad.ad_type === "banner" && ad.media_url && (
+                  <img src={ad.media_url} alt={`${ad.title} banner`} className="w-full md:w-48 h-24 object-contain rounded-md border border-border" loading="lazy" />
                 )}
+
+                <div className="md:w-56">
+                  <AdStatsMini adId={ad.id} />
+                </div>
+
+                <div className="flex gap-2 md:flex-col md:items-end justify-self-end">
+                  {(ad.status || "").toLowerCase() === "pending" ? (
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={() => approve(ad)}><CheckCircle2 className="w-4 h-4 mr-1" />Approve</Button>
+                      <Button size="sm" variant="destructive" onClick={() => reject(ad)}><XCircle className="w-4 h-4 mr-1" />Reject</Button>
+                    </div>
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => pauseToggle(ad)}>
+                      {(ad.is_active ?? true) ? (<><Pause className="w-4 h-4 mr-1"/>Pause</>) : (<><Play className="w-4 h-4 mr-1"/>Resume</>)}
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
           </CardContent>
         </Card>
       ))}
