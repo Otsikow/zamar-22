@@ -133,7 +133,8 @@ const Contact: React.FC = () => {
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${id}` },
           (payload) => {
-            setMessages((prev) => [...prev, payload.new as unknown as ChatMessage]);
+            const incoming = payload.new as unknown as ChatMessage;
+            setMessages((prev) => (prev.some(m => m.id === incoming.id) ? prev : [...prev, incoming]));
           }
         )
         .subscribe();
@@ -152,17 +153,33 @@ const Contact: React.FC = () => {
   const sendChat = async () => {
     if (!user || !roomId || !chatInput.trim()) return;
     setChatLoading(true);
+    const text = chatInput.trim();
+    // Optimistic UI
+    const optimistic: ChatMessage = {
+      id: 'temp-' + Date.now(),
+      room_id: roomId,
+      sender_id: user.id,
+      message: text,
+      seen: false,
+      sent_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    setChatInput('');
     try {
-      const { error } = await supabase.from("chat_messages").insert({
-        room_id: roomId,
-        sender_id: user.id,
-        message: chatInput.trim(),
-      });
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({ room_id: roomId, sender_id: user.id, message: text })
+        .select()
+        .single();
       if (error) throw error;
-      setChatInput("");
+      // Replace optimistic with real message
+      setMessages((prev) => prev.map(m => (m.id === optimistic.id ? (data as any) : m)));
     } catch (e) {
       console.error(e);
-      toast({ title: "Message failed", description: "Please try again.", variant: "destructive" });
+      // Revert optimistic on error
+      setMessages((prev) => prev.filter(m => m.id !== optimistic.id));
+      setChatInput(text);
+      toast({ title: 'Message failed', description: 'Please try again.', variant: 'destructive' });
     } finally {
       setChatLoading(false);
     }

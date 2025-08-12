@@ -59,9 +59,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for Supabase API/storage with cache fallback
+  // Bypass caching for Supabase API, Realtime, and Storage to prevent stale data
   if (isSupabase) {
-    event.respondWith(networkFirst(request, RUNTIME_CACHE));
+    event.respondWith(fetch(request));
     return;
   }
 
