@@ -35,7 +35,7 @@ export default function AdSlot({ placement, className }: AdSlotProps) {
     const load = async () => {
       setLoading(true);
       const { data } = await supabase
-        .from("ads")
+        .from("advertisements")
         .select("id,title,ad_type,target_url,media_url,placement,start_date,end_date")
         .eq("is_active", true)
         .ilike("ad_type", "banner")

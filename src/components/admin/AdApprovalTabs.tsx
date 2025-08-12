@@ -48,7 +48,7 @@ export default function AdApprovalTabs() {
   const { isAdmin, loading: adminLoading } = useIsAdmin();
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("ads").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase.from("advertisements").select("*").order("created_at", { ascending: false });
     setAds((data as Ad[]) || []);
     setLoading(false);
   };
@@ -68,7 +68,7 @@ export default function AdApprovalTabs() {
       toast({ title: "Permission denied", description: "You must be an admin to approve ads.", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("ads").update({ status: "active", is_active: true, start_date: ad.start_date ?? today }).eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").update({ status: "active", is_active: true, start_date: ad.start_date ?? today }).eq("id", ad.id);
     if (error) {
       console.error("Approve ad error", error);
       toast({ title: "Error", description: (error as any)?.message || "Failed to approve", variant: "destructive" });
@@ -81,7 +81,7 @@ export default function AdApprovalTabs() {
       toast({ title: "Permission denied", description: "You must be an admin to reject ads.", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("ads").update({ status: "rejected", is_active: false }).eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").update({ status: "rejected", is_active: false }).eq("id", ad.id);
     if (error) {
       console.error("Reject ad error", error);
       toast({ title: "Error", description: (error as any)?.message || "Failed to reject", variant: "destructive" });
@@ -95,7 +95,7 @@ export default function AdApprovalTabs() {
       return;
     }
     const next = !(ad.is_active ?? true);
-    const { error } = await supabase.from("ads").update({ is_active: next, status: next ? "active" : "paused" }).eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").update({ is_active: next, status: next ? "active" : "paused" }).eq("id", ad.id);
     if (error) {
       console.error("Toggle ad error", error);
       toast({ title: "Error", description: (error as any)?.message || "Failed to update status", variant: "destructive" });

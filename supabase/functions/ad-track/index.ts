@@ -48,9 +48,9 @@ serve(async (req) => {
       await supabase.from("ad_logs").insert({ ad_id: adId, placement, type, ip, ua, referrer });
 
       const col = type === "click" ? "clicks" : "impressions";
-      const { data: adRow } = await supabase.from("ads").select("impressions, clicks").eq("id", adId).maybeSingle();
+      const { data: adRow } = await supabase.from("advertisements").select("impressions, clicks").eq("id", adId).maybeSingle();
       const current = (adRow?.[col as "impressions" | "clicks"] as number | null) ?? 0;
-      await supabase.from("ads").update({ [col]: current + 1 } as any).eq("id", adId);
+      await supabase.from("advertisements").update({ [col]: current + 1 } as any).eq("id", adId);
     }
 
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });

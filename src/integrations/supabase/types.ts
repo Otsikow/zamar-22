@@ -152,6 +152,60 @@ export type Database = {
         }
         Relationships: []
       }
+      advertisements: {
+        Row: {
+          ad_type: string
+          clicks: number | null
+          created_at: string
+          end_date: string | null
+          frequency: number | null
+          id: string
+          impressions: number | null
+          is_active: boolean
+          media_url: string | null
+          placement: string | null
+          start_date: string | null
+          status: string | null
+          target_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ad_type: string
+          clicks?: number | null
+          created_at?: string
+          end_date?: string | null
+          frequency?: number | null
+          id?: string
+          impressions?: number | null
+          is_active?: boolean
+          media_url?: string | null
+          placement?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ad_type?: string
+          clicks?: number | null
+          created_at?: string
+          end_date?: string | null
+          frequency?: number | null
+          id?: string
+          impressions?: number | null
+          is_active?: boolean
+          media_url?: string | null
+          placement?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       app_translations: {
         Row: {
           created_at: string

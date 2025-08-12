@@ -107,7 +107,7 @@ export default function AdGrid({ placement, limit = 4, className, title }: AdGri
     const load = async () => {
       setLoading(true);
       const { data } = await supabase
-        .from("ads")
+        .from("advertisements")
         .select(
           "id,title,ad_type,target_url,media_url,placement,start_date,end_date"
         )

@@ -119,7 +119,9 @@ const Admin = () => {
   // Read tab from URL
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const initialTab = params.get('tab') || 'upload';
+  const rawInitialTab = params.get('tab') || 'upload';
+  const initialTab = rawInitialTab === 'ads' ? 'advertising' : rawInitialTab;
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   // Manage Songs search state
   const [q, setQ] = useState("");
@@ -353,16 +355,16 @@ const Admin = () => {
     try {
       // Upload audio file to storage
       const audioFileName = `${Date.now()}_${songForm.audioFile.name}`;
-      const { data: audioData, error: audioError } = await supabase.storage
-        .from('songs')
-        .upload(audioFileName, songForm.audioFile);
+        const { data: audioData, error: audioError } = await supabase.storage
+          .from('advertisements')
+          .upload(audioFileName, songForm.audioFile);
 
-      if (audioError) throw audioError;
+        if (audioError) throw audioError;
 
-      // Get public URL for the audio file
-      const { data: { publicUrl: audioUrl } } = supabase.storage
-        .from('songs')
-        .getPublicUrl(audioFileName);
+        // Get public URL for the audio file
+        const { data: { publicUrl: audioUrl } } = supabase.storage
+          .from('advertisements')
+          .getPublicUrl(audioFileName);
 
       // Insert song into database
       const { data: songData, error: songError } = await supabase
@@ -591,25 +593,25 @@ const Admin = () => {
       if (adForm.adType === "banner" && adForm.bannerFile) {
         const fileName = `${Date.now()}_${adForm.bannerFile.name}`;
         const { error: uploadErr } = await supabase.storage
-          .from("ads")
+          .from("advertisements")
           .upload(fileName, adForm.bannerFile);
         if (uploadErr) throw uploadErr;
-        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        const { data: pub } = supabase.storage.from("advertisements").getPublicUrl(fileName);
         mediaUrl = pub.publicUrl;
       }
 
       if (adForm.adType === "audio" && adForm.audioFile) {
         const fileName = `${Date.now()}_${adForm.audioFile.name}`;
         const { error: uploadErr } = await supabase.storage
-          .from("ads")
+          .from("advertisements")
           .upload(fileName, adForm.audioFile);
         if (uploadErr) throw uploadErr;
-        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        const { data: pub } = supabase.storage.from("advertisements").getPublicUrl(fileName);
         mediaUrl = pub.publicUrl;
       }
 
       const { error } = await supabase
-        .from("ads")
+        .from("advertisements")
         .insert({
           title: adForm.title,
           ad_type: adForm.adType,
@@ -747,7 +749,7 @@ const Admin = () => {
         <GrantAdminOnce />
 
 
-        <Tabs defaultValue={initialTab} key={location.search} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-2 p-1">
             <TabsTrigger value="upload" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Upload</TabsTrigger>
             <TabsTrigger value="songs" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Songs</TabsTrigger>
@@ -757,7 +759,7 @@ const Admin = () => {
             <TabsTrigger value="donations" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Donations</TabsTrigger>
             <TabsTrigger value="testimonials" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Testimonials</TabsTrigger>
             <TabsTrigger value="users" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">User Management</TabsTrigger>
-            <TabsTrigger value="ads" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
+            <TabsTrigger value="advertising" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Ads</TabsTrigger>
             <TabsTrigger value="referrals" className="w-full justify-center text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Referrals</TabsTrigger>
           </TabsList>
 
@@ -1587,7 +1589,7 @@ const Admin = () => {
           </TabsContent>
 
           {/* Ad Manager */}
-          <TabsContent value="ads">
+          <TabsContent value="advertising">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

@@ -40,7 +40,7 @@ const AdManagerList = () => {
 
   const loadAds = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("ads").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("advertisements").select("*").order("created_at", { ascending: false });
     if (error) {
       toast({ title: "Error", description: "Failed to load ads", variant: "destructive" });
     } else {
@@ -59,7 +59,7 @@ const AdManagerList = () => {
       return;
     }
     const next = !(ad.is_active ?? true);
-    const { error } = await supabase.from("ads").update({ is_active: next }).eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").update({ is_active: next }).eq("id", ad.id);
     if (error) {
       console.error("Toggle ad error", error);
       const msg = (error as any)?.message || "Could not update status";
@@ -76,7 +76,7 @@ const AdManagerList = () => {
     }
     const confirm = window.confirm(`Delete ad “${ad.title}”?`);
     if (!confirm) return;
-    const { error } = await supabase.from("ads").delete().eq("id", ad.id);
+    const { error } = await supabase.from("advertisements").delete().eq("id", ad.id);
     if (error) {
       console.error("Delete ad error", error);
       const msg = (error as any)?.message || "Could not delete ad";
@@ -113,20 +113,20 @@ const AdManagerList = () => {
       if (editing.ad_type?.toLowerCase() === "banner" && newBannerFile) {
         const fileName = `${Date.now()}_${newBannerFile.name}`;
         const { error: uploadErr } = await supabase.storage
-          .from("ads")
+          .from("advertisements")
           .upload(fileName, newBannerFile);
         if (uploadErr) throw uploadErr;
-        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        const { data: pub } = supabase.storage.from("advertisements").getPublicUrl(fileName);
         mediaUrl = pub.publicUrl;
       }
 
       if (editing.ad_type?.toLowerCase() === "audio" && newAudioFile) {
         const fileName = `${Date.now()}_${newAudioFile.name}`;
         const { error: uploadErr } = await supabase.storage
-          .from("ads")
+          .from("advertisements")
           .upload(fileName, newAudioFile);
         if (uploadErr) throw uploadErr;
-        const { data: pub } = supabase.storage.from("ads").getPublicUrl(fileName);
+        const { data: pub } = supabase.storage.from("advertisements").getPublicUrl(fileName);
         mediaUrl = pub.publicUrl;
       }
 
@@ -142,7 +142,7 @@ const AdManagerList = () => {
         updates.media_url = mediaUrl;
       }
 
-      const { error } = await supabase.from("ads").update(updates).eq("id", editing.id);
+      const { error } = await supabase.from("advertisements").update(updates).eq("id", editing.id);
       if (error) throw error;
 
       setAds((prev) =>

@@ -21,7 +21,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { data: ad } = await supabase
-      .from("ads")
+      .from("advertisements")
       .select("id, target_url")
       .eq("id", adId)
       .maybeSingle();
@@ -37,9 +37,9 @@ serve(async (req) => {
 
     await supabase.from("ad_logs").insert({ ad_id: adId, type: "click", ip, ua, referrer });
 
-    const { data: counts } = await supabase.from("ads").select("clicks").eq("id", adId).maybeSingle();
+    const { data: counts } = await supabase.from("advertisements").select("clicks").eq("id", adId).maybeSingle();
     const current = (counts?.clicks as number | null) ?? 0;
-    await supabase.from("ads").update({ clicks: current + 1 }).eq("id", adId);
+    await supabase.from("advertisements").update({ clicks: current + 1 }).eq("id", adId);
 
     return Response.redirect(ad.target_url, 302);
   } catch (e) {
