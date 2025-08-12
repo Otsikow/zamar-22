@@ -12,7 +12,7 @@ const Index = () => {
       <main className="pb-20">
         <HeroSection bgImageUrl={heroImage} />
         <WelcomeBanner />
-        <AdGrid placement="home_hero" limit={4} className="container mx-auto my-6" />
+        <AdGrid placement="home_hero" limit={8} className="container mx-auto my-6" />
         <FeaturedSongs />
         <LiveCounter />
         <VideoShowcase />
