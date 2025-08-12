@@ -347,7 +347,7 @@ export type Database = {
           occasion: string
           reference_file_url: string | null
           scripture_quote: string | null
-          status: string | null
+          status: Database["public"]["Enums"]["custom_status"] | null
           style_genre: string
           tier: string
           updated_at: string
@@ -361,7 +361,7 @@ export type Database = {
           occasion: string
           reference_file_url?: string | null
           scripture_quote?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["custom_status"] | null
           style_genre: string
           tier: string
           updated_at?: string
@@ -375,7 +375,7 @@ export type Database = {
           occasion?: string
           reference_file_url?: string | null
           scripture_quote?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["custom_status"] | null
           style_genre?: string
           tier?: string
           updated_at?: string
@@ -1233,6 +1233,17 @@ export type Database = {
     }
     Enums: {
       account_status: "active" | "suspended" | "deleted"
+      custom_status:
+        | "pending_brief"
+        | "quoted"
+        | "awaiting_payment"
+        | "in_production"
+        | "draft_shared"
+        | "revision_requested"
+        | "approved"
+        | "delivered"
+        | "cancelled"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1361,6 +1372,18 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended", "deleted"],
+      custom_status: [
+        "pending_brief",
+        "quoted",
+        "awaiting_payment",
+        "in_production",
+        "draft_shared",
+        "revision_requested",
+        "approved",
+        "delivered",
+        "cancelled",
+        "rejected",
+      ],
     },
   },
 } as const
