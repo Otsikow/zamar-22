@@ -98,7 +98,7 @@ export default function Advertise() {
             <h2 id="pricing" className="sr-only">Ad Pricing</h2>
             <div className="grid gap-6 md:grid-cols-3 items-stretch auto-rows-fr">
               {placements.map((p) => (
-                <Card key={p.key} className={`relative bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 h-full flex flex-col ${p.key === "player" ? "ring-2 ring-primary/20 shadow-gold" : ""}`}>
+                <Card key={p.key} className={`relative bg-gradient-card border-border hover:border-primary/40 transition-all duration-300 h-full flex flex-col hover:-translate-y-0.5 hover:shadow-gold ${p.key === "player" ? "ring-2 ring-primary/25 shadow-gold" : ""}`}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -121,14 +121,15 @@ export default function Advertise() {
 
                     <div className="grid grid-cols-2 gap-3 items-stretch mt-auto">
                       {(["7d", "30d"] as AdDuration[]).map((d) => (
-                        <Card key={d} className="p-3 border-dashed h-full flex flex-col justify-between">
-                          <div className="text-xs text-muted-foreground">{durationLabels[d]}</div>
-                          <div className="text-lg font-semibold text-primary">{formatGBP(AD_PRICING_GBP[p.key][d])}</div>
+                        <Card key={d} className="p-4 rounded-xl border border-primary/30 bg-secondary/5 hover:bg-primary/5 hover:border-primary/60 transition-all duration-300 h-full flex flex-col justify-between">
+                          <div className="text-xs uppercase tracking-wide text-muted-foreground">{durationLabels[d]}</div>
+                          <div className="text-2xl md:text-3xl font-extrabold text-primary">{formatGBP(AD_PRICING_GBP[p.key][d])}</div>
                           <AdCheckoutButton
                             placement={p.key}
                             duration={d}
                             label={`Buy ${durationLabels[d]}`}
-                            className="mt-2 w-full"
+                            className="mt-3 w-full"
+                            variant="solid"
                           />
                         </Card>
                       ))}

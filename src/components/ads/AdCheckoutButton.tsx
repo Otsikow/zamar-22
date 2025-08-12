@@ -9,9 +9,10 @@ interface AdCheckoutButtonProps {
   duration: AdDuration;
   label?: string;
   className?: string;
+  variant?: "default" | "solid" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "hero" | "premium";
 }
 
-export function AdCheckoutButton({ placement, duration, label = "Checkout with Stripe", className }: AdCheckoutButtonProps) {
+export function AdCheckoutButton({ placement, duration, label = "Checkout with Stripe", className, variant = "solid" }: AdCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
@@ -35,7 +36,7 @@ export function AdCheckoutButton({ placement, duration, label = "Checkout with S
   };
 
   return (
-    <Button onClick={handleClick} disabled={loading} className={className} aria-label="Start ad checkout">
+    <Button onClick={handleClick} disabled={loading} className={className} variant={variant} aria-label="Start ad checkout">
       {loading ? "Redirecting…" : label}
     </Button>
   );
