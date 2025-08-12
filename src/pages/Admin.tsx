@@ -343,12 +343,13 @@ const Admin = () => {
   const handleSongUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!songForm.title || !songForm.title.trim()) {
+      toast({ title: "Error", description: "Please enter a song title", variant: "destructive" });
+      return;
+    }
+
     if (!songForm.audioFile) {
-      toast({
-        title: "Error",
-        description: "Please select an MP3 file",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Please select an MP3 file", variant: "destructive" });
       return;
     }
     

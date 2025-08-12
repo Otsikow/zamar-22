@@ -78,6 +78,9 @@ export default function HeroSection({
             <Button asChild variant="outline" size="lg">
               <Link to={secondaryHref}>{secondaryLabel}</Link>
             </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/radio">Radio</Link>
+            </Button>
           </div>
 
           {/* Badges */}
