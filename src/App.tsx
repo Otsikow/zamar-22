@@ -38,6 +38,7 @@ import NotificationCenter from "./pages/NotificationCenter";
 import Terms from "./pages/Terms";
 import AboutUs from "./pages/AboutUs";
 import Pricing from "./pages/Pricing";
+import Advertise from "./pages/Advertise";
 import Donate from "./pages/Donate";
 import ThankYou from "./pages/ThankYou";
 import Testimonies from "./pages/Testimonies";
@@ -81,8 +82,8 @@ const App = () => (
                      <Route path="/legal/gdpr" element={<GDPRPolicy />} />
                     <Route path="/about" element={<AboutUs />} />
                     <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/advertise" element={<Advertise />} />
                     <Route path="/testimonies" element={<Testimonies />} />
-                    
                     {/* Public Routes */}
                     <Route path="/radio" element={<Radio />} />
                     <Route path="/songs" element={<SongsLibrary />} />

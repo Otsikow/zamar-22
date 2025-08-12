@@ -103,6 +103,9 @@ const Header = () => {
 
           {/* Right Side - Auth & Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="secondary" size="sm" asChild>
+              <Link to="/advertise">Advertise</Link>
+            </Button>
             {/* Language Selector */}
             <LanguageSelector className="min-w-[90px] sm:min-w-[140px]" />
             {user ? (
