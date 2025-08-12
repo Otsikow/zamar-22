@@ -276,6 +276,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       chat_rooms: {
@@ -309,11 +316,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "chat_rooms_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "chat_rooms_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -510,6 +531,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -744,6 +772,7 @@ export type Database = {
           earned_at: string | null
           generation: number
           id: string
+          payment_id: string | null
           referred_user_id: string
           status: string | null
           updated_at: string | null
@@ -755,6 +784,7 @@ export type Database = {
           earned_at?: string | null
           generation: number
           id?: string
+          payment_id?: string | null
           referred_user_id: string
           status?: string | null
           updated_at?: string | null
@@ -766,6 +796,7 @@ export type Database = {
           earned_at?: string | null
           generation?: number
           id?: string
+          payment_id?: string | null
           referred_user_id?: string
           status?: string | null
           updated_at?: string | null
@@ -1012,11 +1043,53 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_favourites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      v_referral_earnings_detailed: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          generation: number | null
+          id: string | null
+          payment_amount: number | null
+          payment_created_at: string | null
+          payment_currency: string | null
+          payment_id: string | null
+          referred_user_id: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_referral_summary: {
+        Row: {
+          direct_referrals: number | null
+          indirect_referrals: number | null
+          paid_earnings: number | null
+          pending_earnings: number | null
+          total_earned: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_top_referrers_last30: {
+        Row: {
+          earned_30d: number | null
+          earner_id: string | null
+          earning_events: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_manual_referral_reward: {
@@ -1137,6 +1210,10 @@ export type Database = {
         Args: { payer_id: string; payment_amount: number }
         Returns: undefined
       }
+      insert_referral_earnings_after_payment_v2: {
+        Args: { p_payment_id: string; payer_id: string; payment_amount: number }
+        Returns: undefined
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1147,6 +1224,10 @@ export type Database = {
       }
       process_referral_earnings: {
         Args: { new_user: string; payment_amount: number }
+        Returns: undefined
+      }
+      reverse_referral_earnings_for_payment: {
+        Args: { p_payment_id: string }
         Returns: undefined
       }
     }
