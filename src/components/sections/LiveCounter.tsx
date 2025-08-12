@@ -63,6 +63,13 @@ const LiveCounter = () => {
         </div>
       </div>;
   }
-  return;
+  return (
+    <div className="flex items-center justify-center py-8">
+      <div className="flex items-center space-x-2 text-muted-foreground">
+        <Globe className="h-5 w-5 text-primary" />
+        <span className="text-sm font-inter">{activeUsers} online now</span>
+      </div>
+    </div>
+  );
 };
 export default LiveCounter;
