@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-
+import UserSearchSelect from "@/components/admin/UserSearchSelect";
 interface Request {
   id: string;
   user_id: string | null;
@@ -23,6 +23,7 @@ interface Request {
   price_cents: number | null;
   currency: string | null;
   assigned_admin: string | null;
+  stripe_pi_id: string | null;
   updated_at: string;
 }
 
@@ -52,6 +53,10 @@ export default function AdminCustomSongDetail() {
 
   const [quote, setQuote] = useState<string>("");
   const [newMessage, setNewMessage] = useState<string>("");
+  const [selectedAdmin, setSelectedAdmin] = useState<string>("");
+  const [stripePI, setStripePI] = useState<string>("");
+  const [nudgeTitle, setNudgeTitle] = useState<string>("");
+  const [nudgeBody, setNudgeBody] = useState<string>("");
 
   const statusOptions = useMemo(
     () => [
@@ -78,6 +83,8 @@ export default function AdminCustomSongDetail() {
         .maybeSingle();
       setReq(r as any);
       setQuote(r?.price_cents ? (r.price_cents / 100).toFixed(2) : "");
+      setSelectedAdmin(r?.assigned_admin || "");
+      setStripePI(r?.stripe_pi_id || "");
 
       const { data: a } = await supabase
         .from("custom_song_assets")
@@ -93,11 +100,17 @@ export default function AdminCustomSongDetail() {
         .order("created_at", { ascending: true });
       setMessages((m || []) as any);
 
-      // realtime messages
+      // realtime messages/assets/deliveries
       const channel = supabase
         .channel(`csr-${id}`)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "custom_song_messages", filter: `request_id=eq.${id}` }, (payload) => {
           setMessages((prev) => [...prev, payload.new as any]);
+        })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "custom_song_assets", filter: `request_id=eq.${id}` }, (payload) => {
+          setAssets((prev) => [...prev, payload.new as any]);
+        })
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "custom_song_deliveries", filter: `request_id=eq.${id}` }, () => {
+          toast({ title: "Delivery updated", description: "New delivery added." });
         })
         .subscribe();
       return () => {
@@ -209,6 +222,127 @@ export default function AdminCustomSongDetail() {
     }
   };
 
+  const assignProducer = async () => {
+    if (!id || !selectedAdmin) return;
+    try {
+      const { error } = await supabase
+        .from("custom_song_requests")
+        .update({ assigned_admin: selectedAdmin } as any)
+        .eq("id", id);
+      if (error) throw error;
+      setReq((r) => (r ? { ...r, assigned_admin: selectedAdmin } : r));
+      toast({ title: "Producer assigned successfully." });
+    } catch (e: any) {
+      toast({ title: "Assignment failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const attachPaymentIntent = async () => {
+    if (!id || !stripePI.trim()) return;
+    try {
+      const { error } = await supabase
+        .from("custom_song_requests")
+        .update({ stripe_pi_id: stripePI, status: "awaiting_payment" } as any)
+        .eq("id", id);
+      if (error) throw error;
+      setReq((r) => (r ? { ...r, stripe_pi_id: stripePI, status: "awaiting_payment" } : r));
+      toast({ title: "Payment intent attached." });
+    } catch (e: any) {
+      toast({ title: "Attach failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const uploadDraftLyrics = async (file?: File | null) => {
+    if (!id || !file) return;
+    try {
+      const path = `${id}/lyrics-${Date.now()}-${file.name}`;
+      const { error: upErr } = await supabase.storage.from("custom-drafts").upload(path, file);
+      if (upErr) throw upErr;
+      const { error: insErr } = await supabase
+        .from("custom_song_assets")
+        .insert({ request_id: id, kind: "lyrics_pdf", storage_path: path } as any);
+      if (insErr) throw insErr;
+      toast({ title: "Lyrics PDF attached." });
+      const { data: a } = await supabase
+        .from("custom_song_assets")
+        .select("id,kind,storage_path,created_at")
+        .eq("request_id", id)
+        .order("created_at", { ascending: true });
+      setAssets((a || []) as any);
+    } catch (e: any) {
+      toast({ title: "Upload failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const uploadCoverArtAsset = async (file?: File | null) => {
+    if (!id || !file) return;
+    try {
+      const path = `${id}/cover-${Date.now()}-${file.name}`;
+      const { error: upErr } = await supabase.storage.from("custom-art").upload(path, file);
+      if (upErr) throw upErr;
+      const { error: insErr } = await supabase
+        .from("custom_song_assets")
+        .insert({ request_id: id, kind: "cover_art", storage_path: path } as any);
+      if (insErr) throw insErr;
+      toast({ title: "Cover art added." });
+      const { data: a } = await supabase
+        .from("custom_song_assets")
+        .select("id,kind,storage_path,created_at")
+        .eq("request_id", id)
+        .order("created_at", { ascending: true });
+      setAssets((a || []) as any);
+    } catch (e: any) {
+      toast({ title: "Upload failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const requestRevision = async () => {
+    if (!id) return;
+    await updateStatus("revision_requested");
+    try {
+      await supabase
+        .from("custom_song_messages")
+        .insert({ request_id: id, body: "Admin marked: Revision requested." } as any);
+      toast({ title: "Marked as revision requested." });
+    } catch (e: any) {
+      toast({ title: "Action failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const approveDraft = async () => {
+    if (!id || !req?.user_id) return;
+    await updateStatus("approved");
+    try {
+      await supabase.from("notifications").insert({
+        user_id: req.user_id,
+        type: "draft",
+        title: "Draft approved",
+        message: "We are preparing final delivery.",
+        link: "/library",
+      } as any);
+      toast({ title: "Draft approved." });
+    } catch (e: any) {
+      toast({ title: "Notify failed", description: e.message, variant: "destructive" });
+    }
+  };
+
+  const nudgeClient = async () => {
+    if (!req?.user_id || !nudgeTitle.trim() || !nudgeBody.trim()) return;
+    try {
+      await supabase.from("notifications").insert({
+        user_id: req.user_id,
+        type: "message",
+        title: nudgeTitle,
+        message: nudgeBody,
+        link: "/library",
+      } as any);
+      toast({ title: "Client notified." });
+      setNudgeTitle("");
+      setNudgeBody("");
+    } catch (e: any) {
+      toast({ title: "Notify failed", description: e.message, variant: "destructive" });
+    }
+  };
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -243,6 +377,21 @@ export default function AdminCustomSongDetail() {
           </Card>
 
           <Card>
+            <CardHeader><CardTitle>Assignment</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid sm:grid-cols-3 gap-3 items-center">
+                <Label>Producer</Label>
+                <div className="sm:col-span-2">
+                  <UserSearchSelect value={selectedAdmin} onChange={setSelectedAdmin} placeholder="Search admin by name or email" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={assignProducer} disabled={!selectedAdmin}>Assign</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
             <CardHeader><CardTitle>Quote & Payment</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2 items-center">
@@ -257,6 +406,15 @@ export default function AdminCustomSongDetail() {
                   </Button>
                 ))}
               </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button size="sm" variant="outline" onClick={() => updateStatus('awaiting_payment')}>Awaiting Payment</Button>
+                <Button size="sm" variant="outline" onClick={() => updateStatus('in_production')}>Confirm Paid & Start</Button>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Label htmlFor="pi">Stripe PI</Label>
+                <Input id="pi" value={stripePI} onChange={(e) => setStripePI(e.target.value)} className="max-w-[260px]" placeholder="pi_..." />
+                <Button size="sm" onClick={attachPaymentIntent} disabled={!stripePI.trim()}>Attach PI</Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -266,6 +424,14 @@ export default function AdminCustomSongDetail() {
               <div className="flex items-center gap-2">
                 <Label className="w-36">Upload Draft</Label>
                 <Input type="file" accept="audio/*" onChange={(e) => uploadDraft(e.target.files?.[0])} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-36">Lyrics PDF (draft)</Label>
+                <Input type="file" accept="application/pdf" onChange={(e) => uploadDraftLyrics(e.target.files?.[0])} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="w-36">Cover Art (asset)</Label>
+                <Input type="file" accept="image/*" onChange={(e) => uploadCoverArtAsset(e.target.files?.[0])} />
               </div>
               <div>
                 <div className="text-sm text-muted-foreground mb-2">Files</div>
@@ -329,6 +495,24 @@ export default function AdminCustomSongDetail() {
               <div className="mt-3 flex gap-2">
                 <Textarea placeholder="Type a message..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} />
                 <Button onClick={sendMessage}>Send</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex gap-2 flex-wrap">
+                <Button size="sm" variant="outline" onClick={requestRevision}>Request Revision</Button>
+                <Button size="sm" variant="outline" onClick={approveDraft}>Approve Draft</Button>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nudgeTitle">Notify Client</Label>
+                <Input id="nudgeTitle" placeholder="Title" value={nudgeTitle} onChange={(e) => setNudgeTitle(e.target.value)} />
+                <Textarea placeholder="Message" value={nudgeBody} onChange={(e) => setNudgeBody(e.target.value)} />
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={nudgeClient} disabled={!nudgeTitle.trim() || !nudgeBody.trim()}>Send Notification</Button>
+                </div>
               </div>
             </CardContent>
           </Card>
