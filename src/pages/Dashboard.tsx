@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Music, PlayCircle, Library, Users, TrendingUp, Clock, Wallet } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
 
 interface DashboardStats {
   mySongs: number;
@@ -240,7 +241,7 @@ const [stats, setStats] = useState<DashboardStats>({
               <Music className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {loading ? "..." : stats.mySongs}
               </div>
               <p className="text-xs text-muted-foreground">Custom songs created</p>
@@ -253,7 +254,7 @@ const [stats, setStats] = useState<DashboardStats>({
               <PlayCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {loading ? "..." : stats.totalPlays.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground">Across all your songs</p>
@@ -266,7 +267,7 @@ const [stats, setStats] = useState<DashboardStats>({
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {loading ? "..." : stats.pendingRequests}
               </div>
               <p className="text-xs text-muted-foreground">Awaiting completion</p>
@@ -279,7 +280,7 @@ const [stats, setStats] = useState<DashboardStats>({
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 {loading ? "..." : stats.followers}
               </div>
               <p className="text-xs text-muted-foreground">Coming soon</p>
@@ -368,7 +369,7 @@ const [stats, setStats] = useState<DashboardStats>({
             <div className="space-y-4">
               {recentActivity.length > 0 ? (
                 recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                  <div key={activity.id} className="flex items-center gap-4 p-4 border border-border rounded-lg">
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                       {getActivityIcon(activity.icon)}
                     </div>
@@ -388,6 +389,7 @@ const [stats, setStats] = useState<DashboardStats>({
           </CardContent>
         </Card>
       </div>
+      <FloatingChatButton />
     </div>
   );
 };
