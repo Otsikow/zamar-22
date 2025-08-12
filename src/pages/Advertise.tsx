@@ -121,15 +121,16 @@ export default function Advertise() {
 
                     <div className="grid grid-cols-2 gap-3 items-stretch mt-auto">
                       {(["7d", "30d"] as AdDuration[]).map((d) => (
-                        <Card key={d} className="p-4 rounded-xl border border-primary/30 bg-secondary/5 hover:bg-primary/5 hover:border-primary/60 transition-all duration-300 h-full flex flex-col justify-between">
-                          <div className="text-xs uppercase tracking-wide text-muted-foreground">{durationLabels[d]}</div>
-                          <div className="text-2xl md:text-3xl font-extrabold text-primary">{formatGBP(AD_PRICING_GBP[p.key][d])}</div>
+                        <Card key={d} className="p-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 transition-all duration-200 h-full min-h-[130px] flex flex-col justify-between">
+                          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{d === "7d" ? "7 days" : "30 days"}</div>
+                          <div className="text-xl md:text-2xl font-extrabold text-primary leading-none">{formatGBP(AD_PRICING_GBP[p.key][d])}</div>
                           <AdCheckoutButton
                             placement={p.key}
                             duration={d}
-                            label={`Buy ${durationLabels[d]}`}
+                            label={`Buy ${d === "7d" ? "7d" : "30d"}`}
                             className="mt-3 w-full"
-                            variant="solid"
+                            variant="default"
+                            size="sm"
                           />
                         </Card>
                       ))}
