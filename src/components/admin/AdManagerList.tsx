@@ -110,7 +110,7 @@ const AdManagerList = () => {
     try {
       let mediaUrl: string | null = null;
 
-      if (editing.ad_type === "banner" && newBannerFile) {
+      if (editing.ad_type?.toLowerCase() === "banner" && newBannerFile) {
         const fileName = `${Date.now()}_${newBannerFile.name}`;
         const { error: uploadErr } = await supabase.storage
           .from("ads")
@@ -120,7 +120,7 @@ const AdManagerList = () => {
         mediaUrl = pub.publicUrl;
       }
 
-      if (editing.ad_type === "audio" && newAudioFile) {
+      if (editing.ad_type?.toLowerCase() === "audio" && newAudioFile) {
         const fileName = `${Date.now()}_${newAudioFile.name}`;
         const { error: uploadErr } = await supabase.storage
           .from("ads")
@@ -201,7 +201,7 @@ const AdManagerList = () => {
                   )}
                 </div>
 
-                {ad.ad_type === "banner" && ad.media_url && (
+                {ad.ad_type?.toLowerCase() === "banner" && ad.media_url && (
                   <img
                     src={ad.media_url}
                     alt={`${ad.title} banner`}
@@ -210,7 +210,7 @@ const AdManagerList = () => {
                   />
                 )}
 
-                {ad.ad_type === "audio" && ad.media_url && (
+                {ad.ad_type?.toLowerCase() === "audio" && ad.media_url && (
                   <audio className="w-full md:w-64" controls src={ad.media_url} />
                 )}
 
@@ -274,7 +274,7 @@ const AdManagerList = () => {
                                 onChange={(e) => setEditForm({ ...editForm, end_date: e.target.value })} />
                             </div>
                           </div>
-                          {editing?.ad_type === "banner" && (
+                          {editing?.ad_type?.toLowerCase() === "banner" && (
                             <div>
                               <Label htmlFor={`banner-${ad.id}`}>Banner image</Label>
                               {editing?.media_url && (
@@ -296,7 +296,7 @@ const AdManagerList = () => {
                             </div>
                           )}
 
-                          {editing?.ad_type === "audio" && (
+                          {editing?.ad_type?.toLowerCase() === "audio" && (
                             <div>
                               <Label htmlFor={`audio-${ad.id}`}>Audio file</Label>
                               {editing?.media_url && <audio className="w-full my-2" controls src={editing.media_url} />}

@@ -38,7 +38,7 @@ export default function AdSlot({ placement, className }: AdSlotProps) {
         .from("ads")
         .select("id,title,ad_type,target_url,media_url,placement,start_date,end_date")
         .eq("is_active", true)
-        .eq("ad_type", "banner")
+        .ilike("ad_type", "banner")
         .eq("placement", placement)
         .order("created_at", { ascending: false });
       setAds((data as Ad[]) || []);

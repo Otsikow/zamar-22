@@ -112,7 +112,7 @@ export default function AdGrid({ placement, limit = 4, className, title }: AdGri
           "id,title,ad_type,target_url,media_url,placement,start_date,end_date"
         )
         .eq("is_active", true)
-        .eq("ad_type", "banner")
+        .ilike("ad_type", "banner")
         .eq("placement", placement)
         .order("created_at", { ascending: false })
         .limit(limit);
