@@ -155,7 +155,7 @@ export default function AdApprovalTabs() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Ad Approvals & Status</h3>
+      <h3 className="text-lg font-semibold">Sponsored Spotlights – Approvals & Status</h3>
       <Tabs defaultValue="active">
         <TabsList>
           <TabsTrigger value="pending">Pending ({groups.pending.length})</TabsTrigger>

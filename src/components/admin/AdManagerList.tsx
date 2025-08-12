@@ -165,7 +165,7 @@ const AdManagerList = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Existing Ads</h3>
+        <h3 className="text-lg font-semibold">Sponsored Spotlights</h3>
         <Button variant="outline" size="sm" onClick={loadAds} aria-label="Refresh ads">
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh
         </Button>

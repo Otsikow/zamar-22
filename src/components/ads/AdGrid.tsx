@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 interface Ad {
   id: string;
   title: string;
@@ -78,7 +79,17 @@ function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
         aria-label={`Sponsored: ${ad.title}`}
         className="block h-full"
       >
-        <Card className="h-full flex flex-col overflow-hidden p-0 transition-shadow duration-200 hover:shadow-card/80">
+        <Card className="relative h-full flex flex-col overflow-hidden p-0 transition-shadow duration-200 hover:shadow-card/80">
+          <div className="absolute left-2 top-2 z-10">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Badge variant="sponsored">Sponsored</Badge>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Promotions from partners supporting Zamar</TooltipContent>
+            </Tooltip>
+          </div>
           <div
             className={cn("w-full bg-muted/40 border-b border-border/60 flex items-center justify-center")}
             aria-hidden="true"
@@ -134,9 +145,11 @@ export default function AdGrid({ placement, limit = 4, className, title }: AdGri
   return (
     <section className={cn("container mx-auto", className)} aria-label="sponsored ads">
       {title ? (
-        <h2 className="sr-only">{title}</h2>
+        <header className="mb-3">
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground">{title}</h2>
+        </header>
       ) : (
-        <h2 className="sr-only">Sponsored ads</h2>
+        <h2 className="sr-only">Sponsored Spotlights</h2>
       )}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr items-stretch">
         {visibleAds.map((ad) => (
