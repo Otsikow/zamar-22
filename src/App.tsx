@@ -34,6 +34,8 @@ import Analytics from "./pages/Analytics";
 import AdminChatInbox from "./pages/AdminChatInbox";
 import AdminDonationAnalytics from "./pages/AdminDonationAnalytics";
 import AdminReferralPayoutDashboard from "./pages/AdminReferralPayoutDashboard";
+import AdminCustomSongs from "./pages/AdminCustomSongs";
+import AdminCustomSongDetail from "./pages/AdminCustomSongDetail";
 import NotificationCenter from "./pages/NotificationCenter";
 import Terms from "./pages/Terms";
 import AboutUs from "./pages/AboutUs";
@@ -126,6 +128,8 @@ const App = () => (
                     <Route path="/admin/donations" element={<ProtectedRoute><AdminDonationAnalytics /></ProtectedRoute>} />
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/referral-ops" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
+                    <Route path="/admin/custom-songs" element={<ProtectedRoute><AdminCustomSongs /></ProtectedRoute>} />
+                    <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
                     <Route path="*" element={<NotFound />} />

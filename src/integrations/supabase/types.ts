@@ -338,46 +338,190 @@ export type Database = {
           },
         ]
       }
+      custom_song_assets: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          duration_seconds: number | null
+          id: string
+          kind: string | null
+          notes: string | null
+          request_id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          duration_seconds?: number | null
+          id?: string
+          kind?: string | null
+          notes?: string | null
+          request_id: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          duration_seconds?: number | null
+          id?: string
+          kind?: string | null
+          notes?: string | null
+          request_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_song_assets_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "custom_song_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_song_deliveries: {
+        Row: {
+          cover_art_path: string | null
+          delivered_at: string | null
+          delivered_by: string | null
+          final_audio_path: string
+          id: string
+          lyrics_pdf_path: string | null
+          request_id: string
+        }
+        Insert: {
+          cover_art_path?: string | null
+          delivered_at?: string | null
+          delivered_by?: string | null
+          final_audio_path: string
+          id?: string
+          lyrics_pdf_path?: string | null
+          request_id: string
+        }
+        Update: {
+          cover_art_path?: string | null
+          delivered_at?: string | null
+          delivered_by?: string | null
+          final_audio_path?: string
+          id?: string
+          lyrics_pdf_path?: string | null
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_song_deliveries_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "custom_song_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_song_messages: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          id: string
+          request_id: string
+          sender_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          id?: string
+          request_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          id?: string
+          request_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_song_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "custom_song_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_song_requests: {
         Row: {
+          assigned_admin: string | null
           created_at: string
+          currency: string | null
+          duration_seconds: number | null
           id: string
           key_message: string
           language: string | null
+          need_by_date: string | null
           occasion: string
+          price_cents: number | null
           reference_file_url: string | null
+          reference_urls: string[] | null
           scripture_quote: string | null
+          scripture_ref: string | null
           status: Database["public"]["Enums"]["custom_status"] | null
+          stripe_pi_id: string | null
+          style: string | null
           style_genre: string
           tier: string
+          title: string | null
+          tone: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          assigned_admin?: string | null
           created_at?: string
+          currency?: string | null
+          duration_seconds?: number | null
           id?: string
           key_message: string
           language?: string | null
+          need_by_date?: string | null
           occasion: string
+          price_cents?: number | null
           reference_file_url?: string | null
+          reference_urls?: string[] | null
           scripture_quote?: string | null
+          scripture_ref?: string | null
           status?: Database["public"]["Enums"]["custom_status"] | null
+          stripe_pi_id?: string | null
+          style?: string | null
           style_genre: string
           tier: string
+          title?: string | null
+          tone?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          assigned_admin?: string | null
           created_at?: string
+          currency?: string | null
+          duration_seconds?: number | null
           id?: string
           key_message?: string
           language?: string | null
+          need_by_date?: string | null
           occasion?: string
+          price_cents?: number | null
           reference_file_url?: string | null
+          reference_urls?: string[] | null
           scripture_quote?: string | null
+          scripture_ref?: string | null
           status?: Database["public"]["Enums"]["custom_status"] | null
+          stripe_pi_id?: string | null
+          style?: string | null
           style_genre?: string
           tier?: string
+          title?: string | null
+          tone?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1009,6 +1153,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_custom_library: {
+        Row: {
+          cover_art_path: string | null
+          created_at: string | null
+          final_audio_path: string
+          id: string
+          lyrics_pdf_path: string | null
+          request_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          cover_art_path?: string | null
+          created_at?: string | null
+          final_audio_path: string
+          id?: string
+          lyrics_pdf_path?: string | null
+          request_id: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          cover_art_path?: string | null
+          created_at?: string | null
+          final_audio_path?: string
+          id?: string
+          lyrics_pdf_path?: string | null
+          request_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_custom_library_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "custom_song_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_favourites: {
         Row: {
           created_at: string
@@ -1217,6 +1402,10 @@ export type Database = {
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      mark_paid: {
+        Args: { request: string; amount: number }
+        Returns: undefined
       }
       mark_referral_earnings_as_paid: {
         Args: { earnings_ids: string[]; payout_method?: string }

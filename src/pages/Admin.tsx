@@ -301,7 +301,7 @@ const [activeTab, setActiveTab] = useState(initialTab);
     try {
       const { error } = await supabase
         .from("custom_song_requests")
-        .update({ status: action })
+        .update({ status: action } as any)
         .eq("id", id);
 
       if (error) throw error;
