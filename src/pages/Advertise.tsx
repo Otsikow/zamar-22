@@ -9,14 +9,25 @@ import { AD_PRICING_GBP, formatGBP, AdPlacement, AdDuration } from "@/lib/adPric
 
 const setMeta = (title: string, description: string) => {
   document.title = title;
-  const existing = document.querySelector('meta[name="description"]');
-  if (existing) existing.setAttribute("content", description);
-  else {
+  let existing = document.querySelector('meta[name="description"]');
+  if (!existing) {
     const m = document.createElement("meta");
     m.setAttribute("name", "description");
-    m.setAttribute("content", description);
     document.head.appendChild(m);
+    existing = m;
   }
+  existing.setAttribute("content", description);
+
+  // Canonical tag
+  const canonicalHref = `${window.location.origin}/advertise`;
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    const l = document.createElement("link");
+    l.setAttribute("rel", "canonical");
+    document.head.appendChild(l);
+    canonical = l;
+  }
+  canonical.setAttribute("href", canonicalHref);
 };
 
 const placements: { key: AdPlacement; label: string; blurb: string; example: string }[] = [
@@ -36,6 +47,38 @@ export default function Advertise() {
       "Advertise on Zamar | Ad Pricing & Workflow",
       "See ad placements, pricing, and a simple 3-step workflow to advertise on Zamar."
     );
+
+    // Structured data (JSON-LD)
+    const items = placements.flatMap((p) =>
+      (["7d", "30d"] as AdDuration[]).map((d) => ({
+        "@type": "Product",
+        name: `Zamar Ad - ${p.label} (${durationLabels[d]})`,
+        category: "Online Advertising",
+        description: p.blurb,
+        brand: { "@type": "Brand", name: "Zamar" },
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "GBP",
+          price: (AD_PRICING_GBP[p.key][d] / 100).toFixed(2),
+          availability: "https://schema.org/InStock",
+          url: `${window.location.origin}/advertise`,
+        },
+      }))
+    );
+
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListElement: items,
+    } as const;
+
+    const existing = document.getElementById("ld-json-advertise");
+    if (existing) existing.remove();
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "ld-json-advertise";
+    script.text = JSON.stringify(ld);
+    document.head.appendChild(script);
   }, []);
 
   return (
@@ -44,10 +87,10 @@ export default function Advertise() {
         <div className="container mx-auto px-4">
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
-              Advertise on Zamar
+              Choose Your <span className="text-primary">Perfect Placement</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Transparent pricing, simple workflow, and placements designed for meaningful reach.
+              Select the ad package that best fits your reach and budget.
             </p>
           </header>
 
@@ -95,31 +138,31 @@ export default function Advertise() {
             <h2 id="workflow" className="text-2xl font-semibold font-playfair text-foreground mb-6 text-center">
               How it works
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card>
+            <div className="grid md:grid-cols-3 gap-6 items-stretch">
+              <Card className="h-full flex flex-col">
                 <CardHeader>
                   <div className="p-2 rounded-full bg-primary/10 text-primary w-fit"><Megaphone className="w-5 h-5" /></div>
                   <CardTitle>Select placement</CardTitle>
                 </CardHeader>
-                <CardContent className="text-muted-foreground text-sm">
+                <CardContent className="text-muted-foreground text-sm flex-1">
                   Choose a placement and duration that fits your goals. Pay securely via Stripe.
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="h-full flex flex-col">
                 <CardHeader>
                   <div className="p-2 rounded-full bg-primary/10 text-primary w-fit"><CalendarClock className="w-5 h-5" /></div>
                   <CardTitle>Submit creative</CardTitle>
                 </CardHeader>
-                <CardContent className="text-muted-foreground text-sm">
+                <CardContent className="text-muted-foreground text-sm flex-1">
                   After checkout you’ll receive instructions to provide your banner (PNG/JPG, recommended 728×90 or 300×250 depending on placement).
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="h-full flex flex-col">
                 <CardHeader>
                   <div className="p-2 rounded-full bg-primary/10 text-primary w-fit"><ShieldCheck className="w-5 h-5" /></div>
                   <CardTitle>Review & go live</CardTitle>
                 </CardHeader>
-                <CardContent className="text-muted-foreground text-sm">
+                <CardContent className="text-muted-foreground text-sm flex-1">
                   We review within 24 hours for faith-friendly compliance. Your ad then goes live for the selected period.
                 </CardContent>
               </Card>
