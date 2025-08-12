@@ -121,7 +121,14 @@ const Admin = () => {
   const params = new URLSearchParams(location.search);
   const rawInitialTab = params.get('tab') || 'upload';
   const initialTab = rawInitialTab === 'ads' ? 'advertising' : rawInitialTab;
-  const [activeTab, setActiveTab] = useState(initialTab);
+const [activeTab, setActiveTab] = useState(initialTab);
+
+  // Ensure the selected tab scrolls into view (helps on mobile where users think it didn't open)
+  useEffect(() => {
+    if (activeTab === 'advertising') {
+      document.getElementById('ads-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeTab]);
 
   // Manage Songs search state
   const [q, setQ] = useState("");
@@ -1590,7 +1597,7 @@ const Admin = () => {
           </TabsContent>
 
           {/* Ad Manager */}
-          <TabsContent value="advertising">
+          <TabsContent value="advertising" id="ads-section">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -1602,118 +1609,122 @@ const Admin = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleAdCreate} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="adTitle">Ad Title</Label>
-                      <Input
-                        id="adTitle"
-                        value={adForm.title}
-                        onChange={(e) => setAdForm({...adForm, title: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="adType">Ad Type</Label>
-                      <Select value={adForm.adType} onValueChange={(value) => setAdForm({...adForm, adType: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="banner">Banner</SelectItem>
-                          <SelectItem value="audio">Audio</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="placement">Placement</Label>
-                      <Select value={adForm.placement} onValueChange={(value) => setAdForm({...adForm, placement: value as any})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose placement" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="home_hero">Home Hero</SelectItem>
-                          <SelectItem value="sidebar_300x250">Sidebar 300x250</SelectItem>
-                          <SelectItem value="player_728x90">Player 728x90</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="targetUrl">Target URL</Label>
-                      <Input
-                        id="targetUrl"
-                        type="url"
-                        value={adForm.targetUrl}
-                        onChange={(e) => setAdForm({...adForm, targetUrl: e.target.value})}
-                        placeholder="https://example.com"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="frequency">Frequency</Label>
-                      <Input
-                        id="frequency"
-                        type="number"
-                        min="1"
-                        value={adForm.frequency}
-                        onChange={(e) => setAdForm({...adForm, frequency: parseInt(e.target.value) || 1})}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="startDate">Start Date</Label>
-                      <Input id="startDate" type="date" value={adForm.startDate} onChange={(e) => setAdForm({...adForm, startDate: e.target.value})} />
-                    </div>
-                    <div>
-                      <Label htmlFor="endDate">End Date</Label>
-                      <Input id="endDate" type="date" value={adForm.endDate} onChange={(e) => setAdForm({...adForm, endDate: e.target.value})} />
-                    </div>
-                   </div>
-                   
-                   {/* File Upload Section */}
-                   {adForm.adType === "banner" && (
-                     <div>
-                       <Label htmlFor="bannerFile">Upload Banner Image</Label>
-                       <Input
-                         id="bannerFile"
-                         type="file"
-                         accept="image/*"
-                         onChange={(e) => setAdForm({...adForm, bannerFile: e.target.files?.[0] || null})}
-                       />
-                       <p className="text-xs text-muted-foreground mt-1">
-                         Supported formats: JPG, PNG, GIF. Recommended size: 728x90 or 300x250
-                       </p>
-                     </div>
-                   )}
-                   
-                   {adForm.adType === "audio" && (
-                     <div>
-                       <Label htmlFor="audioFile">Upload Audio File</Label>
-                       <Input
-                         id="audioFile"
-                         type="file"
-                         accept="audio/*"
-                         onChange={(e) => setAdForm({...adForm, audioFile: e.target.files?.[0] || null})}
-                       />
-                       <p className="text-xs text-muted-foreground mt-1">
-                         Supported formats: MP3, WAV. Maximum duration: 30 seconds
-                       </p>
-                     </div>
-                   )}
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="isActive"
-                      checked={adForm.isActive}
-                      onCheckedChange={(checked) => setAdForm({...adForm, isActive: checked})}
-                    />
-                    <Label htmlFor="isActive">Is Active</Label>
-                  </div>
-                  <Button type="submit" className="w-full">
-                    Create Ad
-                  </Button>
-                </form>
-
-                <div className="mt-8 space-y-8">
+                {/* Show submitted/approval workflow first */}
+                <div className="space-y-8">
                   <AdApprovalTabs />
                   <AdManagerList />
+                </div>
+
+                {/* Creation form moved below lists for clarity */}
+                <div className="mt-10">
+                  <form onSubmit={handleAdCreate} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="adTitle">Ad Title</Label>
+                        <Input
+                          id="adTitle"
+                          value={adForm.title}
+                          onChange={(e) => setAdForm({...adForm, title: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="adType">Ad Type</Label>
+                        <Select value={adForm.adType} onValueChange={(value) => setAdForm({...adForm, adType: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="banner">Banner</SelectItem>
+                            <SelectItem value="audio">Audio</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="placement">Placement</Label>
+                        <Select value={adForm.placement} onValueChange={(value) => setAdForm({...adForm, placement: value as any})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose placement" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="home_hero">Home Hero</SelectItem>
+                            <SelectItem value="sidebar_300x250">Sidebar 300x250</SelectItem>
+                            <SelectItem value="player_728x90">Player 728x90</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="targetUrl">Target URL</Label>
+                        <Input
+                          id="targetUrl"
+                          type="url"
+                          value={adForm.targetUrl}
+                          onChange={(e) => setAdForm({...adForm, targetUrl: e.target.value})}
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="frequency">Frequency</Label>
+                        <Input
+                          id="frequency"
+                          type="number"
+                          min="1"
+                          value={adForm.frequency}
+                          onChange={(e) => setAdForm({...adForm, frequency: parseInt(e.target.value) || 1})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="startDate">Start Date</Label>
+                        <Input id="startDate" type="date" value={adForm.startDate} onChange={(e) => setAdForm({...adForm, startDate: e.target.value})} />
+                      </div>
+                      <div>
+                        <Label htmlFor="endDate">End Date</Label>
+                        <Input id="endDate" type="date" value={adForm.endDate} onChange={(e) => setAdForm({...adForm, endDate: e.target.value})} />
+                      </div>
+                    </div>
+                    
+                    {/* File Upload Section */}
+                    {adForm.adType === "banner" && (
+                      <div>
+                        <Label htmlFor="bannerFile">Upload Banner Image</Label>
+                        <Input
+                          id="bannerFile"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setAdForm({...adForm, bannerFile: e.target.files?.[0] || null})}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Supported formats: JPG, PNG, GIF. Recommended size: 728x90 or 300x250
+                        </p>
+                      </div>
+                    )}
+                    
+                    {adForm.adType === "audio" && (
+                      <div>
+                        <Label htmlFor="audioFile">Upload Audio File</Label>
+                        <Input
+                          id="audioFile"
+                          type="file"
+                          accept="audio/*"
+                          onChange={(e) => setAdForm({...adForm, audioFile: e.target.files?.[0] || null})}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Supported formats: MP3, WAV. Maximum duration: 30 seconds
+                        </p>
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="isActive"
+                        checked={adForm.isActive}
+                        onCheckedChange={(checked) => setAdForm({...adForm, isActive: checked})}
+                      />
+                      <Label htmlFor="isActive">Is Active</Label>
+                    </div>
+                    <Button type="submit" className="w-full">
+                      Create Ad
+                    </Button>
+                  </form>
                 </div>
               </CardContent>
             </Card>
