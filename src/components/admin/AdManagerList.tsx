@@ -155,7 +155,8 @@ const AdManagerList = () => {
       toast({ title: "Saved", description: "Ad updated" });
     } catch (err) {
       console.error("Save ad error", err);
-      toast({ title: "Error", description: "Could not save changes", variant: "destructive" });
+      const msg = (err as any)?.message || (typeof err === 'string' ? err : 'Could not save changes');
+      toast({ title: "Error", description: msg, variant: "destructive" });
     }
   };
 
@@ -220,13 +221,14 @@ const AdManagerList = () => {
                       checked={!!ad.is_active}
                       onCheckedChange={() => handleToggleActive(ad)}
                       id={`active-${ad.id}`}
+                      disabled={adminLoading}
                     />
                     <Label htmlFor={`active-${ad.id}`}>Active</Label>
                   </div>
                   <div className="flex gap-2">
                     <Dialog open={editing?.id === ad.id} onOpenChange={(open) => (open ? startEdit(ad) : setEditing(null))}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" onClick={() => startEdit(ad)}>
+                        <Button variant="outline" size="sm" onClick={() => startEdit(ad)} disabled={adminLoading}>
                           <Edit className="h-4 w-4 mr-2" /> Edit
                         </Button>
                       </DialogTrigger>
@@ -314,7 +316,7 @@ const AdManagerList = () => {
                             <Button variant="outline" onClick={() => setEditing(null)}>
                               <X className="h-4 w-4 mr-2" /> Cancel
                             </Button>
-                            <Button onClick={saveEdit}>
+                            <Button onClick={saveEdit} disabled={!isAdmin || adminLoading}>
                               <Save className="h-4 w-4 mr-2" /> Save
                             </Button>
                           </div>
@@ -322,7 +324,7 @@ const AdManagerList = () => {
                       </DialogContent>
                     </Dialog>
 
-                    <Button variant="destructive" size="sm" onClick={() => handleDelete(ad)}>
+                    <Button variant="destructive" size="sm" onClick={() => handleDelete(ad)} disabled={adminLoading}>
                       <Trash2 className="h-4 w-4 mr-2" /> Delete
                     </Button>
                   </div>
