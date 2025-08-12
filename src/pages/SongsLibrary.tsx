@@ -12,6 +12,7 @@ import Footer from "@/components/sections/Footer";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import FavouriteButton from "@/components/FavouriteButton";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis } from "@/components/ui/pagination";
 const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Song {
@@ -38,8 +39,13 @@ const SongsLibrary = () => {
   const [selectedOccasion, setSelectedOccasion] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [availableGenres, setAvailableGenres] = useState<string[]>([]);
-  const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
-  // Fetch songs from Supabase
+const [availableOccasions, setAvailableOccasions] = useState<string[]>([]);
+
+// Pagination
+const ITEMS_PER_PAGE = 100;
+const [currentPage, setCurrentPage] = useState(1);
+
+// Fetch songs from Supabase
   useEffect(() => {
     const fetchSongs = async () => {
       try {
@@ -115,7 +121,8 @@ const SongsLibrary = () => {
       });
     }
 
-    setFilteredSongs(filtered);
+setFilteredSongs(filtered);
+    setCurrentPage(1);
   }, [songs, searchTerm, selectedGenre, selectedOccasion]);
 
   const handleSongClick = (songId: string) => {
@@ -156,13 +163,26 @@ const SongsLibrary = () => {
     }
   };
 
-  const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedGenre("all");
-    setSelectedOccasion("all");
-  };
+const clearFilters = () => {
+  setSearchTerm("");
+  setSelectedGenre("all");
+  setSelectedOccasion("all");
+};
 
-  return (
+// Derived pagination values
+const totalPages = Math.max(1, Math.ceil(filteredSongs.length / ITEMS_PER_PAGE));
+const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+const currentSongs = filteredSongs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+const handlePageChange = (page: number) => {
+  if (page < 1 || page > totalPages) return;
+  setCurrentPage(page);
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch {}
+};
+return (
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4">
@@ -290,7 +310,7 @@ const SongsLibrary = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {filteredSongs.map((song) => (
+              {currentSongs.map((song) => (
                 <Card 
                   key={song.id} 
                   className="bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 cursor-pointer group"
@@ -358,6 +378,38 @@ const SongsLibrary = () => {
                 </Card>
               ))}
             </div>
+          )}
+          {/* Pagination */}
+          {!isLoading && filteredSongs.length > 0 && totalPages > 1 && (
+            <Pagination className="mt-8">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
+                    onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }}
+                  />
+                </PaginationItem>
+                {pageNumbers.map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === currentPage}
+                      onClick={(e) => { e.preventDefault(); handlePageChange(page); }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                    onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           )}
         </div>
       </main>
