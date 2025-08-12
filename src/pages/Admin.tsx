@@ -1293,6 +1293,26 @@ const [activeTab, setActiveTab] = useState(initialTab);
                 </Card>
               </TabsContent>
 
+              <TabsContent value="custom">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>Custom Songs</span>
+                      <Button asChild size="sm">
+                        <Link to="/admin/custom-songs">Open Manager</Link>
+                      </Button>
+                    </CardTitle>
+                    <CardDescription>
+                      Manage quotes, assignments, drafts, messages, and final deliveries for custom song requests.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Use the Custom Songs Manager for full workflow controls. This tab provides a quick entry point.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               <TabsContent value="requests">
                 <RequestReviewPanel 
