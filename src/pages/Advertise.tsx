@@ -87,7 +87,7 @@ export default function Advertise() {
         <div className="container mx-auto px-4">
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-4">
-              Choose Your <span className="text-primary">Perfect Placement</span>
+              Choose Your <span className="text-transparent bg-gradient-primary bg-clip-text">Perfect Placement</span>
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Select the ad package that best fits your reach and budget.
@@ -96,27 +96,32 @@ export default function Advertise() {
 
           <section aria-labelledby="pricing" className="max-w-6xl mx-auto mb-14">
             <h2 id="pricing" className="sr-only">Ad Pricing</h2>
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3 items-stretch auto-rows-fr">
               {placements.map((p) => (
-                <Card key={p.key} className="bg-gradient-card border-border hover:border-primary/30 transition-all duration-300">
+                <Card key={p.key} className={`relative bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 h-full flex flex-col ${p.key === "player" ? "ring-2 ring-primary/20 shadow-gold" : ""}`}>
                   <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-primary/10 text-primary"><Megaphone className="w-5 h-5" /></div>
-                      <CardTitle className="font-playfair text-foreground">{p.label}</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-primary/10 text-primary"><Megaphone className="w-5 h-5" /></div>
+                        <CardTitle className="font-playfair text-foreground">{p.label}</CardTitle>
+                      </div>
+                      {p.key === "player" && (
+                        <Badge variant="secondary">Most Popular</Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-2">{p.blurb}</p>
-                    <Badge variant="secondary" className="mt-3">{p.example}</Badge>
+                    <Badge variant="outline" className="mt-3">{p.example}</Badge>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-1 flex flex-col">
                     <ul className="space-y-2 mb-5">
                       <li className="flex items-center gap-2 text-sm text-muted-foreground"><Check className="w-4 h-4 text-primary" /> Professionally reviewed creatives</li>
                       <li className="flex items-center gap-2 text-sm text-muted-foreground"><Check className="w-4 h-4 text-primary" /> Impression & click tracking</li>
                       <li className="flex items-center gap-2 text-sm text-muted-foreground"><Check className="w-4 h-4 text-primary" /> Family-friendly policy compliance</li>
                     </ul>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 items-stretch mt-auto">
                       {(["7d", "30d"] as AdDuration[]).map((d) => (
-                        <Card key={d} className="p-3 border-dashed">
+                        <Card key={d} className="p-3 border-dashed h-full flex flex-col justify-between">
                           <div className="text-xs text-muted-foreground">{durationLabels[d]}</div>
                           <div className="text-lg font-semibold text-primary">{formatGBP(AD_PRICING_GBP[p.key][d])}</div>
                           <AdCheckoutButton

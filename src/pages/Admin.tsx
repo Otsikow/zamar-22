@@ -1712,8 +1712,8 @@ const Admin = () => {
                 </form>
 
                 <div className="mt-8 space-y-8">
-                  <AdManagerList />
                   <AdApprovalTabs />
+                  <AdManagerList />
                 </div>
               </CardContent>
             </Card>
