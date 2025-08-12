@@ -21,6 +21,26 @@ interface Notification {
   user_id: string;
 }
 
+const getLinkForType = (type: string): string | null => {
+  switch ((type || '').toLowerCase()) {
+    case 'message':
+      return '/admin/chat-inbox';
+    case 'song_request':
+    case 'request':
+      return '/admin?tab=upload';
+    case 'testimony':
+    case 'testimonial':
+      return '/admin?tab=testimonials';
+    case 'donation':
+      return '/admin?tab=donations';
+    case 'ad':
+    case 'advertisement':
+      return '/admin?tab=advertising';
+    default:
+      return null;
+  }
+};
+
 export const NotificationBell = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -220,14 +240,14 @@ export const NotificationBell = () => {
                           </span>
                           
                           <div className="flex gap-1">
-                            {notification.link && (
+{(notification.link || getLinkForType(notification.type)) && (
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 asChild
                                 onClick={() => setIsOpen(false)}
                               >
-                                <Link to={notification.link}>
+                                <Link to={notification.link || (getLinkForType(notification.type) as string)}>
                                   <ExternalLink className="h-3 w-3 mr-1" />
                                   View
                                 </Link>
