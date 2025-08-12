@@ -141,6 +141,12 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/referrals/analytics">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        {t('nav.referral_analytics', 'Referral Analytics')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/library">
                         <Settings className="mr-2 h-4 w-4" />
                         {t('nav.library', 'Library')}

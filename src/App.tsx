@@ -54,6 +54,7 @@ import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
+import ReferralAnalytics from "./pages/ReferralAnalytics";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -108,6 +109,7 @@ const App = () => (
                     {/* Referral Routes */}
                     <Route path="/referrals" element={<ProtectedRoute><ReferralDashboardComponent /></ProtectedRoute>} />
                     <Route path="/referrals/dashboard" element={<ProtectedRoute><ReferralDashboard /></ProtectedRoute>} />
+                    <Route path="/referrals/analytics" element={<ProtectedRoute><ReferralAnalytics /></ProtectedRoute>} />
                     <Route path="/referral" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     <Route path="/referral-calculator" element={<ProtectedRoute><ReferralCalculator /></ProtectedRoute>} />
                     
@@ -122,6 +124,7 @@ const App = () => (
                     <Route path="/admin/chat-inbox" element={<ProtectedRoute><AdminChatInbox /></ProtectedRoute>} />
                     <Route path="/admin/donations" element={<ProtectedRoute><AdminDonationAnalytics /></ProtectedRoute>} />
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
+                    <Route path="/admin/referral-ops" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
                     <Route path="*" element={<NotFound />} />
