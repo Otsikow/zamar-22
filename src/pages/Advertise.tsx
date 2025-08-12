@@ -129,7 +129,7 @@ export default function Advertise() {
                             duration={d}
                             label={`Buy ${d === "7d" ? "7d" : "30d"}`}
                             className="mt-3 w-full"
-                            variant="default"
+                            variant="solid"
                             size="sm"
                           />
                         </Card>
