@@ -1436,19 +1436,6 @@ export type Database = {
           reward_count: number
         }[]
       }
-      get_user_profile: {
-        Args: { target_user_id: string }
-        Returns: {
-          id: string
-          first_name: string
-          last_name: string
-          email: string
-          preferred_language: string
-          account_status: Database["public"]["Enums"]["account_status"]
-          created_at: string
-          updated_at: string
-        }[]
-      }
       get_user_referral_stats: {
         Args: { target_user_id: string }
         Returns: {
