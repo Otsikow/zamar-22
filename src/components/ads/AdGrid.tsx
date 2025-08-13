@@ -33,6 +33,8 @@ const loggedImpressions = new Set<string>();
 
 function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Track impressions when the card enters the viewport
   useEffect(() => {
@@ -64,7 +66,17 @@ function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
     return () => observer.disconnect();
   }, [ad, placement]);
 
-  if (!ad.media_url) return null;
+  // Preload image
+  useEffect(() => {
+    if (!ad?.media_url) return;
+    
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageError(true);
+    img.src = ad.media_url;
+  }, [ad?.media_url]);
+
+  if (!ad.media_url || imageError) return null;
 
   const redirectUrl = `https://wtnebvhrjnpygkftjreo.supabase.co/functions/v1/ad-redirect?ad_id=${encodeURIComponent(
     ad.id
@@ -91,15 +103,23 @@ function AdCard({ ad, placement }: { ad: Ad; placement: string }) {
             </Tooltip>
           </div>
           <div
-            className={cn("w-full bg-muted/40 border-b border-border/60 flex items-center justify-center")}
+            className={cn("w-full bg-muted/40 border-b border-border/60 flex items-center justify-center relative")}
             aria-hidden="true"
           >
             <img
               src={ad.media_url}
               alt={`Sponsored banner: ${ad.title}`}
-              className="w-full h-32 object-contain"
-              loading="lazy"
+              className={`w-full h-32 object-contain transition-opacity duration-200 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
             />
+            {!imageLoaded && !imageError && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
           <div className="p-3 mt-auto">
             <h3 className="text-sm font-medium line-clamp-2 text-foreground/90 min-h-[40px]">
