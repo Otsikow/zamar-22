@@ -11,7 +11,7 @@ function getSystem(): "light" | "dark" {
 
 export const ThemeProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(
-    () => (localStorage.getItem("theme") as Theme) || "system"
+    () => (localStorage.getItem("theme") as Theme) || "dark"
   )
 
   const setTheme = (t: Theme) => {
