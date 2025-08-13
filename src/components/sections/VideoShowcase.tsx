@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 const howItWorksUrl = "https://www.youtube.com/embed/GG34m4WIEys";
 const testimonials = [
   "https://www.youtube.com/embed/Oh_d3zvQG6U",
-  "https://www.youtube.com/embed/VIDEO_ID_3",
-  "https://www.youtube.com/embed/VIDEO_ID_4",
-];
+  // "https://www.youtube.com/embed/VIDEO_ID_3", // Hidden until real video ID provided
+  // "https://www.youtube.com/embed/VIDEO_ID_4", // Hidden until real video ID provided
+].filter(url => !url.includes('VIDEO_ID_'));
 
 const VideoShowcase = () => {
   return (
