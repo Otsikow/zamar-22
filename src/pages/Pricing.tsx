@@ -149,7 +149,7 @@ const Pricing = () => {
                   Reach our community of faith-based music lovers with targeted advertising 
                   options that align with your values.
                 </p>
-                <Button variant="secondary" size="lg" asChild>
+                <Button variant="hero" size="lg" asChild>
                   <Link to="/advertise">
                     View Advertising Options
                   </Link>
