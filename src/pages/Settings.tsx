@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
-import BackButton from '@/components/ui/back-button';
+
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { 
@@ -121,7 +121,6 @@ const Settings = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <BackButton showOnDesktop={true} />
           <div>
             <h1 className="text-3xl font-heading text-primary">{t('settings.title', 'Settings')}</h1>
             <p className="text-muted-foreground mt-1">{t('settings.subtitle', 'Customize your app experience')}</p>

@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import BackButton from "@/components/ui/back-button";
 import Footer from "@/components/sections/Footer";
 import { Music, Heart, Globe, Zap, Shield, Users, UserCheck, Building2, Church, Briefcase } from "lucide-react";
 const AboutUs = () => {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("individual");
 
   const serviceCategories = [
@@ -37,9 +34,7 @@ const AboutUs = () => {
     }
   ];
   return <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <BackButton onClick={() => navigate(-1)} />
-        
+      <div className="container mx-auto px-4 py-8">        
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center space-y-4">

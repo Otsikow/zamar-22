@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 import { User, Mail, Calendar, Edit3, Save, X, Users } from 'lucide-react';
-import BackButton from '@/components/ui/back-button';
+
 import { ReferralDashboard } from '@/components/referrals/ReferralDashboard';
 
 interface UserProfile {
@@ -157,7 +157,6 @@ const Profile = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <BackButton showOnDesktop={true} />
           <div className="flex-1">
             <h1 className="text-3xl font-heading text-primary">{t('profile.title', 'My Account')}</h1>
             <p className="text-muted-foreground mt-1">{t('profile.subtitle', 'Manage your profile information')}</p>
