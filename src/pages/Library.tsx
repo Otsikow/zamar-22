@@ -332,15 +332,6 @@ const Library = () => {
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Back Button */}
-          <div className="mb-6">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('library.backToHome', 'Back to Home')}
-              </Link>
-            </Button>
-          </div>
 
           {/* Header */}
           <div className="text-center mb-12">
