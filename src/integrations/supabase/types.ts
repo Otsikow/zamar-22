@@ -1299,6 +1299,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      get_active_session_count: {
+        Args: { minutes_threshold?: number }
+        Returns: number
+      }
       get_all_referral_rewards: {
         Args: Record<PropertyKey, never>
         Returns: {

@@ -23,17 +23,13 @@ const LiveCounter = () => {
     };
     const fetchActiveCount = async () => {
       try {
-        const cutoffTime = new Date(Date.now() - 90 * 1000).toISOString(); // 90 seconds ago
-
-        const {
-          count,
-          error
-        } = await supabase.from('active_sessions').select('*', {
-          count: 'exact',
-          head: true
-        }).gte('last_ping', cutoffTime);
+        // Use secure function that only returns count, no sensitive data
+        const { data, error } = await supabase.rpc('get_active_session_count', { 
+          minutes_threshold: 2 // 2 minutes threshold for active sessions
+        });
+        
         if (error) throw error;
-        setActiveUsers(count || 0);
+        setActiveUsers(data || 0);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching active users:', error);
