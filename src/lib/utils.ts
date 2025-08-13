@@ -27,17 +27,21 @@ export function extractScriptureFromLyrics(text?: string): { reference?: string;
   if (!text) return null;
 
   // Pattern with reference and quote separated by dash variants
-  const matchWithQuote = text.match(/Scripture(?:\s+Inspiration|\s*Reference)?\s*:\s*([^\n–—-]+)\s*[–—-]\s*[“”"']?([^"\n]+)[”"']?/i);
+  // Updated regex to handle quotes properly, including the full quote with ellipsis
+  const matchWithQuote = text.match(/Scripture(?:\s+Inspiration|\s*Reference)?\s*:\s*([^\n–—-]+)\s*[–—-]\s*["""']?([^"""\n]+(?:\.\.\.)?)[""]?/i);
   if (matchWithQuote) {
-    return { reference: matchWithQuote[1].trim(), quote: matchWithQuote[2].trim() };
+    const reference = matchWithQuote[1].trim();
+    let quote = matchWithQuote[2].trim();
+    // Remove surrounding quotes if they exist
+    quote = quote.replace(/^"|"$/g, '');
+    return { reference, quote };
   }
 
   // Pattern with reference only, possibly wrapped in parentheses
-  const matchRefOnly = text.match(/\(?\s*Scripture\s*:\s*([^\)\n]+)\)?/i);
+  const matchRefOnly = text.match(/\(?\s*Scripture(?:\s+Inspiration|\s*Reference)?\s*:\s*([^\)\n–—-]+)\)?/i);
   if (matchRefOnly) {
     return { reference: matchRefOnly[1].trim() };
   }
 
   return null;
 }
-
