@@ -325,107 +325,134 @@ const UserRoleManagement = () => {
             </Button>
           </div>
 
-          {/* Users Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Current Role</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      No users found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredUsers.map((u) => {
-                    const userId = u.profile.id;
-                    const isCurrentUser = user?.id === userId;
-                    const isUpdating = updatingRoles.has(userId);
-                    
-                    return (
-                      <TableRow key={userId}>
-                        <TableCell>
-                          <div className="font-medium">
-                            {u.profile.first_name && u.profile.last_name
-                              ? `${u.profile.first_name} ${u.profile.last_name}`
-                              : 'No name set'}
+          {/* Mobile-Optimized User Cards */}
+          <div className="space-y-4">
+            {filteredUsers.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center text-muted-foreground">
+                  No users found
+                </CardContent>
+              </Card>
+            ) : (
+              filteredUsers.map((u) => {
+                const userId = u.profile.id;
+                const isCurrentUser = user?.id === userId;
+                const isUpdating = updatingRoles.has(userId);
+                
+                return (
+                  <Card key={userId} className="overflow-hidden">
+                    <CardContent className="p-4">
+                      {/* User Info Header */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-medium truncate">
+                              {u.profile.first_name && u.profile.last_name
+                                ? `${u.profile.first_name} ${u.profile.last_name}`
+                                : 'No name set'}
+                            </h3>
                             {isCurrentUser && (
-                              <Badge variant="outline" className="ml-2 text-xs">
+                              <Badge variant="outline" className="text-xs flex-shrink-0">
                                 You
                               </Badge>
                             )}
-                            {u.profile.account_status === 'suspended' && (
-                              <Badge variant="secondary" className="ml-2 text-xs">Suspended</Badge>
-                            )}
-                            {u.profile.account_status === 'deleted' && (
-                              <Badge variant="destructive" className="ml-2 text-xs">Deleted</Badge>
-                            )}
                           </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {u.profile.email || 'No email'}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={u.role}
-                            onValueChange={(newRole: Role) => updateUserRole(u, newRole)}
-                            disabled={isCurrentUser || isUpdating}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {VALID_ROLES.map((role) => (
-                                <SelectItem key={role} value={role}>
-                                  <div className="flex items-center gap-2">
-                                    {getRoleIcon(role)}
-                                    {role}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {isCurrentUser && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Cannot edit own role
-                            </p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {u.profile.email || 'No email'}
+                          </p>
+                        </div>
+                        
+                        {/* Status Badges */}
+                        <div className="flex flex-col gap-1">
+                          {u.profile.account_status === 'suspended' && (
+                            <Badge variant="secondary" className="text-xs">Suspended</Badge>
                           )}
-                          <div className="flex flex-wrap items-center gap-2 mt-2">
-                            <Button variant="outline" size="sm" onClick={() => handleChat(userId)}>
-                              <MessageCircle className="h-4 w-4 mr-1" /> Chat
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleSuspendToggle(userId, u.profile.account_status === 'suspended')}
-                              disabled={isCurrentUser}
-                            >
-                              <Ban className="h-4 w-4 mr-1" />
-                              {u.profile.account_status === 'suspended' ? 'Unsuspend' : 'Suspend'}
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleSoftDelete(userId)}
-                              disabled={isCurrentUser}
-                            >
-                              <Trash2 className="h-4 w-4 mr-1" /> Delete
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
+                          {u.profile.account_status === 'deleted' && (
+                            <Badge variant="destructive" className="text-xs">Deleted</Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Role Selection */}
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium">Role:</span>
+                          <Badge className={getRoleColor(u.role)}>
+                            <div className="flex items-center gap-1">
+                              {getRoleIcon(u.role)}
+                              <span className="capitalize">{u.role}</span>
+                            </div>
+                          </Badge>
+                        </div>
+                        
+                        <Select
+                          value={u.role}
+                          onValueChange={(newRole: Role) => updateUserRole(u, newRole)}
+                          disabled={isCurrentUser || isUpdating}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {VALID_ROLES.map((role) => (
+                              <SelectItem key={role} value={role}>
+                                <div className="flex items-center gap-2">
+                                  {getRoleIcon(role)}
+                                  <span className="capitalize">{role}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
+                        {isCurrentUser && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Cannot edit own role
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Action Buttons - Mobile Optimized */}
+                      <div className="grid grid-cols-1 gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleChat(userId)}
+                          className="justify-start"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Start Chat
+                        </Button>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSuspendToggle(userId, u.profile.account_status === 'suspended')}
+                            disabled={isCurrentUser}
+                            className="justify-start"
+                          >
+                            <Ban className="h-4 w-4 mr-1" />
+                            {u.profile.account_status === 'suspended' ? 'Unsuspend' : 'Suspend'}
+                          </Button>
+                          
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleSoftDelete(userId)}
+                            disabled={isCurrentUser}
+                            className="justify-start"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>
