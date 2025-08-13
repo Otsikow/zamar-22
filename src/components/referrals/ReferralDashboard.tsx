@@ -55,8 +55,10 @@ export const ReferralDashboard = () => {
     if (!user) return;
 
     try {
-      // Create a simple referral code from user ID
+      // Create a simple referral code from user ID (last 8 characters)
       const referralCode = user.id.slice(-8).toUpperCase();
+      
+      console.log('Generated referral code for user:', user.id, 'Code:', referralCode);
       
       setData({
         referralCode,
@@ -79,24 +81,32 @@ export const ReferralDashboard = () => {
     if (!user) return;
 
     try {
+      console.log('Fetching referral stats for user:', user.id);
+      
       // Try RPC first, then gracefully fall back to local aggregation
       const { data: statsData, error: statsError } = await supabase
         .rpc('get_user_referral_stats', { target_user_id: user.id });
+
+      console.log('RPC result:', { statsData, statsError });
 
       let userStats: any | undefined =
         !statsError && statsData?.[0] ? statsData[0] : undefined;
 
       if (!userStats) {
+        console.log('Using fallback method to fetch referral data');
+        
         // Fallback: compute from tables
-        const { data: referrals } = await supabase
+        const { data: referrals, error: referralsError } = await supabase
           .from('referrals')
           .select('generation')
           .eq('referrer_id', user.id);
 
-        const { data: earnings } = await supabase
+        const { data: earnings, error: earningsError } = await supabase
           .from('referral_earnings')
           .select('amount,status')
           .eq('user_id', user.id);
+
+        console.log('Fallback data:', { referrals, referralsError, earnings, earningsError });
 
         const direct = (referrals || []).filter((r: any) => r.generation === 1).length;
         const indirect = (referrals || []).filter((r: any) => r.generation === 2).length;

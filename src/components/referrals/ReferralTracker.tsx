@@ -31,7 +31,7 @@ export const handleReferralSignup = async (newUserId: string) => {
   
   if (referralCode) {
     try {
-      // Extract the referrer ID from the referral code (remove ZAMAR_ prefix and find matching user)
+      // Extract the referrer ID from the referral code (handle both formats)
       const codeId = referralCode.replace('ZAMAR_', '').toLowerCase();
       
       // Find the referrer user by matching the end of their user ID with the code
