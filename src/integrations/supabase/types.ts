@@ -280,6 +280,13 @@ export type Database = {
             foreignKeyName: "chat_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "v_referral_summary"
             referencedColumns: ["user_id"]
           },
@@ -319,6 +326,13 @@ export type Database = {
             foreignKeyName: "chat_rooms_admin_id_fkey"
             columns: ["admin_id"]
             isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
             referencedRelation: "v_referral_summary"
             referencedColumns: ["user_id"]
           },
@@ -327,6 +341,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -674,6 +695,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1232,6 +1260,13 @@ export type Database = {
             foreignKeyName: "user_favourites_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favourites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "v_referral_summary"
             referencedColumns: ["user_id"]
           },
@@ -1239,6 +1274,27 @@ export type Database = {
       }
     }
     Views: {
+      public_profiles: {
+        Row: {
+          created_at: string | null
+          first_name: string | null
+          id: string | null
+          preferred_language: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          first_name?: string | null
+          id?: string | null
+          preferred_language?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          first_name?: string | null
+          id?: string | null
+          preferred_language?: string | null
+        }
+        Relationships: []
+      }
       v_referral_earnings_detailed: {
         Row: {
           amount: number | null
@@ -1378,6 +1434,19 @@ export type Database = {
           email: string
           total_earned: number
           reward_count: number
+        }[]
+      }
+      get_user_profile: {
+        Args: { target_user_id: string }
+        Returns: {
+          id: string
+          first_name: string
+          last_name: string
+          email: string
+          preferred_language: string
+          account_status: Database["public"]["Enums"]["account_status"]
+          created_at: string
+          updated_at: string
         }[]
       }
       get_user_referral_stats: {
