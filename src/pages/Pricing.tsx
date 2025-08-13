@@ -138,6 +138,26 @@ const Pricing = () => {
             ))}
           </div>
 
+          {/* Call to Action Section */}
+          <div className="text-center mb-16">
+            <Card className="bg-accent/10 border-primary/10 max-w-2xl mx-auto">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-playfair font-semibold text-foreground mb-4">
+                  Looking to Advertise?
+                </h3>
+                <p className="text-muted-foreground font-inter mb-6 leading-relaxed">
+                  Reach our community of faith-based music lovers with targeted advertising 
+                  options that align with your values.
+                </p>
+                <Button variant="secondary" size="lg" asChild>
+                  <Link to="/advertise">
+                    View Advertising Options
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Faith-Based Notice */}
           <div className="max-w-4xl mx-auto">
             <Card className="bg-accent/20 border-primary/20">
