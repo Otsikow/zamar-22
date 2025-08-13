@@ -28,6 +28,7 @@ const FeaturedSongs = () => {
 
   useEffect(() => {
     const fetchFeaturedSongs = async () => {
+      console.log('🎵 FeaturedSongs: Starting to fetch featured songs...');
       try {
         const { data, error } = await supabase
           .from('songs')
@@ -35,14 +36,19 @@ const FeaturedSongs = () => {
           .eq('featured', true)
           .limit(12);
         
-        if (error) throw error;
+        if (error) {
+          console.error('🎵 FeaturedSongs: Database error:', error);
+          throw error;
+        }
         
+        console.log('🎵 FeaturedSongs: Successfully fetched', data?.length || 0, 'songs');
         // Use database songs only, no fallback to demo songs
         setSongs(data || []);
       } catch (error) {
-        console.error('Error fetching featured songs:', error);
+        console.error('🎵 FeaturedSongs: Error fetching featured songs:', error);
         setSongs([]); // Empty array if there's an error
       } finally {
+        console.log('🎵 FeaturedSongs: Setting loading to false');
         setLoading(false);
       }
     };

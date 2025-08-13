@@ -23,16 +23,24 @@ const LiveCounter = () => {
     };
     const fetchActiveCount = async () => {
       try {
+        console.log('📊 LiveCounter: Fetching active session count...');
         // Use secure function that only returns count, no sensitive data
         const { data, error } = await supabase.rpc('get_active_session_count', { 
           minutes_threshold: 2 // 2 minutes threshold for active sessions
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('📊 LiveCounter: RPC error:', error);
+          throw error;
+        }
+        
+        console.log('📊 LiveCounter: Active users count:', data);
         setActiveUsers(data || 0);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching active users:', error);
+        console.error('📊 LiveCounter: Error fetching active users:', error);
+        // Set a default value and stop loading even on error
+        setActiveUsers(0);
         setLoading(false);
       }
     };
