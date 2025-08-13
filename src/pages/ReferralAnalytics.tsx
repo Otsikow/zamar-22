@@ -184,20 +184,51 @@ export default function ReferralAnalytics() {
         {/* Row: Referral Link + Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card A */}
-          <Card className="border-primary/20">
+          <Card className="border-primary/20 bg-gradient-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-primary"><Share2 className="h-5 w-5"/>Your Referral Link</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Share2 className="h-5 w-5"/>
+                Your Referral Link
+              </CardTitle>
               <CardDescription>Share this link and earn commissions</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="font-mono text-sm p-3 rounded bg-muted/50 break-all">https://www.zamarsongs.com/auth?ref={referralCode}</div>
-              <div className="flex gap-2">
-                <Button onClick={copyReferral} size="sm"><Copy className="h-4 w-4 mr-2"/>Copy</Button>
-                <Button asChild variant="outline" size="sm">
-                  <a href={`https://wa.me/?text=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`} target="_blank" rel="noreferrer">WhatsApp</a>
+            <CardContent className="space-y-4">
+              <div className="font-mono text-sm p-4 rounded-lg bg-muted/50 border border-border break-all">
+                https://www.zamarsongs.com/auth?ref={referralCode}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <Button 
+                  onClick={copyReferral} 
+                  variant="default" 
+                  size="sm" 
+                  className="w-full"
+                >
+                  <Copy className="h-4 w-4 mr-2"/>
+                  Copy
                 </Button>
-                <Button asChild variant="outline" size="sm">
-                  <a href={`mailto:?subject=Join%20Zamar&body=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`}>Email</a>
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  size="sm"
+                  className="w-full"
+                >
+                  <a 
+                    href={`https://wa.me/?text=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                  >
+                    WhatsApp
+                  </a>
+                </Button>
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  size="sm"
+                  className="w-full"
+                >
+                  <a href={`mailto:?subject=Join%20Zamar&body=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`}>
+                    Email
+                  </a>
                 </Button>
               </div>
             </CardContent>
