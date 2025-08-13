@@ -53,8 +53,23 @@ export const LiveChats = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
+  // Only auto-scroll when new messages arrive, not on room change
+  const prevMessagesLength = useRef(0);
+  const prevSelectedRoomId = useRef<string | null>(null);
+  
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    // Scroll to bottom when switching rooms
+    if (selectedRoom && selectedRoom.id !== prevSelectedRoomId.current) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+      prevSelectedRoomId.current = selectedRoom.id;
+    }
+    // Scroll to bottom only when new messages are added
+    else if (messages.length > prevMessagesLength.current && messages.length > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+    prevMessagesLength.current = messages.length;
   }, [messages, selectedRoom]);
 
   useEffect(() => {
