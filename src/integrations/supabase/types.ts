@@ -71,6 +71,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_creation_attempts: {
+        Row: {
+          attempted_at: string | null
+          attempted_by: string | null
+          id: string
+          ip_address: unknown | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          attempted_by?: string | null
+          id?: string
+          ip_address?: unknown | null
+          success: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          attempted_by?: string | null
+          id?: string
+          ip_address?: unknown | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -1355,6 +1382,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      extract_single_ip: {
+        Args: { ip_input: string }
+        Returns: unknown
+      }
       get_active_session_count: {
         Args: { minutes_threshold?: number }
         Returns: number
@@ -1462,6 +1493,15 @@ export type Database = {
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      log_admin_operation: {
+        Args: {
+          operation_type: string
+          target_table: string
+          target_id?: string
+          additional_info?: Json
+        }
+        Returns: undefined
       }
       mark_paid: {
         Args: { request: string; amount: number }

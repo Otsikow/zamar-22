@@ -24,42 +24,34 @@ serve(async (req) => {
     const { data: userRes, error: userErr } = await supabaseAuth.auth.getUser(token);
 
     if (userErr || !userRes?.user) {
+      // Log failed attempt
+      await logAdminAttempt(supabaseService, null, false, req);
       return new Response(JSON.stringify({ error: "Not authenticated" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 401,
       });
     }
 
-    // Check if any admin exists
-    const { count, error: countErr } = await supabaseService
-      .from('admin_users')
-      .select('*', { count: 'exact', head: true });
+    // Use atomic transaction to prevent race conditions
+    const { data: result, error: transactionError } = await supabaseService.rpc('atomic_grant_first_admin', {
+      candidate_user_id: userRes.user.id
+    });
 
-    if (countErr) {
-      console.error('admin count error', countErr);
+    // Log the attempt
+    await logAdminAttempt(supabaseService, userRes.user.id, !transactionError && result?.success, req);
+
+    if (transactionError) {
+      console.error('Transaction error:', transactionError);
       return new Response(JSON.stringify({ error: 'Server error' }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
       });
     }
 
-    if ((count ?? 0) > 0) {
-      return new Response(JSON.stringify({ error: 'Already initialized' }), {
+    if (!result?.success) {
+      return new Response(JSON.stringify({ error: result?.error || 'Already initialized' }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 403,
-      });
-    }
-
-    // Insert current user as admin
-    const { error: insertErr } = await supabaseService
-      .from('admin_users')
-      .insert({ user_id: userRes.user.id, role: 'admin' });
-
-    if (insertErr) {
-      console.error('admin insert error', insertErr);
-      return new Response(JSON.stringify({ error: 'Failed to grant admin' }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
       });
     }
 
@@ -75,3 +67,28 @@ serve(async (req) => {
     });
   }
 });
+
+// Helper function to log admin creation attempts
+async function logAdminAttempt(supabase: any, userId: string | null, success: boolean, req: Request) {
+  try {
+    const userAgent = req.headers.get("User-Agent") || "Unknown";
+    const forwarded = req.headers.get("X-Forwarded-For");
+    const realIp = req.headers.get("X-Real-IP");
+    const cfIp = req.headers.get("CF-Connecting-IP");
+    
+    // Extract single IP address safely
+    let ipAddress = forwarded || realIp || cfIp || "127.0.0.1";
+    if (ipAddress.includes(',')) {
+      ipAddress = ipAddress.split(',')[0].trim();
+    }
+
+    await supabase.from('admin_creation_attempts').insert({
+      attempted_by: userId,
+      success,
+      ip_address: ipAddress,
+      user_agent: userAgent
+    });
+  } catch (error) {
+    console.error('Failed to log admin attempt:', error);
+  }
+}
