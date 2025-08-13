@@ -157,7 +157,7 @@ const PublicPlaylistDetail = () => {
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-primary">{playlist.name}</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">{playlist.name}</h1>
             {playlist.description && (
               <p className="text-muted-foreground mt-1">{playlist.description}</p>
             )}

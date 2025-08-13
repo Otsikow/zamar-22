@@ -158,7 +158,7 @@ const Profile = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-primary">{t('profile.title', 'My Account')}</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">{t('profile.title', 'My Account')}</h1>
             <p className="text-muted-foreground mt-1">{t('profile.subtitle', 'Manage your profile information')}</p>
           </div>
           {!isEditing && (

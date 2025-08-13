@@ -122,7 +122,7 @@ const Settings = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-heading text-primary">{t('settings.title', 'Settings')}</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">{t('settings.title', 'Settings')}</h1>
             <p className="text-muted-foreground mt-1">{t('settings.subtitle', 'Customize your app experience')}</p>
           </div>
         </div>

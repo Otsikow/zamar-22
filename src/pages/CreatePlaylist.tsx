@@ -91,7 +91,7 @@ const CreatePlaylist = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-heading text-primary">{t('playlist.create_title', 'Create Playlist')}</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">{t('playlist.create_title', 'Create Playlist')}</h1>
             <p className="text-muted-foreground mt-1">{t('playlist.create_subtitle', 'Build your custom song collection')}</p>
           </div>
         </div>

@@ -232,7 +232,7 @@ const ManagePlaylists = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-primary">Manage Playlists</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">Manage Playlists</h1>
             <p className="text-muted-foreground mt-1">Edit, delete, or view your playlists</p>
           </div>
           <Button

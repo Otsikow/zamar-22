@@ -120,7 +120,7 @@ const PublicPlaylists = () => {
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-primary">Public Playlists</h1>
+            <h1 className="text-3xl font-heading text-brand-gold">Public Playlists</h1>
             <p className="text-muted-foreground mt-1">
               Discover playlists shared by the community
             </p>

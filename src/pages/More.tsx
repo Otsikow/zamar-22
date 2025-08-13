@@ -60,7 +60,7 @@ const More = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-heading text-primary mb-2">{t("more.menu", "Menu")}</h1>
+          <h1 className="text-3xl font-heading text-brand-gold mb-2">{t("more.menu", "Menu")}</h1>
           {user && (
             <p className="text-muted-foreground">
               {t("more.welcome_back", "Welcome back, {email}").replace("{email}", user.email)}
