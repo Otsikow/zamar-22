@@ -143,11 +143,53 @@ export const ReferralDashboard = () => {
     if (!user) return;
 
     try {
-      // For now, just set empty arrays until types are updated
-      setReferrals([]);
-      setCommissions([]);
+      // Fetch referrals (people who signed up using my referral code)
+      const { data: referralData } = await supabase
+        .from('referrals')
+        .select('referred_user_id, created_at')
+        .eq('referrer_id', user.id);
+
+      // Get profile details for each referred user
+      const referralItems: ReferralItem[] = [];
+      if (referralData) {
+        for (const referral of referralData) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name, last_name, email')
+            .eq('id', referral.referred_user_id)
+            .single();
+
+          referralItems.push({
+            created_at: referral.created_at,
+            friend_name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.email : 'Anonymous',
+            friend_id: referral.referred_user_id
+          });
+        }
+      }
+
+      // Fetch commission earnings
+      const { data: commissionData } = await supabase
+        .from('referral_earnings')
+        .select('*')
+        .eq('user_id', user.id);
+
+      const commissionItems = commissionData?.map(c => ({
+        created_at: c.created_at || '',
+        level: c.generation,
+        amount_gbp: Number(c.amount),
+        status: c.status || 'pending',
+        purchase_id: c.payment_id || 'N/A'
+      })) || [];
+
+      setReferrals(referralItems);
+      setCommissions(commissionItems);
     } catch (error) {
       console.error('Error fetching referral details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load referral details",
+        variant: "destructive"
+      });
     }
   };
 
@@ -335,6 +377,94 @@ export const ReferralDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Referred Users */}
+      {referrals.length > 0 && (
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Your Referrals ({referrals.length})
+            </CardTitle>
+            <CardDescription>
+              People who signed up using your referral link
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Friend</TableHead>
+                  <TableHead>Joined Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {referrals.map((referral, index) => (
+                  <TableRow key={referral.friend_id}>
+                    <TableCell className="font-medium">
+                      {referral.friend_name || 'Anonymous User'}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(referral.created_at).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Commission Earnings */}
+      {commissions.length > 0 && (
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-success" />
+              Your Earnings ({commissions.length})
+            </CardTitle>
+            <CardDescription>
+              Commission earnings from your referrals
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Level</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {commissions.map((commission, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {new Date(commission.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        Level {commission.level}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      £{commission.amount_gbp.toFixed(2)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={commission.status === 'paid' ? 'default' : 'secondary'}
+                      >
+                        {commission.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* How It Works */}
       <Card className="border-primary/20">
