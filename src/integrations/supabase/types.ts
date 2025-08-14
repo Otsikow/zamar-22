@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -1362,11 +1362,11 @@ export type Database = {
     Functions: {
       add_manual_referral_reward: {
         Args: {
-          p_user_id: string
-          p_referred_user_id: string
-          p_payment_amount: number
-          p_reward_amount: number
           p_level: number
+          p_payment_amount: number
+          p_referred_user_id: string
+          p_reward_amount: number
+          p_user_id: string
         }
         Returns: undefined
       }
@@ -1393,37 +1393,37 @@ export type Database = {
       get_all_referral_rewards: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          user_id: string
-          referred_user_id: string
-          payment_amount: number
-          reward_amount: number
-          level: number
-          reward_type: string
           created_at: string
-          referrer_first_name: string
-          referrer_last_name: string
-          referrer_email: string
+          id: string
+          level: number
+          payment_amount: number
+          referred_email: string
           referred_first_name: string
           referred_last_name: string
-          referred_email: string
+          referred_user_id: string
+          referrer_email: string
+          referrer_first_name: string
+          referrer_last_name: string
+          reward_amount: number
+          reward_type: string
+          user_id: string
         }[]
       }
       get_donation_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
-          total_donations: number
           monthly_donors: number
           one_time_donations: number
           total_amount: number
+          total_donations: number
         }[]
       }
       get_donations_by_campaign: {
         Args: Record<PropertyKey, never>
         Returns: {
           campaign_name: string
-          total_amount: number
           donation_count: number
+          total_amount: number
         }[]
       }
       get_monthly_referral_stats: {
@@ -1435,13 +1435,13 @@ export type Database = {
       get_recent_donations: {
         Args: { limit_count?: number }
         Returns: {
-          id: string
           amount: number
-          donor_name: string
-          donor_email: string
           campaign: string
-          type: string
           created_at: string
+          donor_email: string
+          donor_name: string
+          id: string
+          type: string
         }[]
       }
       get_referral_count: {
@@ -1459,23 +1459,23 @@ export type Database = {
       get_top_referrers: {
         Args: Record<PropertyKey, never>
         Returns: {
-          user_id: string
+          email: string
           first_name: string
           last_name: string
-          email: string
-          total_earned: number
           reward_count: number
+          total_earned: number
+          user_id: string
         }[]
       }
       get_user_referral_stats: {
         Args: { target_user_id: string }
         Returns: {
-          total_referrals: number
           active_referrals: number
           inactive_referrals: number
-          total_earned: number
           paid_earnings: number
           pending_earnings: number
+          total_earned: number
+          total_referrals: number
         }[]
       }
       get_user_role: {
@@ -1496,15 +1496,15 @@ export type Database = {
       }
       log_admin_operation: {
         Args: {
-          operation_type: string
-          target_table: string
-          target_id?: string
           additional_info?: Json
+          operation_type: string
+          target_id?: string
+          target_table: string
         }
         Returns: undefined
       }
       mark_paid: {
-        Args: { request: string; amount: number }
+        Args: { amount: number; request: string }
         Returns: undefined
       }
       mark_referral_earnings_as_paid: {
