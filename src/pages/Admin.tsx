@@ -44,11 +44,12 @@ interface CustomSongRequest {
 
 interface Testimonial {
   id: string;
-  name: string;
+  display_name?: string;
   message: string;
   status: string;
-  audio_url?: string;
+  media_url?: string;
   created_at: string;
+  country?: string;
 }
 
 interface SongPlay {
@@ -243,7 +244,7 @@ const [activeTab, setActiveTab] = useState(initialTab);
 
       // Fetch testimonials
       const { data: testimonialsData } = await supabase
-        .from("testimonials")
+        .from("testimonies")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -323,12 +324,23 @@ const [activeTab, setActiveTab] = useState(initialTab);
 
   const handleTestimonialAction = async (id: string, action: string) => {
     try {
-      const { error } = await supabase
-        .from("testimonials")
-        .update({ status: action, moderated_at: new Date().toISOString() })
-        .eq("id", id);
-
-      if (error) throw error;
+      // Get current user for admin tracking
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (action === 'approved') {
+        const { error } = await supabase.rpc('approve_testimony', {
+          p_testimony_id: id,
+          p_admin: user?.id
+        });
+        if (error) throw error;
+      } else if (action === 'rejected') {
+        const { error } = await supabase.rpc('reject_testimony', {
+          p_testimony_id: id,
+          p_admin: user?.id,
+          p_reason: 'Rejected by admin'
+        });
+        if (error) throw error;
+      }
 
       toast({
         title: "Success",

@@ -24,10 +24,12 @@ type FormData = z.infer<typeof formSchema>;
 
 interface Testimonial {
   id: string;
-  name: string;
+  display_name: string;
   message: string;
-  audio_url: string | null;
+  media_url: string | null;
   created_at: string;
+  published_at: string;
+  country?: string;
 }
 
 const Testimonies = () => {
@@ -70,10 +72,9 @@ const Testimonies = () => {
   const fetchTestimonials = async () => {
     try {
       const { data, error } = await supabase
-        .from("testimonials")
-        .select("id, name, message, audio_url, created_at")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
+        .from("public_testimonies")
+        .select("*")
+        .order("published_at", { ascending: false })
         .limit(20);
 
       if (error) throw error;
@@ -103,10 +104,10 @@ const Testimonies = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from("testimonials")
+        .from("testimonies")
         .insert({
           user_id: user.id,
-          name: data.name,
+          display_name: data.name,
           message: data.message,
           status: "pending",
         });
@@ -210,12 +211,18 @@ const Testimonies = () => {
                           <div className="flex items-center justify-between mb-3">
                             <div>
                               <h4 className="font-playfair font-semibold text-foreground">
-                                {testimonial.name}
+                                {testimonial.display_name}
                               </h4>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar className="w-3 h-3" />
-                                {formatDate(testimonial.created_at)}
-                              </p>
+                                <span>{formatDate(testimonial.published_at || testimonial.created_at)}</span>
+                                {testimonial.country && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{testimonial.country}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                             <Badge className="bg-primary/20 text-primary border-primary/30">
                               Verified

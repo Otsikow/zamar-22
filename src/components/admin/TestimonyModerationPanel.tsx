@@ -4,17 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Heart, Volume2 } from "lucide-react";
 import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
 
-interface Testimonial {
+interface Testimony {
   id: string;
-  name: string;
+  display_name?: string;
   message: string;
   status: string;
-  audio_url?: string;
+  media_url?: string;
   created_at: string;
+  country?: string;
 }
 
 interface TestimonyModerationPanelProps {
-  testimonials: Testimonial[];
+  testimonials: Testimony[];
   onTestimonialAction: (id: string, action: string) => Promise<void>;
 }
 
@@ -49,43 +50,50 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {testimonials.map((testimonial) => (
+          {testimonials.map((testimony) => (
             <Card 
-              key={testimonial.id} 
+              key={testimony.id} 
               className="border-primary/20 bg-card/50 hover:border-primary/40 transition-colors"
             >
               <CardContent className="p-4">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="flex-1 space-y-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-foreground">{testimonial.name}</span>
-                      <Badge className={getStatusColor(testimonial.status)}>
-                        {testimonial.status.toUpperCase()}
+                      <span className="font-medium text-foreground">
+                        {testimony.display_name || 'A Grateful Listener'}
+                      </span>
+                      {testimony.country && (
+                        <Badge variant="outline" className="text-xs">
+                          {testimony.country}
+                        </Badge>
+                      )}
+                      <Badge className={getStatusColor(testimony.status)}>
+                        {testimony.status.toUpperCase()}
                       </Badge>
-                      {testimonial.audio_url && (
+                      {testimony.media_url && (
                         <Badge variant="outline" className="text-primary border-primary/50">
                           <Volume2 className="w-3 h-3 mr-1" />
-                          Audio
+                          Media
                         </Badge>
                       )}
                       <span className="text-xs text-muted-foreground">
-                        {formatDate(testimonial.created_at)}
+                        {formatDate(testimony.created_at)}
                       </span>
                     </div>
                     
                     <div className="space-y-2">
                       <p className="text-foreground leading-relaxed">
-                        "{testimonial.message}"
+                        "{testimony.message}"
                       </p>
                       
-                      {testimonial.audio_url && (
+                      {testimony.media_url && (
                         <div className="bg-muted/20 rounded-lg p-3 border border-primary/20">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                             <Volume2 className="w-4 h-4" />
-                            Audio Testimony
+                            Media Testimony
                           </div>
                           <audio controls className="w-full h-8">
-                            <source src={testimonial.audio_url} type="audio/mpeg" />
+                            <source src={testimony.media_url} type="audio/mpeg" />
                             Your browser does not support the audio element.
                           </audio>
                         </div>
@@ -93,10 +101,10 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
                     </div>
                   </div>
                   
-                  {testimonial.status === 'pending' && (
+                  {testimony.status === 'pending' && (
                     <div className="flex flex-col gap-2 lg:flex-row">
                       <Button
-                        onClick={() => onTestimonialAction(testimonial.id, 'approved')}
+                        onClick={() => onTestimonialAction(testimony.id, 'approved')}
                         size="sm"
                         className="bg-green-600 hover:bg-green-700 text-white"
                       >
@@ -104,7 +112,7 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
                         Approve
                       </Button>
                       <Button
-                        onClick={() => onTestimonialAction(testimonial.id, 'rejected')}
+                        onClick={() => onTestimonialAction(testimony.id, 'rejected')}
                         size="sm"
                         variant="destructive"
                       >
