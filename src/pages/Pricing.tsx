@@ -11,96 +11,96 @@ const Pricing = () => {
   const { t } = useTranslation();
   const customSongTiers = [
     {
-      name: "Essentials",
+      name: t('pricing.essentials', 'Essentials'),
       price: "£25",
       popular: false,
       badge: null,
       features: [
-        "1 song",
-        "Single theme",
-        "1 genre choice",
-        "Delivery in 3–4 days",
-        "MP3 download",
-        "Basic production"
+        t('pricing.feature_1_song', '1 song'),
+        t('pricing.feature_single_theme', 'Single theme'),
+        t('pricing.feature_1_genre', '1 genre choice'),
+        t('pricing.feature_delivery_3_4', 'Delivery in 3–4 days'),
+        t('pricing.feature_mp3_download', 'MP3 download'),
+        t('pricing.feature_basic_production', 'Basic production')
       ],
       icon: Music,
-      description: "Perfect for quick personal messages",
-      cta: "Order Now"
+      description: t('pricing.perfect_for_quick', 'Perfect for quick personal messages'),
+      cta: t('pricing.order_now', 'Order Now')
     },
     {
-      name: "Signature",
+      name: t('pricing.signature', 'Signature'),
       price: "£60",
       popular: true,
-      badge: "Most Popular",
+      badge: t('pricing.most_popular', 'Most Popular'),
       features: [
-        "1 song in 2 versions",
-        "Multiple themes",
-        "PDF lyrics included",
-        "Delivery in 48–72 hrs",
-        "High-quality MP3",
-        "Professional mixing",
-        "1 minor revision"
+        t('pricing.feature_1_song_2_versions', '1 song in 2 versions'),
+        t('pricing.feature_multiple_themes', 'Multiple themes'),
+        t('pricing.feature_pdf_lyrics', 'PDF lyrics included'),
+        t('pricing.feature_delivery_48_72', 'Delivery in 48–72 hrs'),
+        t('pricing.feature_high_quality_mp3', 'High-quality MP3'),
+        t('pricing.feature_professional_mixing', 'Professional mixing'),
+        t('pricing.feature_1_minor_revision', '1 minor revision')
       ],
       icon: Star,
-      description: "Most popular choice for special occasions",
-      cta: "Order Now"
+      description: t('pricing.most_popular_choice', 'Most popular choice for special occasions'),
+      cta: t('pricing.order_now', 'Order Now')
     },
     {
-      name: "Premier",
+      name: t('pricing.premier', 'Premier'),
       price: "£129",
       popular: false,
-      badge: "Limited Availability",
+      badge: t('pricing.limited_availability', 'Limited Availability'),
       features: [
-        "2 songs in 2 versions",
-        "Complex storytelling",
-        "Free major revision",
-        "Delivery in 24–48 hrs",
-        "Studio-quality production",
-        "MP3 + WAV + Instrumental versions",
-        "Priority support"
+        t('pricing.feature_2_songs_2_versions', '2 songs in 2 versions'),
+        t('pricing.feature_complex_storytelling', 'Complex storytelling'),
+        t('pricing.feature_free_major_revision', 'Free major revision'),
+        t('pricing.feature_delivery_24_48', 'Delivery in 24–48 hrs'),
+        t('pricing.feature_studio_quality', 'Studio-quality production'),
+        t('pricing.feature_mp3_wav_instrumental', 'MP3 + WAV + Instrumental versions'),
+        t('pricing.feature_priority_support', 'Priority support')
       ],
       icon: Clock,
-      description: "Premium experience with fastest delivery",
-      cta: "Order Now"
+      description: t('pricing.premium_experience', 'Premium experience with fastest delivery'),
+      cta: t('pricing.order_now', 'Order Now')
     }
   ];
 
   const supporterPlans = [
     {
-      name: "Supporter Lifetime",
+      name: t('pricing.supporter_lifetime', 'Supporter Lifetime'),
       price: "£49",
-      subtitle: "Only first 500 supporters",
+      subtitle: t('pricing.only_first_500', 'Only first 500 supporters'),
       features: [
-        "Ad-free streaming",
-        "Unlimited downloads (songs & lyrics)",
-        "Playlist creation",
-        "Song suggestion submissions",
-        "Access to My Library"
+        t('pricing.ad_free_streaming', 'Ad-free streaming'),
+        t('pricing.unlimited_downloads', 'Unlimited downloads (songs & lyrics)'),
+        t('pricing.playlist_creation', 'Playlist creation'),
+        t('pricing.song_suggestion_submissions', 'Song suggestion submissions'),
+        t('pricing.access_my_library', 'Access to My Library')
       ],
-      cta: "Become a Supporter"
+      cta: t('pricing.become_supporter', 'Become a Supporter')
     },
     {
-      name: "Standard",
+      name: t('pricing.standard', 'Standard'),
       price: "£6/month",
       yearlyPrice: "£60/year",
-      savings: "save £12",
+      savings: t('pricing.save_12', 'save £12'),
       features: [
-        "All Supporter perks",
-        "Exclusive playlists",
-        "Early access to new releases",
-        "Behind-the-scenes content"
+        t('pricing.all_supporter_perks', 'All Supporter perks'),
+        t('pricing.exclusive_playlists', 'Exclusive playlists'),
+        t('pricing.early_access_new_releases', 'Early access to new releases'),
+        t('pricing.behind_scenes_content', 'Behind-the-scenes content')
       ],
-      cta: "Subscribe Now"
+      cta: t('pricing.subscribe_now', 'Subscribe Now')
     },
     {
-      name: "Family/Church",
+      name: t('pricing.family_church', 'Family/Church'),
       price: "£12/month",
       yearlyPrice: "£120/year",
-      subtitle: "up to 5 accounts",
+      subtitle: t('pricing.up_to_5_accounts', 'up to 5 accounts'),
       features: [
-        "All Standard perks for multiple users"
+        t('pricing.all_standard_perks', 'All Standard perks for multiple users')
       ],
-      cta: "Subscribe Now"
+      cta: t('pricing.subscribe_now', 'Subscribe Now')
     }
   ];
 
@@ -255,11 +255,11 @@ const Pricing = () => {
                       <div className="text-4xl font-bold text-primary">
                         {plan.price}
                       </div>
-                      {plan.yearlyPrice && (
-                        <div className="text-sm text-muted-foreground">
-                          or {plan.yearlyPrice} {plan.savings && `(${plan.savings})`}
-                        </div>
-                      )}
+                       {plan.yearlyPrice && (
+                         <div className="text-sm text-muted-foreground">
+                           {t('pricing.or', 'or')} {plan.yearlyPrice} {plan.savings && `(${plan.savings})`}
+                         </div>
+                       )}
                     </div>
                   </CardHeader>
                   

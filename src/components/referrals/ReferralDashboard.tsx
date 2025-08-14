@@ -247,11 +247,13 @@ export const ReferralDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <Button variant="outline" asChild>
-            <Link to="/dashboard" aria-label="Back to Dashboard">← Back</Link>
+            <Link to="/dashboard" aria-label="Back to Dashboard">
+              {t('referral.back', 'Back')}
+            </Link>
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
               onClick={refreshData} 
@@ -259,10 +261,12 @@ export const ReferralDashboard = () => {
               className="gap-2"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('referral.refresh', 'Refresh')}
             </Button>
-            <Button variant="outline" asChild>
-              <Link to="/referral-calculator" aria-label="Open Referral Earnings Calculator">Earnings Calculator</Link>
+            <Button variant="outline" asChild className="whitespace-nowrap">
+              <Link to="/referral-calculator" aria-label="Open Referral Earnings Calculator">
+                {t('referral.earnings_calculator', 'Earnings Calculator')}
+              </Link>
             </Button>
           </div>
       </div>
@@ -524,7 +528,7 @@ export const ReferralDashboard = () => {
             </Button>
             <Button variant="outline" onClick={() => navigate('/referral-calculator')}>
               <Target className="h-4 w-4 mr-2" />
-              Earnings Calculator
+              {t('referral.earnings_calculator', 'Earnings Calculator')}
             </Button>
             <Button variant="outline" onClick={copyReferralLink}>
               <Copy className="h-4 w-4 mr-2" />
