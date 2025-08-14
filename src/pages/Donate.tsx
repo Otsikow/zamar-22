@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Heart, CreditCard, Calendar, Target, Music, Globe, Church, Info } from "lucide-react";
+import BackButton from "@/components/ui/back-button";
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
 import { useTranslation } from "@/contexts/TranslationContext";
@@ -144,6 +145,11 @@ const Donate = () => {
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-4xl">
+          {/* Back Button */}
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          
           {/* Hero Section */}
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
@@ -152,8 +158,7 @@ const Donate = () => {
               </div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-primary bg-clip-text mb-6 flex items-center justify-center gap-3">
-              <Heart className="w-10 h-10 md:w-12 md:h-12 text-primary" />
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-primary bg-clip-text mb-6">
               {t('donate.title', 'Support the Mission')}
             </h1>
             
