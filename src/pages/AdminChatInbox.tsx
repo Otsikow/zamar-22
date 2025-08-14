@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { MessageCircle, Send, User, Clock, Paperclip } from 'lucide-react';
+import { MessageCircle, Send, User, Clock, Paperclip, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -48,7 +48,9 @@ const AdminChatInbox = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showChat, setShowChat] = useState(false); // For mobile view toggle
+  const [showChat, setShowChat] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loadingRooms, setLoadingRooms] = useState(true);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -113,67 +115,96 @@ const AdminChatInbox = () => {
     };
   }, [user, selectedRoom]);
 
-  const fetchChatRooms = async () => {
+  const fetchChatRooms = useCallback(async () => {
     try {
-      // Get all chat rooms with user profiles, grouped by user (only one room per user)
-      // Filter out rooms where user is the same as current admin (prevent self-chat)
-      const { data: rooms, error: roomsError } = await supabase
+      setLoadingRooms(true);
+      
+      // Optimized query with join instead of separate requests
+      const { data: roomsWithProfiles, error } = await supabase
         .from('chat_rooms')
-        .select('*')
+        .select(`
+          id,
+          user_id,
+          admin_id,
+          created_at,
+          updated_at,
+          profiles:user_id (
+            id,
+            first_name,
+            last_name,
+            email
+          )
+        `)
         .order('updated_at', { ascending: false });
 
-      if (roomsError) throw roomsError;
-
-      // Get user profiles separately
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email');
-
-      if (profilesError) throw profilesError;
+      if (error) throw error;
 
       // Group rooms by user_id and keep only the most recent one per user
       const roomsByUser = new Map<string, any>();
       
-      (rooms || []).forEach(room => {
+      (roomsWithProfiles || []).forEach(room => {
         const existingRoom = roomsByUser.get(room.user_id);
         if (!existingRoom || new Date(room.updated_at) > new Date(existingRoom.updated_at)) {
           roomsByUser.set(room.user_id, room);
         }
       });
 
-      // Get last message and unread count for each unique user room
-      const roomsWithData = await Promise.all(
-        Array.from(roomsByUser.values()).map(async (room) => {
-          // Get last message across ALL rooms for this user (in case of multiple rooms)
-          const { data: lastMsg } = await supabase
-            .from('chat_messages')
-            .select('message, sent_at, sender_id')
-            .in('room_id', rooms?.filter(r => r.user_id === room.user_id).map(r => r.id) || [])
-            .order('sent_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+      // Use batch queries for better performance
+      const uniqueRooms = Array.from(roomsByUser.values());
+      const allRoomIds = roomsWithProfiles?.map(r => r.id) || [];
+      
+      // Get last messages and unread counts in batches
+      const [lastMessagesResult, unreadCountsResult] = await Promise.all([
+        // Get last message for each user (across all their rooms)
+        Promise.all(
+          uniqueRooms.map(async (room) => {
+            const userRoomIds = roomsWithProfiles?.filter(r => r.user_id === room.user_id).map(r => r.id) || [];
+            const { data } = await supabase
+              .from('chat_messages')
+              .select('message, sent_at, sender_id')
+              .in('room_id', userRoomIds)
+              .order('sent_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            return { userId: room.user_id, lastMessage: data };
+          })
+        ),
+        // Get unread counts for each user
+        Promise.all(
+          uniqueRooms.map(async (room) => {
+            const userRoomIds = roomsWithProfiles?.filter(r => r.user_id === room.user_id).map(r => r.id) || [];
+            const { count } = await supabase
+              .from('chat_messages')
+              .select('*', { count: 'exact', head: true })
+              .in('room_id', userRoomIds)
+              .eq('sender_id', room.user_id)
+              .eq('seen', false);
+            return { userId: room.user_id, count: count || 0 };
+          })
+        )
+      ]);
 
-          // Get unread count across ALL rooms for this user
-          const { count: unreadCount } = await supabase
-            .from('chat_messages')
-            .select('*', { count: 'exact', head: true })
-            .in('room_id', rooms?.filter(r => r.user_id === room.user_id).map(r => r.id) || [])
-            .eq('sender_id', room.user_id)
-            .eq('seen', false);
+      // Combine data efficiently
+      const roomsWithData = uniqueRooms.map((room) => {
+        const lastMessageData = lastMessagesResult.find(lm => lm.userId === room.user_id);
+        const unreadData = unreadCountsResult.find(uc => uc.userId === room.user_id);
+        
+        return {
+          ...room,
+          last_message: lastMessageData?.lastMessage,
+          unread_count: unreadData?.count || 0
+        };
+      });
 
-          // Find matching profile
-          const userProfile = profiles?.find(p => p.id === room.user_id) || null;
-
-          return {
-            ...room,
-            profiles: userProfile,
-            last_message: lastMsg,
-            unread_count: unreadCount || 0
-          };
-        })
-      );
-
-      setChatRooms(roomsWithData);
+      setChatRooms(roomsWithData.sort((a, b) => {
+        // Sort by unread count first, then by last message time
+        if (a.unread_count !== b.unread_count) {
+          return b.unread_count - a.unread_count;
+        }
+        const aTime = a.last_message?.sent_at || a.updated_at;
+        const bTime = b.last_message?.sent_at || b.updated_at;
+        return new Date(bTime).getTime() - new Date(aTime).getTime();
+      }));
       
       // Auto-select room if user or room parameter is present
       const targetUserId = searchParams.get('user');
@@ -182,9 +213,8 @@ const AdminChatInbox = () => {
         let targetRoom: ChatRoom | undefined;
 
         if (targetRoomId) {
-          const rawRoom = (rooms || []).find(r => r.id === targetRoomId);
+          const rawRoom = roomsWithProfiles?.find(r => r.id === targetRoomId);
           if (rawRoom) {
-            // Select the consolidated conversation for that user
             targetRoom = roomsWithData.find(r => r.user_id === rawRoom.user_id);
           }
         }
@@ -199,8 +229,10 @@ const AdminChatInbox = () => {
       }
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
+    } finally {
+      setLoadingRooms(false);
     }
-  };
+  }, [searchParams, selectedRoom]);
 
   const fetchMessages = async (roomId: string, userIdOverride?: string) => {
     try {
@@ -400,15 +432,34 @@ const AdminChatInbox = () => {
     setSearchParams(newSearchParams);
   };
 
-  const getUserDisplayName = (room: ChatRoom) => {
+  const getUserDisplayName = useCallback((room: ChatRoom) => {
     const profile = room.profiles;
     if (profile?.first_name || profile?.last_name) {
       return `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
     }
     return profile?.email || 'Anonymous User';
-  };
+  }, []);
 
-  const totalUnreadCount = chatRooms.reduce((sum, room) => sum + room.unread_count, 0);
+  // Memoized filtered chat rooms for search performance
+  const filteredChatRooms = useMemo(() => {
+    if (!searchTerm) return chatRooms;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return chatRooms.filter(room => {
+      const displayName = getUserDisplayName(room).toLowerCase();
+      const email = room.profiles?.email?.toLowerCase() || '';
+      const lastMessage = room.last_message?.message?.toLowerCase() || '';
+      
+      return displayName.includes(searchLower) || 
+             email.includes(searchLower) || 
+             lastMessage.includes(searchLower);
+    });
+  }, [chatRooms, searchTerm, getUserDisplayName]);
+
+  const totalUnreadCount = useMemo(() => 
+    chatRooms.reduce((sum, room) => sum + room.unread_count, 0), 
+    [chatRooms]
+  );
 
   const openFirstUnread = () => {
     const unreadRoom = chatRooms.find(r => r.unread_count > 0);
@@ -452,25 +503,50 @@ const AdminChatInbox = () => {
         <div className={`${showChat ? 'block lg:grid' : 'grid'} grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 flex-1 min-h-0 px-4`}>
           {/* Left Sidebar - Chat Rooms List */}
           <div className={`${showChat ? 'hidden lg:block' : 'block'} lg:col-span-1 bg-[#1a1a1a] rounded-lg overflow-hidden flex flex-col min-h-0`}>
-            <div className="flex-shrink-0 p-3 sm:p-4 border-b border-gray-800">
-              <h2 className="text-lg sm:text-xl font-semibold text-white flex items-center justify-between">
-                <span>Conversations</span>
+            <div className="flex-shrink-0 p-3 sm:p-4 border-b border-gray-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg sm:text-xl font-semibold text-white">Conversations</h2>
                 {totalUnreadCount > 0 && (
                   <Badge variant="destructive" className="bg-[#FFD700] text-black text-xs">
                     {totalUnreadCount}
                   </Badge>
                 )}
-              </h2>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search conversations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-[#2a2a2a] border-gray-700 text-white placeholder:text-gray-400"
+                />
+              </div>
             </div>
             <ScrollArea className="flex-1 min-h-0">
-              {chatRooms.length === 0 ? (
+              {loadingRooms ? (
+                <div className="p-4 text-center text-gray-400">
+                  <div className="animate-pulse space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="flex items-center space-x-3 p-3">
+                        <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+                          <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : filteredChatRooms.length === 0 ? (
                 <div className="p-4 text-center text-gray-400">
                   <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No conversations yet</p>
+                  <p className="text-sm">
+                    {searchTerm ? 'No conversations match your search' : 'No conversations yet'}
+                  </p>
                 </div>
               ) : (
                 <div>
-                  {chatRooms.map((room) => (
+                  {filteredChatRooms.map((room) => (
                     <div
                       key={room.id}
                       onClick={() => selectRoom(room)}
