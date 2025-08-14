@@ -152,7 +152,9 @@ const Pricing = () => {
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {customSongTiers.map((tier, index) => (
+               {customSongTiers.map((tier, index) => {
+                 const IconComponent = tier.icon;
+                 return (
                 <Card 
                   key={tier.name} 
                   className={`relative bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 ${
@@ -172,7 +174,7 @@ const Pricing = () => {
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-4">
                       <div className={`p-3 rounded-full ${tier.popular ? 'bg-primary/20' : 'bg-accent'}`}>
-                        <tier.icon className="w-6 h-6 text-primary" />
+                        <IconComponent className="w-6 h-6 text-primary" />
                       </div>
                     </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
@@ -209,8 +211,9 @@ const Pricing = () => {
                       </Link>
                     </Button>
                   </CardContent>
-                </Card>
-              ))}
+                 </Card>
+                 );
+               })}
             </div>
           </div>
 
