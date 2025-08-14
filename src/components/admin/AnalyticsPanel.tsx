@@ -29,10 +29,13 @@ const AnalyticsPanel = ({ songPlays, activeSessions }: AnalyticsPanelProps) => {
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
-  // Calculate downloads by country
+  // Calculate plays by country (filter out null/empty countries)
   const countryStats = songPlays.reduce((acc, play) => {
-    const country = play.country || 'Unknown';
-    acc[country] = (acc[country] || 0) + 1;
+    const country = play.country?.trim();
+    // Only count plays with valid country data
+    if (country && country !== 'Unknown' && country !== '') {
+      acc[country] = (acc[country] || 0) + 1;
+    }
     return acc;
   }, {} as Record<string, number>);
 
@@ -41,6 +44,7 @@ const AnalyticsPanel = ({ songPlays, activeSessions }: AnalyticsPanelProps) => {
     .slice(0, 5);
 
   const totalPlays = songPlays.length;
+  const uniqueCountries = Object.keys(countryStats).length;
   const maxPlays = Math.max(...Object.values(songPlayCounts), 1);
   const maxCountryPlays = Math.max(...Object.values(countryStats), 1);
 
@@ -77,7 +81,7 @@ const AnalyticsPanel = ({ songPlays, activeSessions }: AnalyticsPanelProps) => {
           <Globe className="h-4 w-4 text-primary" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-foreground">{Object.keys(countryStats).length}</div>
+          <div className="text-2xl font-bold text-foreground">{uniqueCountries}</div>
           <p className="text-xs text-muted-foreground">Unique countries</p>
         </CardContent>
       </Card>
@@ -110,12 +114,12 @@ const AnalyticsPanel = ({ songPlays, activeSessions }: AnalyticsPanelProps) => {
         </CardContent>
       </Card>
 
-      {/* Downloads by Country */}
+      {/* Plays by Country */}
       <Card className="bg-gradient-card border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary">
-            <Download className="h-5 w-5" />
-            Downloads by Country
+            <Globe className="h-5 w-5" />
+            Plays by Country
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -125,14 +129,14 @@ const AnalyticsPanel = ({ songPlays, activeSessions }: AnalyticsPanelProps) => {
                 <span className="text-sm font-medium text-foreground">
                   {index + 1}. {country}
                 </span>
-                <span className="text-xs text-muted-foreground">{playCount}</span>
+                <span className="text-xs text-muted-foreground">{playCount} plays</span>
               </div>
               <Progress value={(playCount / maxCountryPlays) * 100} className="h-2" />
             </div>
           ))}
           {topCountries.length === 0 && (
             <div className="text-center text-muted-foreground py-4">
-              No location data available
+              No country data available - location tracking may not be enabled
             </div>
           )}
         </CardContent>

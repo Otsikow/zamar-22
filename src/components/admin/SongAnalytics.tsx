@@ -349,8 +349,11 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
     .slice(0, 5);
 
   const countryStats = songPlays.reduce((acc, play) => {
-    const country = play.country || 'Unknown';
-    acc[country] = (acc[country] || 0) + 1;
+    const country = play.country?.trim();
+    // Only count plays with valid country data
+    if (country && country !== 'Unknown' && country !== '') {
+      acc[country] = (acc[country] || 0) + 1;
+    }
     return acc;
   }, {} as Record<string, number>);
 
@@ -491,11 +494,11 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
           </CardContent>
         </Card>
 
-        {/* Downloads by Country */}
+        {/* Plays by Country */}
         <Card className="bg-gradient-card border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
-              <Download className="h-5 w-5" />
+              <Globe className="h-5 w-5" />
               Plays by Country
             </CardTitle>
           </CardHeader>
@@ -506,14 +509,14 @@ const SongAnalytics = ({ songPlays = [], activeSessions = 0 }: SongAnalyticsProp
                   <span className="text-sm font-medium text-foreground">
                     {index + 1}. {country}
                   </span>
-                  <span className="text-xs text-muted-foreground">{playCount}</span>
+                  <span className="text-xs text-muted-foreground">{playCount} plays</span>
                 </div>
                 <Progress value={(playCount / maxCountryPlays) * 100} className="h-2" />
               </div>
             ))}
             {topCountries.length === 0 && (
               <div className="text-center text-muted-foreground py-4">
-                No location data available
+                No country data available - location tracking may not be enabled
               </div>
             )}
           </CardContent>

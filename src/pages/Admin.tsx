@@ -272,10 +272,9 @@ const [activeTab, setActiveTab] = useState(initialTab);
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Fetch active sessions count
-      const { count: sessionsCount } = await supabase
-        .from("active_sessions")
-        .select("*", { count: "exact" });
+      // Fetch active sessions count using the RPC function
+      const { data: sessionsData } = await supabase
+        .rpc('get_active_session_count', { minutes_threshold: 5 });
 
       setSongs(songsData || []);
       setAllSongs(allSongsData || []);
@@ -284,7 +283,7 @@ const [activeTab, setActiveTab] = useState(initialTab);
       setSongPlays(playsData || []);
       setLyrics(lyricsData || []);
       setDonations(donationsData || []);
-      setActiveSessions(sessionsCount || 0);
+      setActiveSessions(sessionsData || 0);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast({
