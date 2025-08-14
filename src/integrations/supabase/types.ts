@@ -1287,6 +1287,57 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonies: {
+        Row: {
+          admin_notes: string | null
+          approved_at: string | null
+          approved_by: string | null
+          country: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          media_url: string | null
+          message: string
+          published_at: string | null
+          song_id: string | null
+          status: Database["public"]["Enums"]["testimony_status"]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          country?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          media_url?: string | null
+          message: string
+          published_at?: string | null
+          song_id?: string | null
+          status?: Database["public"]["Enums"]["testimony_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          country?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          media_url?: string | null
+          message?: string
+          published_at?: string | null
+          song_id?: string | null
+          status?: Database["public"]["Enums"]["testimony_status"]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_custom_library: {
         Row: {
           cover_art_path: string | null
@@ -1401,6 +1452,39 @@ export type Database = {
         }
         Relationships: []
       }
+      public_testimonies: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          media_url: string | null
+          message: string | null
+          published_at: string | null
+          song_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          display_name?: never
+          id?: string | null
+          media_url?: string | null
+          message?: string | null
+          published_at?: string | null
+          song_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          display_name?: never
+          id?: string | null
+          media_url?: string | null
+          message?: string | null
+          published_at?: string | null
+          song_id?: string | null
+        }
+        Relationships: []
+      }
       v_referral_earnings_detailed: {
         Row: {
           amount: number | null
@@ -1459,6 +1543,10 @@ export type Database = {
       }
       admin_unsuspend_user: {
         Args: { target_user_id: string }
+        Returns: undefined
+      }
+      approve_testimony: {
+        Args: { p_admin: string; p_testimony_id: string }
         Returns: undefined
       }
       atomic_grant_first_admin: {
@@ -1615,6 +1703,10 @@ export type Database = {
         Args: { new_user: string; payment_amount: number }
         Returns: undefined
       }
+      reject_testimony: {
+        Args: { p_admin: string; p_reason: string; p_testimony_id: string }
+        Returns: undefined
+      }
       reverse_referral_earnings_for_payment: {
         Args: { p_payment_id: string }
         Returns: undefined
@@ -1633,6 +1725,7 @@ export type Database = {
         | "delivered"
         | "cancelled"
         | "rejected"
+      testimony_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1773,6 +1866,7 @@ export const Constants = {
         "cancelled",
         "rejected",
       ],
+      testimony_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
