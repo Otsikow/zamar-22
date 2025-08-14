@@ -1,5 +1,5 @@
 
-import { Heart, Cross, Info, Music, DollarSign, Plus, Users, HelpCircle, FileText, Mail, HeartHandshake } from "lucide-react";
+import { Heart, Cross, Info, Music, DollarSign, Plus, Users, HelpCircle, FileText, Mail, HeartHandshake, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/contexts/TranslationContext";
 
@@ -21,9 +21,23 @@ const Footer = () => {
             <p className="text-muted-foreground mb-4 max-w-md font-inter">
               {t('footer.description', 'Creating meaningful custom songs for every occasion. A faith-based platform dedicated to bringing your stories to life through music.')}
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Cross className="w-4 h-4 text-primary" />
               <span>{t('footer.faith_values', 'Built on faith, powered by technology')}</span>
+            </div>
+            
+            {/* Social Links */}
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-inter text-muted-foreground">{t('footer.follow_us', 'Follow us:')}</span>
+              <a 
+                href="https://www.youtube.com/@ZamarSongs" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Visit our YouTube channel"
+              >
+                <Youtube className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
