@@ -281,7 +281,7 @@ const CommunityTestimonies = () => {
 
   const truncateMessage = (message: string, maxLength: number = 280) => {
     if (message.length <= maxLength) return message;
-    return message.substring(0, 240) + "...";
+    return message.substring(0, maxLength - 3) + "...";
   };
 
   const getInitials = (name: string) => {
@@ -414,8 +414,10 @@ const CommunityTestimonies = () => {
                               }).catch(console.error);
                             } else {
                               navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`).then(() => {
-                                // Could add a toast here
-                                console.log('Testimony link copied to clipboard');
+                                toast({
+                                  title: "Copied to clipboard!",
+                                  description: "Testimony link copied successfully",
+                                });
                               }).catch(() => {
                                 // Fallback: open share options
                                 const encodedText = encodeURIComponent(shareText);
