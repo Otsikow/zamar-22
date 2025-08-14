@@ -1626,10 +1626,29 @@ const [activeTab, setActiveTab] = useState(initialTab);
 
           {/* Testimony Moderation */}
           <TabsContent value="testimonials">
-            <TestimonyModerationPanel 
-              testimonials={testimonials} 
-              onTestimonialAction={handleTestimonialAction}
-            />
+            <div className="space-y-6">
+              <Card className="bg-gradient-card border-border">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">Testimony Management</h3>
+                      <p className="text-muted-foreground">Quick overview of pending testimonials</p>
+                    </div>
+                    <Link to="/admin/testimonies">
+                      <Button className="flex items-center gap-2">
+                        <Heart className="w-4 h-4" />
+                        Full Admin Panel
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <TestimonyModerationPanel 
+                testimonials={testimonials.slice(0, 5)} 
+                onTestimonialAction={handleTestimonialAction}
+              />
+            </div>
           </TabsContent>
 
           {/* Ad Manager */}

@@ -11,8 +11,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Quote, Upload, Heart, User, Calendar, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { Link } from "react-router-dom";
 import Footer from "@/components/sections/Footer";
 
 const formSchema = z.object({
@@ -67,6 +68,21 @@ const Testimonies = () => {
 
   useEffect(() => {
     fetchTestimonials();
+    
+    // Set up realtime subscription
+    const channel = supabase
+      .channel('testimonies-public')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'testimonies' },
+        () => {
+          fetchTestimonials(); // Refresh on any change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchTestimonials = async () => {
@@ -245,95 +261,23 @@ const Testimonies = () => {
           </div>
 
           {/* Testimonial Submission Form */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-playfair font-bold text-foreground mb-8 flex items-center gap-2">
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-playfair font-bold text-foreground mb-8 flex items-center justify-center gap-2">
               <Quote className="w-6 h-6 text-primary" />
               Share Your Story
             </h2>
-
-            <Card className="bg-gradient-card border-border">
-              <CardHeader>
-                <CardTitle className="text-xl font-playfair text-foreground">
+            
+            <div className="space-y-4">
+              <p className="text-muted-foreground font-inter max-w-xl mx-auto">
+                Tell us how Zamar has blessed your life and encouraged your faith journey.
+              </p>
+              <Link to="/testimonies/submit">
+                <Button size="lg" className="flex items-center gap-2">
+                  <Quote className="w-4 h-4" />
                   Submit Your Testimony
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Name Field */}
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-foreground font-inter font-medium">
-                            Name *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Your name"
-                              className="bg-background border-primary/30 focus:border-primary/60"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Message Field */}
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-foreground font-inter font-medium">
-                            Your Testimony *
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Share how Zamar has impacted your life, blessed you, or helped you through a difficult time..."
-                              className="bg-background border-primary/30 focus:border-primary/60 min-h-[120px] resize-none"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Audio Upload Placeholder */}
-                    <div className="space-y-2">
-                      <label className="text-foreground font-inter font-medium text-sm">
-                        Optional Audio Recording
-                      </label>
-                      <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center">
-                        <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">
-                          Audio upload feature coming soon
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full"
-                      disabled={isSubmitting || !user}
-                    >
-                      {isSubmitting ? "Submitting..." : "Submit Testimony"}
-                    </Button>
-
-                    {!user && (
-                      <p className="text-sm text-muted-foreground text-center">
-                        Please log in to submit a testimony
-                      </p>
-                    )}
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Info Box */}
