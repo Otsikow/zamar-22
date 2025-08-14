@@ -23,6 +23,7 @@ import {
   Globe
 } from "lucide-react";
 import PlayerSlider from "@/components/player/PlayerSlider";
+import FavouriteButton from "@/components/FavouriteButton";
 // Visualizer powered by Web Audio API
 import { Volume2 } from "lucide-react";
 import AudioVisualizer from "@/components/player/AudioVisualizer";
@@ -298,15 +299,22 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
                 <Music className="w-6 h-6 text-primary" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0 max-w-none">
-                <h3 className="font-playfair font-bold text-2xl md:text-3xl leading-tight whitespace-normal hyphens-none line-clamp-3">{currentSong.title}</h3>
-                <p className="text-muted-foreground text-sm">{currentSong.artist}</p>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs rounded-full bg-background/60">
-                    {currentCategory}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {currentPosition} of {queueLength}
-                  </span>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-playfair font-bold text-2xl md:text-3xl leading-tight whitespace-normal hyphens-none line-clamp-3">{currentSong.title}</h3>
+                    <p className="text-muted-foreground text-sm">{currentSong.artist}</p>
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      <Badge variant="outline" className="text-xs rounded-full bg-background/60">
+                        {currentCategory}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {currentPosition} of {queueLength}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <FavouriteButton songId={currentSong.id} size="md" />
+                  </div>
                 </div>
               </div>
               <TooltipProvider>
