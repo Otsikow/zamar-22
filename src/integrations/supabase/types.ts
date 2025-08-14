@@ -891,6 +891,8 @@ export type Database = {
           id: string
           last_name: string | null
           preferred_language: string | null
+          referral_code: string | null
+          referred_by: string | null
           suspended_at: string | null
           updated_at: string
         }
@@ -903,6 +905,8 @@ export type Database = {
           id: string
           last_name?: string | null
           preferred_language?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
@@ -915,10 +919,34 @@ export type Database = {
           id?: string
           last_name?: string | null
           preferred_language?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       purchases: {
         Row: {
@@ -963,6 +991,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_config: {
+        Row: {
+          id: number
+          level1_rate: number
+          level2_rate: number
+          min_purchase_cents: number
+        }
+        Insert: {
+          id?: number
+          level1_rate?: number
+          level2_rate?: number
+          min_purchase_cents?: number
+        }
+        Update: {
+          id?: number
+          level1_rate?: number
+          level2_rate?: number
+          min_purchase_cents?: number
+        }
+        Relationships: []
       }
       referral_earnings: {
         Row: {
@@ -1420,6 +1469,10 @@ export type Database = {
         Args: { ip_input: string }
         Returns: unknown
       }
+      generate_referral_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_active_session_count: {
         Args: { minutes_threshold?: number }
         Returns: number
@@ -1526,6 +1579,10 @@ export type Database = {
       }
       is_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      link_referral: {
+        Args: { p_referral_code: string }
         Returns: boolean
       }
       log_admin_operation: {
