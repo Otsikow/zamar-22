@@ -28,6 +28,7 @@ interface Testimonial {
   display_name: string;
   message: string;
   media_url: string | null;
+  media_type: string;
   created_at: string;
   published_at: string;
   country?: string;
@@ -245,12 +246,37 @@ const Testimonies = () => {
                             </Badge>
                           </div>
                           
-                          <blockquote className="relative">
+                          <blockquote className="relative mb-4">
                             <Quote className="absolute -top-2 -left-2 w-6 h-6 text-primary/30" />
                             <p className="text-foreground font-inter leading-relaxed pl-6">
                               {testimonial.message}
                             </p>
                           </blockquote>
+
+                          {/* Media content */}
+                          {testimonial.media_url && (
+                            <div className="mt-4">
+                              {testimonial.media_type === 'video' ? (
+                                <video 
+                                  controls 
+                                  className="w-full max-w-md h-48 object-cover rounded-lg bg-accent"
+                                  src={testimonial.media_url}
+                                >
+                                  Your browser does not support the video tag.
+                                </video>
+                              ) : testimonial.media_type === 'audio' ? (
+                                <div className="bg-primary/10 p-4 rounded-lg max-w-md">
+                                  <audio 
+                                    controls 
+                                    className="w-full"
+                                    src={testimonial.media_url}
+                                  >
+                                    Your browser does not support the audio element.
+                                  </audio>
+                                </div>
+                              ) : null}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>

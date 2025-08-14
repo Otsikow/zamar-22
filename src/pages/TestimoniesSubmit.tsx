@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Quote, Send, Heart, User, Globe, Info } from "lucide-react";
+import { Quote, Send, Heart, User, Globe, Info, Video, Volume2, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/contexts/TranslationContext";
@@ -21,6 +22,7 @@ const formSchema = z.object({
   country: z.string().optional(),
   message: z.string().min(30, "Please provide at least 30 characters for your testimony"),
   media_url: z.string().url().optional().or(z.literal("")),
+  media_type: z.enum(["text", "video", "audio"]).default("text"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -43,6 +45,7 @@ const TestimoniesSubmit = () => {
       country: "",
       message: "",
       media_url: "",
+      media_type: "text",
     },
   });
 
@@ -82,6 +85,7 @@ const TestimoniesSubmit = () => {
           country: data.country || null,
           message: data.message,
           media_url: data.media_url || null,
+          media_type: data.media_type,
           song_id: songId || null,
           status: "pending",
         });
@@ -204,26 +208,70 @@ const TestimoniesSubmit = () => {
                     )}
                   />
 
-                  {/* Media URL Field */}
+                  {/* Media Type Field */}
                   <FormField
                     control={form.control}
-                    name="media_url"
+                    name="media_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-foreground font-inter font-medium">
-                          Media URL (Optional)
+                        <FormLabel className="text-foreground font-inter font-medium flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          Testimony Type
                         </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="https://example.com/audio-or-video"
-                            className="bg-background border-primary/30 focus:border-primary/60"
-                            {...field}
-                          />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-background border-primary/30 focus:border-primary/60">
+                              <SelectValue placeholder="Select testimony type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="text">
+                              <div className="flex items-center gap-2">
+                                <FileText className="w-4 h-4" />
+                                Text Only
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="video">
+                              <div className="flex items-center gap-2">
+                                <Video className="w-4 h-4" />
+                                Video Testimony
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="audio">
+                              <div className="flex items-center gap-2">
+                                <Volume2 className="w-4 h-4" />
+                                Audio Testimony
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Media URL Field - conditionally shown */}
+                  {form.watch("media_type") !== "text" && (
+                    <FormField
+                      control={form.control}
+                      name="media_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-foreground font-inter font-medium">
+                            {form.watch("media_type") === "video" ? "Video URL" : "Audio URL"} (Optional)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={`https://example.com/${form.watch("media_type")}-file`}
+                              className="bg-background border-primary/30 focus:border-primary/60"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Submit Button */}
                   <Button
