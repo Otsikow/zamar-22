@@ -1060,6 +1060,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       song_plays: {
         Row: {
           country: string | null
@@ -1382,6 +1412,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      atomic_grant_first_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       extract_single_ip: {
         Args: { ip_input: string }
         Returns: unknown
@@ -1500,6 +1534,15 @@ export type Database = {
           operation_type: string
           target_id?: string
           target_table: string
+        }
+        Returns: undefined
+      }
+      log_security_event: {
+        Args: {
+          p_event_type: string
+          p_ip_address?: string
+          p_metadata?: Json
+          p_user_agent?: string
         }
         Returns: undefined
       }
