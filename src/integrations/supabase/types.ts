@@ -1296,6 +1296,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          media_type: string | null
           media_url: string | null
           message: string
           published_at: string | null
@@ -1312,6 +1313,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          media_type?: string | null
           media_url?: string | null
           message: string
           published_at?: string | null
@@ -1328,6 +1330,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          media_type?: string | null
           media_url?: string | null
           message?: string
           published_at?: string | null
@@ -1458,6 +1461,7 @@ export type Database = {
           created_at: string | null
           display_name: string | null
           id: string | null
+          media_type: string | null
           media_url: string | null
           message: string | null
           published_at: string | null
@@ -1466,8 +1470,9 @@ export type Database = {
         Insert: {
           country?: string | null
           created_at?: string | null
-          display_name?: never
+          display_name?: string | null
           id?: string | null
+          media_type?: string | null
           media_url?: string | null
           message?: string | null
           published_at?: string | null
@@ -1476,8 +1481,9 @@ export type Database = {
         Update: {
           country?: string | null
           created_at?: string | null
-          display_name?: never
+          display_name?: string | null
           id?: string | null
+          media_type?: string | null
           media_url?: string | null
           message?: string | null
           published_at?: string | null
