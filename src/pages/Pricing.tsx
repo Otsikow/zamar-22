@@ -21,7 +21,7 @@ const Pricing = () => {
         "MP3 download",
         "Basic production"
       ],
-      icon: <Music className="w-6 h-6" />,
+      icon: Music,
       description: "Perfect for quick personal messages",
       cta: "Order Now"
     },
@@ -39,7 +39,7 @@ const Pricing = () => {
         "Professional mixing",
         "1 minor revision"
       ],
-      icon: <Star className="w-6 h-6" />,
+      icon: Star,
       description: "Most popular choice for special occasions",
       cta: "Order Now"
     },
@@ -57,7 +57,7 @@ const Pricing = () => {
         "MP3 + WAV + Instrumental versions",
         "Priority support"
       ],
-      icon: <Clock className="w-6 h-6" />,
+      icon: Clock,
       description: "Premium experience with fastest delivery",
       cta: "Order Now"
     }
@@ -172,9 +172,7 @@ const Pricing = () => {
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-4">
                       <div className={`p-3 rounded-full ${tier.popular ? 'bg-primary/20' : 'bg-accent'}`}>
-                        <div className="text-primary">
-                          {tier.icon}
-                        </div>
+                        <tier.icon className="w-6 h-6 text-primary" />
                       </div>
                     </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
@@ -233,11 +231,13 @@ const Pricing = () => {
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-4">
-                      <div className="p-3 rounded-full bg-accent">
-                        <div className="text-primary">
-                          {index === 0 ? <Heart className="w-6 h-6" /> : <Users className="w-6 h-6" />}
-                        </div>
-                      </div>
+                       <div className="p-3 rounded-full bg-accent">
+                         {index === 0 ? (
+                           <Heart className="w-6 h-6 text-primary" />
+                         ) : (
+                           <Users className="w-6 h-6 text-primary" />
+                         )}
+                       </div>
                     </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
                       {plan.name}
@@ -294,16 +294,15 @@ const Pricing = () => {
               {otherServices.map((service, index) => (
                 <Card key={service.category} className="bg-gradient-card border-border">
                   <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-3 rounded-full bg-accent">
-                        <div className="text-primary">
-                          {service.category === "Advertiser Packages" ? 
-                            <Megaphone className="w-6 h-6" /> : 
-                            <Download className="w-6 h-6" />
-                          }
-                        </div>
-                      </div>
-                    </div>
+                     <div className="flex justify-center mb-4">
+                       <div className="p-3 rounded-full bg-accent">
+                         {service.category === "Advertiser Packages" ? (
+                           <Megaphone className="w-6 h-6 text-primary" />
+                         ) : (
+                           <Download className="w-6 h-6 text-primary" />
+                         )}
+                       </div>
+                     </div>
                     <CardTitle className="text-xl font-playfair text-foreground">
                       {service.category}
                     </CardTitle>
