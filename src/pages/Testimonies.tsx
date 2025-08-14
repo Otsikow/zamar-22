@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Quote, Upload, Heart, User, Calendar, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 
 const formSchema = z.object({
@@ -30,6 +31,7 @@ interface Testimonial {
 }
 
 const Testimonies = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,11 +147,11 @@ const Testimonies = () => {
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
               <Quote className="w-10 h-10 md:w-12 md:h-12 text-primary" />
               <span className="text-transparent bg-gradient-primary bg-clip-text">
-                Testimonies
+                {t('testimonies.title', 'Testimonies')}
               </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
-              Read inspiring stories from our community and share how Zamar has touched your life.
+              {t('testimonies.subtitle', 'Read inspiring stories from our community and share how Zamar has touched your life.')}
             </p>
           </div>
 

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Users, DollarSign, TrendingUp, ExternalLink, Gift, Target, Trophy, RefreshCw } from 'lucide-react';
 import SocialShare from '@/components/ui/social-share';
+import { useTranslation } from "@/contexts/TranslationContext";
 import { addWWWToReferralLink } from '@/lib/utils';
 import {
   Table,
@@ -50,6 +51,7 @@ export const ReferralDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [data, setData] = useState<ReferralData>({
     referralCode: '',
     directReferrals: 0,
@@ -269,10 +271,10 @@ export const ReferralDashboard = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary text-2xl">
             <Gift className="h-6 w-6" />
-            Welcome to Your Referral Dashboard!
+            {t('referral.dashboard.welcome_title', 'Welcome to Your Referral Dashboard!')}
           </CardTitle>
           <CardDescription className="text-lg">
-            Earn commissions by sharing Zamar with others. Start earning today with our multi-level referral system!
+            {t('referral.dashboard.welcome_desc', 'Earn commissions by sharing Zamar with others. Start earning today with our multi-level referral system!')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -282,10 +284,10 @@ export const ReferralDashboard = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary">
             <ExternalLink className="h-5 w-5" />
-            Your Referral Link
+            {t('referral.dashboard.link_title', 'Your Referral Link')}
           </CardTitle>
           <CardDescription>
-            Share this link to earn commissions when supporters upgrade or purchase custom songs through your referrals
+            {t('referral.dashboard.link_desc', 'Share this link to earn commissions when supporters upgrade or purchase custom songs through your referrals')}
           </CardDescription>
         </CardHeader>
         <CardContent>

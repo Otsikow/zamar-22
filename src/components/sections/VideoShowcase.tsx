@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 const howItWorksUrl = "https://www.youtube.com/embed/GG34m4WIEys";
 const testimonials = [
@@ -10,6 +11,7 @@ const testimonials = [
 ].filter(url => !url.includes('VIDEO_ID_'));
 
 const VideoShowcase = () => {
+  const { t } = useTranslation();
   return (
     <section
       aria-labelledby="video-showcase-title"
@@ -22,7 +24,7 @@ const VideoShowcase = () => {
             id="video-showcase-title"
             className="font-playfair font-bold text-primary text-xl md:text-2xl"
           >
-            How Zamar Works
+            {t('video.how_zamar_works', 'How Zamar Works')}
           </h2>
         </header>
 
@@ -31,7 +33,7 @@ const VideoShowcase = () => {
           <div className="w-full">
             <AspectRatio ratio={16 / 9}>
               <iframe
-                title="How Zamar Works"
+                title={t('video.how_zamar_works', 'How Zamar Works')}
                 src={howItWorksUrl}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -44,12 +46,10 @@ const VideoShowcase = () => {
           {/* Right: Description + CTA */}
           <article className="space-y-4">
             <p className="text-foreground/90">
-              Discover how Zamar curates, streams, and inspires. This short
-              overview walks through our radio experience, playlists, and the
-              heart behind the music.
+              {t('video.description', 'Discover how Zamar curates, streams, and inspires. This short overview walks through our radio experience, playlists, and the heart behind the music.')}
             </p>
             <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link to="/about">Learn More About Zamar</Link>
+              <Link to="/about">{t('video.learn_more', 'Learn More About Zamar')}</Link>
             </Button>
           </article>
         </div>
@@ -57,7 +57,7 @@ const VideoShowcase = () => {
         {/* Testimonials */}
         <div className="mt-10 md:mt-12">
           <h3 className="font-playfair font-semibold text-primary mb-4 md:mb-6 text-lg md:text-xl">
-            What People Are Saying
+            {t('video.testimonials_title', 'What People Are Saying')}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
