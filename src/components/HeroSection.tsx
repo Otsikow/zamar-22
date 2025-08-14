@@ -33,9 +33,9 @@ export default function HeroSection({
 
   // Default stats with translations
   const defaultStats = [
-    { icon: "⭐", text: t('hero.stat_clients', '500+ Happy Clients') },
-    { icon: "⏱️", text: t('hero.stat_delivery', '24–48hr Delivery') },
-    { icon: "🙏", text: t('hero.stat_faith', 'Faith‑Based Platform') },
+    { icon: "⭐", text: t('hero.stat1', '500+ Happy Clients') },
+    { icon: "⏱️", text: t('hero.stat2', '24–48hr Delivery') },
+    { icon: "🙏", text: t('hero.stat3', 'Faith‑Based Platform') },
   ];
 
   const heroStats = stats || defaultStats;
@@ -64,30 +64,30 @@ export default function HeroSection({
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-extrabold tracking-tight">
             <span className="block text-4xl sm:text-5xl md:text-6xl leading-tight text-foreground">
-              {t('hero.title_top', titleTop)}
+              {t('hero.title_line1', titleTop)}
             </span>
             <span className="mt-2 block text-3xl sm:text-4xl md:text-5xl leading-tight text-primary">
-              {t('hero.title_bottom', titleBottom)}
+              {t('hero.title_line2', titleBottom)}
             </span>
           </h1>
 
           <p className="mt-6 text-base sm:text-lg md:text-xl leading-relaxed text-muted-foreground">
-            {t('hero.description', blurb)}
+            {t('hero.subtitle', blurb)}
           </p>
 
           {/* CTA */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg">
               <Link to={ctaHref}>
-                {t('hero.cta_primary', ctaLabel)}
+                {t('hero.create_song', ctaLabel)}
                 <span className="ml-2">→</span>
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to={secondaryHref}>{t('hero.cta_secondary', secondaryLabel)}</Link>
+              <Link to={secondaryHref}>{t('hero.see_examples', secondaryLabel)}</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/radio">{t('hero.radio_button', 'Radio')}</Link>
+              <Link to="/radio">{t('hero.radio', 'Radio')}</Link>
             </Button>
           </div>
 
