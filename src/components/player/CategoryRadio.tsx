@@ -99,8 +99,8 @@ const CategoryRadio = ({ className }: CategoryRadioProps) => {
         const genres = [...new Set(songs.map(song => song.genre).filter(Boolean))] as string[];
         const occasions = [...new Set(songs.map(song => song.occasion).filter(Boolean))] as string[];
         
-        setAvailableGenres(genres);
-        setAvailableOccasions(occasions);
+        setAvailableGenres(genres.sort());
+        setAvailableOccasions(occasions.sort());
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
