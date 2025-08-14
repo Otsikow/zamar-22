@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Edit, Trash2, Eye, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye, Plus, List } from 'lucide-react';
 
 interface Playlist {
   id: string;
@@ -24,6 +25,7 @@ interface Playlist {
 
 const ManagePlaylists = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -66,8 +68,8 @@ const ManagePlaylists = () => {
     } catch (error) {
       console.error('Error fetching playlists:', error);
       toast({
-        title: "Error loading playlists",
-        description: "Please try again later",
+        title: t('playlists.error_loading', 'Error loading playlists'),
+        description: t('playlists.try_again', 'Please try again later'),
         variant: "destructive"
       });
     } finally {
@@ -101,8 +103,8 @@ const ManagePlaylists = () => {
       if (error) throw error;
 
       toast({
-        title: "Playlist updated",
-        description: `"${editForm.name}" has been updated successfully.`
+        title: t('playlists.updated', 'Playlist updated'),
+        description: t('playlists.updated_success', `"${editForm.name}" has been updated successfully.`)
       });
 
       setIsEditDialogOpen(false);
@@ -197,7 +199,7 @@ const ManagePlaylists = () => {
     return (
       <div className="min-h-screen bg-background text-foreground pb-20">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-primary">Loading playlists...</div>
+          <div className="text-center text-primary">{t('playlists.loading', 'Loading playlists...')}</div>
         </div>
       </div>
     );
@@ -209,8 +211,8 @@ const ManagePlaylists = () => {
         <div className="container mx-auto px-4 py-8">
           <Card className="border-primary/20">
             <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground mb-4">Please sign in to manage your playlists.</p>
-              <Button onClick={() => navigate('/auth')}>Go to Login</Button>
+              <p className="text-muted-foreground mb-4">{t('playlists.sign_in_required', 'Please sign in to manage your playlists.')}</p>
+              <Button onClick={() => navigate('/auth')}>{t('playlists.go_to_login', 'Go to Login')}</Button>
             </CardContent>
           </Card>
         </div>
@@ -232,29 +234,39 @@ const ManagePlaylists = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-heading text-brand-gold">Manage Playlists</h1>
-            <p className="text-muted-foreground mt-1">Edit, delete, or view your playlists</p>
+            <h1 className="text-3xl font-heading text-brand-gold">{t('playlists.manage_title', 'Manage Playlists')}</h1>
+            <p className="text-muted-foreground mt-1">{t('playlists.manage_subtitle', 'Edit, delete, or view your playlists')}</p>
           </div>
-          <Button
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="bg-primary text-background hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Playlist
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/public-playlists')}
+              className="border-primary/30 text-primary hover:bg-primary/10"
+            >
+              <List className="h-4 w-4 mr-2" />
+              {t('playlists.view_public', 'View Public Playlists')}
+            </Button>
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="bg-primary text-background hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('playlists.new_playlist', 'New Playlist')}
+            </Button>
+          </div>
         </div>
 
         {/* Playlists List */}
         {playlists.length === 0 ? (
           <Card className="border-primary/20">
             <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground mb-4">You haven't created any playlists yet.</p>
+              <p className="text-muted-foreground mb-4">{t('playlists.no_playlists', 'You haven\'t created any playlists yet.')}</p>
               <Button
                 onClick={() => setIsCreateDialogOpen(true)}
                 className="bg-primary text-background hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Create Your First Playlist
+                {t('playlists.create_first', 'Create Your First Playlist')}
               </Button>
             </CardContent>
           </Card>
@@ -275,10 +287,10 @@ const ManagePlaylists = () => {
                             ? 'bg-primary/20 text-primary' 
                             : 'bg-muted text-muted-foreground'
                         }`}>
-                          {playlist.is_public ? 'Public' : 'Private'}
+                          {playlist.is_public ? t('playlists.public', 'Public') : t('playlists.private', 'Private')}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          Created {new Date(playlist.created_at).toLocaleDateString()}
+                          {t('playlists.created', 'Created')} {new Date(playlist.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
