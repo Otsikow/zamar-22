@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { 
   Quote, User, Calendar, Play, Volume2, Video, ArrowRight, 
   Search, MapPin, Heart, RotateCcw, ChevronLeft, ChevronRight,
-  Flag
+  Flag, Share2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
@@ -399,10 +399,38 @@ const CommunityTestimonies = () => {
                         </div>
                       )}
                       
-                      <div className="mt-6 pt-4 border-t border-border flex justify-between items-center text-sm text-muted-foreground">
-                        <span>Share this testimony</span>
+                      <div className="mt-6 pt-4 border-t border-border flex justify-between items-center text-sm">
                         <button 
-                          className="flex items-center gap-1 hover:text-destructive transition-colors"
+                          className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+                          onClick={() => {
+                            const shareUrl = `${window.location.origin}${window.location.pathname}#testimony-${testimony.id}`;
+                            const shareText = `Check out this inspiring testimony from ${testimony.display_name}: "${truncateMessage(testimony.message, 100)}"`;
+                            
+                            if (navigator.share) {
+                              navigator.share({
+                                title: `Testimony from ${testimony.display_name}`,
+                                text: shareText,
+                                url: shareUrl,
+                              }).catch(console.error);
+                            } else {
+                              navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`).then(() => {
+                                // Could add a toast here
+                                console.log('Testimony link copied to clipboard');
+                              }).catch(() => {
+                                // Fallback: open share options
+                                const encodedText = encodeURIComponent(shareText);
+                                const encodedUrl = encodeURIComponent(shareUrl);
+                                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+                                window.open(twitterUrl, '_blank');
+                              });
+                            }
+                          }}
+                        >
+                          <Share2 className="w-4 h-4" />
+                          Share this testimony
+                        </button>
+                        <button 
+                          className="flex items-center gap-1 text-muted-foreground hover:text-destructive transition-colors"
                           onClick={() => {
                             window.location.href = 'mailto:info@zamarsongs.com?subject=Report Testimony';
                           }}
