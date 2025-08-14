@@ -145,11 +145,6 @@ const Donate = () => {
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Back Button */}
-          <div className="mb-6">
-            <BackButton />
-          </div>
-          
           {/* Hero Section */}
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
