@@ -3,10 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Clock, Music, Cross, Heart, Users, Download, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 
 // Pricing page component
 const Pricing = () => {
+  const { t } = useTranslation();
   const customSongTiers = [
     {
       name: "Essentials",
@@ -131,24 +133,23 @@ const Pricing = () => {
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-playfair font-bold text-foreground mb-6 flex items-center justify-center gap-3">
               <Star className="w-10 h-10 md:w-12 md:h-12 text-primary" />
-              Choose Your{" "}
+              {t('pricing.choose_your', 'Choose Your')}{" "}
               <span className="text-transparent bg-gradient-primary bg-clip-text">
-                Perfect Package
+                {t('pricing.perfect_package', 'Perfect Package')}
               </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
-              Every song is crafted with care, love, and faith. Select the package 
-              that best fits your needs and occasion.
+              {t('pricing.description', 'Every song is crafted with care, love, and faith. Select the package that best fits your needs and occasion.')}
             </p>
           </div>
 
           {/* Custom Song Packages */}
           <div className="mb-20">
             <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-2">
-              Custom Song Packages
+              {t('pricing.custom_song_packages', 'Custom Song Packages')}
             </h2>
             <p className="text-center text-muted-foreground mb-12 font-inter">
-              Personalized songs created just for you
+              {t('pricing.personalized_songs', 'Personalized songs created just for you')}
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -220,10 +221,10 @@ const Pricing = () => {
           {/* Supporter & Subscription Plans */}
           <div className="mb-20">
             <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-2">
-              Supporter & Subscription Plans
+              {t('pricing.supporter_plans', 'Supporter & Subscription Plans')}
             </h2>
             <p className="text-center text-muted-foreground mb-12 font-inter">
-              Ongoing access to our complete music library and exclusive content
+              {t('pricing.ongoing_access', 'Ongoing access to our complete music library and exclusive content')}
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -290,7 +291,7 @@ const Pricing = () => {
           {/* Advertisers, Donations & Downloads */}
           <div className="mb-20">
             <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
-              Additional Services
+              {t('pricing.additional_services', 'Additional Services')}
             </h2>
             
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
@@ -349,22 +350,21 @@ const Pricing = () => {
                   </div>
                 </div>
                 <h3 className="text-2xl font-playfair font-semibold text-foreground mb-4">
-                  Support Our Ministry
+                  {t('pricing.support_ministry', 'Support Our Ministry')}
                 </h3>
                 <p className="text-muted-foreground font-inter mb-6 leading-relaxed">
-                  Help us continue creating faith-based music, supporting translation projects, 
-                  and spreading the Gospel through music worldwide.
+                  {t('pricing.ministry_description', 'Help us continue creating faith-based music, supporting translation projects, and spreading the Gospel through music worldwide.')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button variant="hero" size="lg" asChild>
-                    <Link to="/donate">
-                      Give Now
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link to="/donate?type=recurring">
-                      Monthly Giving
-                    </Link>
+                     <Link to="/donate">
+                       {t('pricing.give_now', 'Give Now')}
+                     </Link>
+                   </Button>
+                   <Button variant="outline" size="lg" asChild>
+                     <Link to="/donate?type=recurring">
+                       {t('pricing.monthly_giving', 'Monthly Giving')}
+                     </Link>
                   </Button>
                 </div>
               </CardContent>
@@ -381,13 +381,10 @@ const Pricing = () => {
                   </div>
                   <div>
                     <h3 className="font-playfair font-semibold text-foreground mb-2">
-                      Faith-Based Platform
+                      {t('pricing.faith_based_platform', 'Faith-Based Platform')}
                     </h3>
                     <p className="text-muted-foreground font-inter leading-relaxed">
-                      We are a Christian-led platform committed to creating meaningful music 
-                      that honors our values. We may respectfully decline songs that conflict 
-                      with our Christian principles, including content that promotes hate, 
-                      profanity, violence, or anti-biblical messages.
+                      {t('pricing.faith_notice', 'We are a Christian-led platform committed to creating meaningful music that honors our values. We may respectfully decline songs that conflict with our Christian principles, including content that promotes hate, profanity, violence, or anti-biblical messages.')}
                     </p>
                   </div>
                 </div>
