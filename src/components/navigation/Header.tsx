@@ -33,12 +33,12 @@ const Header = () => {
   // Show loading state while auth is initializing
   if (loading) {
     return (
-      <header className="fixed top-0 left-0 right-0 bg-background/20 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-[100]">
-          <div className="container-responsive py-2 sm:py-3">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
+      <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-[100]">
+        <div className="container mx-auto px-4 py-2 sm:py-3">
+          <div className="flex items-center justify-between min-h-[48px]">
+            <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
               <img src="/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
-              <span className="text-lg sm:text-xl font-bold text-primary font-playfair">Zamar</span>
+              <span className="text-base sm:text-xl font-bold text-primary font-playfair">Zamar</span>
             </Link>
             <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
           </div>
@@ -48,22 +48,22 @@ const Header = () => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/20 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-[100]">
-      <div className="container-responsive py-2 sm:py-3">
-        <div className="flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-white/10 shadow-lg supports-[backdrop-filter]:bg-background/20 z-[100]">
+      <div className="container mx-auto px-4 py-2 sm:py-3">
+        <div className="flex items-center justify-between min-h-[48px]">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <img src="/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
-            <span className="hidden xs:inline text-base sm:text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
+            <span className="text-base sm:text-xl font-bold text-primary font-playfair">{t('app.title', 'Zamar')}</span>
           </Link>
 
           {/* Right Side - Auth & Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Button variant="secondary" size="sm" asChild>
+          <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+            <Button variant="secondary" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" asChild>
               <Link to="/advertise">Advertise</Link>
             </Button>
             {/* Language Selector */}
-            <LanguageSelector className="min-w-[90px] sm:min-w-[140px]" />
+            <LanguageSelector className="min-w-[80px] sm:min-w-[120px]" />
             {user ? (
               <>
                 {/* Notifications */}
@@ -77,7 +77,7 @@ const Header = () => {
                       <span className="hidden sm:inline">{t('nav.account', 'Account')}</span>
                     </Button>
                   </DropdownMenuTrigger>
-<DropdownMenuContent align="end">
+<DropdownMenuContent align="end" className="bg-background border border-border shadow-lg z-[110]">
                     <DropdownMenuItem asChild>
                       <Link to="/profile">
                         <User className="mr-2 h-4 w-4" />

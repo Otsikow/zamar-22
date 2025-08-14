@@ -43,7 +43,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ className })
             </div>
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-background/95 backdrop-blur-md border border-white/10">
+        <SelectContent className="bg-background border border-border shadow-lg z-[110]">
           {AVAILABLE_LANGUAGES.map((language) => (
             <SelectItem
               key={language.code}
