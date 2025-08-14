@@ -172,11 +172,11 @@ const Pricing = () => {
                   )}
                   
                   <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-4">
-                      <div className={`p-3 rounded-full ${tier.popular ? 'bg-primary/20' : 'bg-accent'}`}>
-                        <IconComponent className="w-6 h-6 text-primary" />
-                      </div>
-                    </div>
+                     <div className="flex justify-center mb-4">
+                       <div className={`p-3 rounded-full ${tier.popular ? 'bg-primary/30' : 'bg-primary/20'}`}>
+                         <IconComponent className="w-6 h-6 text-primary" />
+                       </div>
+                     </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
                       {tier.name}
                     </CardTitle>
@@ -234,7 +234,7 @@ const Pricing = () => {
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-4">
-                       <div className="p-3 rounded-full bg-accent">
+                       <div className="p-3 rounded-full bg-primary/20">
                          {index === 0 ? (
                            <Heart className="w-6 h-6 text-primary" />
                          ) : (
@@ -298,7 +298,7 @@ const Pricing = () => {
                 <Card key={service.category} className="bg-gradient-card border-border">
                   <CardHeader className="text-center pb-4">
                      <div className="flex justify-center mb-4">
-                       <div className="p-3 rounded-full bg-accent">
+                       <div className="p-3 rounded-full bg-primary/20">
                          {service.category === "Advertiser Packages" ? (
                            <Megaphone className="w-6 h-6 text-primary" />
                          ) : (
