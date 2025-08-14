@@ -13,7 +13,7 @@ const GlobalBack = () => {
 
   return (
     <div className="container mx-auto px-4 max-w-5xl pt-16">
-      <BackButton variant="outline" size="sm" showOnDesktop label="Back" />
+      <BackButton variant="outline" size="sm" showOnDesktop={true} label="Back" />
     </div>
   );
 };
