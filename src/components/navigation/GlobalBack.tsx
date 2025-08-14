@@ -12,7 +12,7 @@ const GlobalBack = () => {
   if (hiddenPages.includes(location.pathname)) return null;
 
   return (
-    <div className="container mx-auto px-4 max-w-5xl mb-4 pt-16">
+    <div className="container mx-auto px-4 max-w-5xl pt-16">
       <BackButton variant="outline" size="sm" showOnDesktop label="Back" />
     </div>
   );
