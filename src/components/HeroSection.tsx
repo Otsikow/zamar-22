@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 export type HeroStat = { icon: string; text: string };
 
@@ -21,17 +22,24 @@ export default function HeroSection({
   titleBottom = "Crafted with Purpose",
   blurb =
     "Zamar creates custom songs for every occasion – weddings, birthdays, churches, businesses – combining faith and technology to deliver powerful music that speaks.",
-  stats = [
-    { icon: "⭐", text: "500+ Happy Clients" },
-    { icon: "⏱️", text: "24–48hr Delivery" },
-    { icon: "🙏", text: "Faith‑Based Platform" },
-  ],
+  stats,
   ctaHref = "/request-song",
   ctaLabel = "Create Your Song",
   secondaryHref = "/about",
   secondaryLabel = "How it works",
   bgImageUrl,
 }: Props) {
+  const { t } = useTranslation();
+
+  // Default stats with translations
+  const defaultStats = [
+    { icon: "⭐", text: t('hero.stat_clients', '500+ Happy Clients') },
+    { icon: "⏱️", text: t('hero.stat_delivery', '24–48hr Delivery') },
+    { icon: "🙏", text: t('hero.stat_faith', 'Faith‑Based Platform') },
+  ];
+
+  const heroStats = stats || defaultStats;
+
   return (
     <section className="relative overflow-hidden">
       {/* Background */}
@@ -56,36 +64,36 @@ export default function HeroSection({
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-extrabold tracking-tight">
             <span className="block text-4xl sm:text-5xl md:text-6xl leading-tight text-foreground">
-              {titleTop}
+              {t('hero.title_top', titleTop)}
             </span>
             <span className="mt-2 block text-3xl sm:text-4xl md:text-5xl leading-tight text-primary">
-              {titleBottom}
+              {t('hero.title_bottom', titleBottom)}
             </span>
           </h1>
 
           <p className="mt-6 text-base sm:text-lg md:text-xl leading-relaxed text-muted-foreground">
-            {blurb}
+            {t('hero.description', blurb)}
           </p>
 
           {/* CTA */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg">
               <Link to={ctaHref}>
-                {ctaLabel}
+                {t('hero.cta_primary', ctaLabel)}
                 <span className="ml-2">→</span>
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to={secondaryHref}>{secondaryLabel}</Link>
+              <Link to={secondaryHref}>{t('hero.cta_secondary', secondaryLabel)}</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/radio">Radio</Link>
+              <Link to="/radio">{t('hero.radio_button', 'Radio')}</Link>
             </Button>
           </div>
 
           {/* Badges */}
           <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {stats.map((s, i) => (
+            {heroStats.map((s, i) => (
               <li
                 key={i}
                 className="flex items-center gap-3 rounded-xl border border-border bg-card/70 backdrop-blur px-4 py-3 shadow-sm"
