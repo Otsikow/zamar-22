@@ -163,7 +163,7 @@ export default function AdGrid({ placement, limit = 4, className, title }: AdGri
   if (loading || visibleAds.length === 0) return null;
 
   return (
-    <section className={cn("container mx-auto", className)} aria-label="sponsored ads">
+    <section className={cn("container mx-auto relative", className)} aria-label="sponsored ads" style={{ zIndex: 1 }}>
       {title ? (
         <header className="mb-3">
           <h2 className="text-lg sm:text-xl font-semibold text-foreground">{title}</h2>
