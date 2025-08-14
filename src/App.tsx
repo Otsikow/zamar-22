@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
 import { TranslationProvider } from "@/contexts/TranslationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { useReferralCapture } from "@/hooks/useReferralCapture";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
@@ -58,7 +59,14 @@ import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
+
 const queryClient = new QueryClient();
+
+// Component to capture referral codes on all pages
+const ReferralCaptureWrapper = ({ children }: { children: React.ReactNode }) => {
+  useReferralCapture();
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -76,7 +84,8 @@ const App = () => (
                 
                 <main className="flex-1 pt-16 pb-20">
                   <GlobalBack />
-                  <Routes>
+                  <ReferralCaptureWrapper>
+                    <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/terms" element={<Terms />} />
@@ -132,9 +141,10 @@ const App = () => (
                     <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
+                     <Route path="*" element={<NotFound />} />
+                   </Routes>
+                 </ReferralCaptureWrapper>
+               </main>
 
                 <PwaInstallBanner />
                 <BottomNav />
