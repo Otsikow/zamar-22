@@ -62,6 +62,7 @@ import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
+import TestimonyDetail from "./pages/TestimonyDetail";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => (
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/advertise" element={<Advertise />} />
                     <Route path="/testimonies" element={<Testimonies />} />
+                    <Route path="/testimony/:id" element={<TestimonyDetail />} />
                     <Route path="/testimonies/submit" element={<TestimoniesSubmit />} />
                     <Route path="/testimonies/my-submissions" element={<ProtectedRoute><TestimoniesMySubmissions /></ProtectedRoute>} />
                     {/* Public Routes */}
