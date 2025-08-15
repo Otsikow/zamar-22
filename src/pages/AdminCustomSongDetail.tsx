@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,6 +58,7 @@ export default function AdminCustomSongDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin, loading } = useIsAdmin();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [req, setReq] = useState<Request | null>(null);
@@ -230,11 +232,11 @@ export default function AdminCustomSongDetail() {
   };
 
   const sendMessage = async () => {
-    if (!id || !newMessage.trim()) return;
+    if (!id || !newMessage.trim() || !user) return;
     try {
       const { data, error } = await supabase
         .from("custom_song_messages")
-        .insert({ request_id: id, body: newMessage } as any)
+        .insert({ request_id: id, sender_id: user.id, body: newMessage } as any)
         .select()
         .single();
       if (error) throw error;
