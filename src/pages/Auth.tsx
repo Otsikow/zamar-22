@@ -123,8 +123,7 @@ const Auth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             first_name: signupForm.firstName,
-            last_name: signupForm.lastName,
-            ref_code: refCode
+            last_name: signupForm.lastName
           }
         }
       });
@@ -140,13 +139,24 @@ const Auth = () => {
         return;
       }
 
-      // Track referral relationship if a referral code was present
-      try {
-        if (data?.user?.id) {
-          await handleReferralSignup(data.user.id);
+      // BULLETPROOF: Apply referral code using profiles trigger
+      if (data?.user?.id && refCode) {
+        console.log('Applying referral code via profiles upsert:', { userId: data.user.id, refCode });
+        try {
+          // This triggers the profiles trigger which will handle referral attribution
+          await supabase.from('profiles').upsert({
+            id: data.user.id,
+            pending_ref_code: refCode
+          }, { onConflict: 'id' });
+          
+          console.log('Referral code applied successfully');
+          
+          // Clean up stored referral code
+          localStorage.removeItem('ref_code');
+          document.cookie = 'ref_code=; Max-Age=0; path=/';
+        } catch (referralError) {
+          console.error('Failed to apply referral code:', referralError);
         }
-      } catch (e) {
-        console.error('Referral tracking failed after signup:', e);
       }
 
       toast({

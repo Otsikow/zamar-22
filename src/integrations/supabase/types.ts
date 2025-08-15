@@ -890,6 +890,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          pending_ref_code: string | null
           preferred_language: string | null
           referral_code: string | null
           referred_by: string | null
@@ -904,6 +905,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -918,6 +920,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
