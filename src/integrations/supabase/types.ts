@@ -1171,6 +1171,77 @@ export type Database = {
           },
         ]
       }
+      song_suggestions: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          fulfilled_at: string | null
+          id: string
+          preferred_language: string | null
+          scripture_reference: string | null
+          song_id: string | null
+          status: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          preferred_language?: string | null
+          scripture_reference?: string | null
+          song_id?: string | null
+          status?: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          preferred_language?: string | null
+          scripture_reference?: string | null
+          song_id?: string | null
+          status?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "song_suggestions_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       songs: {
         Row: {
           audio_url: string | null
@@ -1180,6 +1251,8 @@ export type Database = {
           id: string
           language: string | null
           occasion: string | null
+          suggested_by: string | null
+          suggested_by_display: string | null
           tags: string[] | null
           thumbnail_url: string | null
           title: string
@@ -1193,6 +1266,8 @@ export type Database = {
           id?: string
           language?: string | null
           occasion?: string | null
+          suggested_by?: string | null
+          suggested_by_display?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           title: string
@@ -1206,12 +1281,36 @@ export type Database = {
           id?: string
           language?: string | null
           occasion?: string | null
+          suggested_by?: string | null
+          suggested_by_display?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       synced_lyrics: {
         Row: {
@@ -1704,6 +1803,10 @@ export type Database = {
       mark_referral_earnings_as_paid: {
         Args: { earnings_ids: string[]; payout_method?: string }
         Returns: undefined
+      }
+      privacy_safe_name: {
+        Args: { u_id: string }
+        Returns: string
       }
       process_referral_earnings: {
         Args: { new_user: string; payment_amount: number }
