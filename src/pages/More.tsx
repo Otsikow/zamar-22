@@ -46,6 +46,7 @@ const More = () => {
   const menuItems = [
     { label: t("more.my_account", "My Account"), icon: User, action: () => navigate('/profile') },
     ...(isAdmin ? [{ label: t("more.dashboard", "Dashboard"), icon: LayoutDashboard, action: () => navigate('/admin') }] : []),
+    { label: "Suggest a Song", icon: Heart, action: () => navigate('/suggest-song') },
     { label: t("more.manage_playlists", "Manage Playlists"), icon: Settings, action: () => navigate('/manage-playlists') },
     { label: t("more.pricing", "Pricing"), icon: CreditCard, action: () => navigate('/pricing') },
     { label: t("more.referral_calculator", "Referral Calculator"), icon: DollarSign, action: () => navigate('/referral') },

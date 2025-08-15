@@ -63,6 +63,8 @@ import PwaInstallBanner from "@/components/PwaInstallBanner";
 import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
 import TestimonyDetail from "./pages/TestimonyDetail";
+import SuggestSong from "./pages/SuggestSong";
+import AdminSuggestions from "./pages/AdminSuggestions";
 
 const queryClient = new QueryClient();
 
@@ -115,9 +117,10 @@ const App = () => (
                     <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-                    <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
-                    <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
-                    <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
+                     <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
+                     <Route path="/suggest-song" element={<ProtectedRoute><SuggestSong /></ProtectedRoute>} />
+                     <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
+                     <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -145,9 +148,10 @@ const App = () => (
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/referral-ops" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/custom-songs" element={<ProtectedRoute><AdminCustomSongs /></ProtectedRoute>} />
-                    <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
-                    <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
-                    <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
+                     <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
+                     <Route path="/admin/suggestions" element={<ProtectedRoute><AdminSuggestions /></ProtectedRoute>} />
+                     <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
+                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
                      <Route path="*" element={<NotFound />} />
                    </Routes>
