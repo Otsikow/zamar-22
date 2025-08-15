@@ -36,28 +36,9 @@ interface Testimony {
 }
 
 interface FilterState {
-  region: string;
-  userType: string;
   search: string;
   page: number;
 }
-
-const REGIONS = [
-  'All',
-  'USA', 
-  'Africa',
-  'Europe', 
-  'Asia',
-  'Latin America'
-];
-
-const USER_TYPES = [
-  'All',
-  'Church Leaders',
-  'Artists', 
-  'Students',
-  'Families'
-];
 
 const SHORT_QUOTES = [
   "Music that touches the soul and lifts the spirit.",
@@ -68,28 +49,6 @@ const SHORT_QUOTES = [
   "Songs that speak when words aren't enough."
 ];
 
-const COUNTRY_MAPPINGS = {
-  'USA': ['USA', 'United States', 'US', 'America'],
-  'Africa': [
-    'Ghana', 'Nigeria', 'Kenya', 'South Africa', 'Uganda', 'Tanzania', 
-    'Rwanda', 'Ethiopia', 'Zimbabwe', 'Zambia', 'Cameroon', 'Ivory Coast',
-    'Senegal', 'Botswana', 'Namibia', 'Malawi', 'Mozambique'
-  ],
-  'Europe': [
-    'UK', 'United Kingdom', 'England', 'Scotland', 'Wales', 'Ireland',
-    'France', 'Germany', 'Italy', 'Spain', 'Portugal', 'Netherlands',
-    'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland'
-  ],
-  'Asia': [
-    'India', 'Philippines', 'Singapore', 'Malaysia', 'Indonesia', 'China',
-    'Japan', 'South Korea', 'Pakistan', 'Bangladesh', 'Sri Lanka', 'Thailand'
-  ],
-  'Latin America': [
-    'Brazil', 'Mexico', 'Colombia', 'Argentina', 'Peru', 'Chile',
-    'Ecuador', 'Guatemala', 'Dominican Republic', 'Venezuela', 'Uruguay'
-  ]
-};
-
 const CommunityTestimonies = () => {
   const [testimonies, setTestimonies] = useState<Testimony[]>([]);
   const [mediaTestimonies, setMediaTestimonies] = useState<Testimony[]>([]);
@@ -97,8 +56,6 @@ const CommunityTestimonies = () => {
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<FilterState>({
-    region: 'All',
-    userType: 'All', 
     search: '',
     page: 1
   });
@@ -132,29 +89,8 @@ const CommunityTestimonies = () => {
     };
   }, [filters]);
 
-  const buildWhereClause = () => {
-    const conditions = [];
-
-    // Region filter
-    if (filters.region !== 'All') {
-      const countries = COUNTRY_MAPPINGS[filters.region as keyof typeof COUNTRY_MAPPINGS] || [];
-      if (countries.length > 0) {
-        const countryConditions = countries.map(country => 
-          `country ILIKE '%${country}%'`
-        ).join(' OR ');
-        conditions.push(`(${countryConditions})`);
-      }
-    }
-
-    // Search filter
-    if (filters.search.trim()) {
-      const searchTerm = filters.search.trim();
-      conditions.push(
-        `(display_name ILIKE '%${searchTerm}%' OR country ILIKE '%${searchTerm}%' OR message ILIKE '%${searchTerm}%')`
-      );
-    }
-
-    return conditions.length > 0 ? conditions.join(' AND ') : '';
+  const hasSearchFilter = () => {
+    return filters.search.trim().length > 0;
   };
 
   const fetchTestimonies = async () => {
@@ -167,34 +103,20 @@ const CommunityTestimonies = () => {
         .select("*", { count: 'exact' })
         .order("published_at", { ascending: false });
 
-      const whereClause = buildWhereClause();
-      if (whereClause) {
-        // Since we can't use raw SQL, we'll need to apply filters differently
-        // For now, we'll fetch all and filter client-side for complex conditions
+      if (hasSearchFilter()) {
+        // Apply search filter client-side for better flexibility
         const { data: allData, error: allError } = await query;
         if (allError) throw allError;
 
         let filteredData = allData || [];
 
-        // Apply region filter
-        if (filters.region !== 'All') {
-          const countries = COUNTRY_MAPPINGS[filters.region as keyof typeof COUNTRY_MAPPINGS] || [];
-          filteredData = filteredData.filter(item => 
-            countries.some(country => 
-              item.country?.toLowerCase().includes(country.toLowerCase())
-            )
-          );
-        }
-
         // Apply search filter
-        if (filters.search.trim()) {
-          const searchTerm = filters.search.trim().toLowerCase();
-          filteredData = filteredData.filter(item =>
-            item.display_name?.toLowerCase().includes(searchTerm) ||
-            item.country?.toLowerCase().includes(searchTerm) ||
-            item.message?.toLowerCase().includes(searchTerm)
-          );
-        }
+        const searchTerm = filters.search.trim().toLowerCase();
+        filteredData = filteredData.filter(item =>
+          item.display_name?.toLowerCase().includes(searchTerm) ||
+          item.country?.toLowerCase().includes(searchTerm) ||
+          item.message?.toLowerCase().includes(searchTerm)
+        );
 
         setTotalCount(filteredData.length);
         
@@ -249,10 +171,6 @@ const CommunityTestimonies = () => {
     }, 300);
 
     setSearchTimeout(timeout);
-  };
-
-  const handleFilterChange = (type: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [type]: value, page: 1 }));
   };
 
   const handleShareTestimony = () => {
@@ -534,48 +452,9 @@ const CommunityTestimonies = () => {
         </div>
 
         {/* Action Bar */}
-        <div className="mb-8 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
-          {/* Filters */}
-          <div className="flex flex-wrap gap-2">
-            {/* Region Pills */}
-            <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-              {REGIONS.map((region) => (
-                <Button
-                  key={region}
-                  variant={filters.region === region ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleFilterChange('region', region)}
-                  className={cn(
-                    "whitespace-nowrap",
-                    filters.region === region && "bg-primary text-primary-foreground"
-                  )}
-                >
-                  {region}
-                </Button>
-              ))}
-            </div>
-            
-            {/* Type Pills */}
-            <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-              {USER_TYPES.map((type) => (
-                <Button
-                  key={type}
-                  variant={filters.userType === type ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleFilterChange('userType', type)}
-                  className={cn(
-                    "whitespace-nowrap",
-                    filters.userType === type && "bg-primary text-primary-foreground"
-                  )}
-                >
-                  {type}
-                </Button>
-              ))}
-            </div>
-          </div>
-
+        <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Search and CTA */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 items-center justify-center lg:justify-end">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
@@ -623,7 +502,7 @@ const CommunityTestimonies = () => {
         {!isLoading && !error && testimonies.length === 0 && (
           <div className="text-center py-12">
             <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">No testimonies found. Try clearing filters or share yours.</p>
+            <p className="text-muted-foreground mb-4">No testimonies found. Share yours!</p>
             <Button onClick={handleShareTestimony}>
               Share Your Testimony
             </Button>
