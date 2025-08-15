@@ -96,39 +96,62 @@ export default function ReferralDashboard() {
     
     console.log('Generating referral code for user:', user.id);
     
-    // First check if user already has a referral code
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('referral_code')
-      .eq('id', user.id)
-      .single();
-    
-    console.log('Current profile:', { profile, profileError });
-    
-    if (profile?.referral_code) {
-      setReferralCode(profile.referral_code);
-      console.log('Using existing referral code:', profile.referral_code);
-    } else {
-      // Generate new code if none exists
-      const { error: updateError } = await supabase.rpc('ensure_ref_code_for', {
-        user_id: user.id
-      });
+    try {
+      // First check if user already has a referral code
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', user.id)
+        .maybeSingle();
       
-      console.log('Generate code result:', { updateError });
+      console.log('Current profile:', { profile, profileError });
       
-      if (!updateError) {
-        // Fetch the newly generated code
-        const { data: updatedProfile } = await supabase
-          .from('profiles')
-          .select('referral_code')
-          .eq('id', user.id)
-          .single();
+      if (profile?.referral_code) {
+        setReferralCode(profile.referral_code);
+        console.log('Using existing referral code:', profile.referral_code);
+      } else {
+        // Generate new code if none exists
+        console.log('No existing referral code found, generating new one...');
+        const { error: updateError } = await supabase.rpc('ensure_ref_code_for', {
+          user_id: user.id
+        });
         
-        if (updatedProfile?.referral_code) {
-          setReferralCode(updatedProfile.referral_code);
-          console.log('Generated new referral code:', updatedProfile.referral_code);
+        console.log('Generate code result:', { updateError });
+        
+        if (!updateError) {
+          // Fetch the newly generated code
+          const { data: updatedProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('referral_code')
+            .eq('id', user.id)
+            .maybeSingle();
+          
+          console.log('Fetched updated profile:', { updatedProfile, fetchError });
+          
+          if (updatedProfile?.referral_code) {
+            setReferralCode(updatedProfile.referral_code);
+            console.log('Generated new referral code:', updatedProfile.referral_code);
+          } else {
+            console.warn('Failed to generate or fetch referral code');
+            // Fallback to manual generation
+            const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+            setReferralCode(fallbackCode);
+            console.log('Using fallback referral code:', fallbackCode);
+          }
+        } else {
+          console.error('Error generating referral code:', updateError);
+          // Fallback to manual generation
+          const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+          setReferralCode(fallbackCode);
+          console.log('Using fallback referral code due to error:', fallbackCode);
         }
       }
+    } catch (error) {
+      console.error('Exception in generateReferralCode:', error);
+      // Ultimate fallback
+      const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+      setReferralCode(fallbackCode);
+      console.log('Using ultimate fallback referral code:', fallbackCode);
     }
   };
 
@@ -137,10 +160,13 @@ export default function ReferralDashboard() {
 
     try {
       // Use the new view for accurate totals
+      console.log('Fetching referral totals for user:', user.id);
       const { data: totals, error: totalsError } = await supabase
         .from('v_my_referral_totals')
         .select('*')
-        .single();
+        .maybeSingle();
+
+      console.log('Totals result:', { totals, totalsError });
 
       if (totalsError) {
         console.error('Error fetching referral totals:', totalsError);
@@ -264,6 +290,8 @@ export default function ReferralDashboard() {
         monthlyEarnings: Array.from(monthlyEarningsMap.values()),
         referralActivity
       };
+
+      console.log('Final stats:', finalStats);
 
       setStats(finalStats);
       setEarningsDetails(earningsDetails);
