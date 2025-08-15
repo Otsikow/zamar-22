@@ -992,6 +992,33 @@ export type Database = {
           },
         ]
       }
+      referral_clicks: {
+        Row: {
+          clicked_at: string
+          id: string
+          ip: string | null
+          ref_code: string
+          referrer_id: string | null
+          ua: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          id?: string
+          ip?: string | null
+          ref_code: string
+          referrer_id?: string | null
+          ua?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          id?: string
+          ip?: string | null
+          ref_code?: string
+          referrer_id?: string | null
+          ua?: string | null
+        }
+        Relationships: []
+      }
       referral_config: {
         Row: {
           id: number
@@ -1054,30 +1081,39 @@ export type Database = {
       }
       referrals: {
         Row: {
+          amount_pence: number
           created_at: string | null
           generation: number
           id: string
+          level: number
           referred_at: string | null
           referred_user_id: string
           referrer_id: string
+          status: string
           updated_at: string | null
         }
         Insert: {
+          amount_pence?: number
           created_at?: string | null
           generation: number
           id?: string
+          level?: number
           referred_at?: string | null
           referred_user_id: string
           referrer_id: string
+          status?: string
           updated_at?: string | null
         }
         Update: {
+          amount_pence?: number
           created_at?: string | null
           generation?: number
           id?: string
+          level?: number
           referred_at?: string | null
           referred_user_id?: string
           referrer_id?: string
+          status?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -1590,6 +1626,16 @@ export type Database = {
         }
         Relationships: []
       }
+      v_my_referral_totals: {
+        Row: {
+          me: string | null
+          paid_out_pence: number | null
+          pending_payout_pence: number | null
+          total_earned_pence: number | null
+          total_referrals: number | null
+        }
+        Relationships: []
+      }
       v_referral_earnings_detailed: {
         Row: {
           amount: number | null
@@ -1650,6 +1696,14 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      apply_referral: {
+        Args: { new_user: string; raw_ref: string }
+        Returns: undefined
+      }
+      approve_referral_for: {
+        Args: { order_total_pence: number; referred: string }
+        Returns: undefined
+      }
       approve_testimony: {
         Args: { p_admin: string; p_testimony_id: string }
         Returns: undefined
@@ -1657,6 +1711,10 @@ export type Database = {
       atomic_grant_first_admin: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      ensure_ref_code_for: {
+        Args: { user_id: string }
+        Returns: undefined
       }
       extract_single_ip: {
         Args: { ip_input: string }
