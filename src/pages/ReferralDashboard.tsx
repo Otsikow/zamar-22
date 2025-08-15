@@ -91,10 +91,45 @@ export default function ReferralDashboard() {
     }
   }, [user]);
 
-  const generateReferralCode = () => {
+  const generateReferralCode = async () => {
     if (!user) return;
-    const code = `ZAMAR_${user.id.slice(-8).toUpperCase()}`;
-    setReferralCode(code);
+    
+    console.log('Generating referral code for user:', user.id);
+    
+    // First check if user already has a referral code
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('referral_code')
+      .eq('id', user.id)
+      .single();
+    
+    console.log('Current profile:', { profile, profileError });
+    
+    if (profile?.referral_code) {
+      setReferralCode(profile.referral_code);
+      console.log('Using existing referral code:', profile.referral_code);
+    } else {
+      // Generate new code if none exists
+      const { error: updateError } = await supabase.rpc('ensure_ref_code_for', {
+        user_id: user.id
+      });
+      
+      console.log('Generate code result:', { updateError });
+      
+      if (!updateError) {
+        // Fetch the newly generated code
+        const { data: updatedProfile } = await supabase
+          .from('profiles')
+          .select('referral_code')
+          .eq('id', user.id)
+          .single();
+        
+        if (updatedProfile?.referral_code) {
+          setReferralCode(updatedProfile.referral_code);
+          console.log('Generated new referral code:', updatedProfile.referral_code);
+        }
+      }
+    }
   };
 
   const fetchReferralStats = async () => {
@@ -112,6 +147,7 @@ export default function ReferralDashboard() {
       }
 
       // Fetch referral activity with user details
+      console.log('Fetching referrals for user:', user.id);
       const { data: referralsData, error: referralsError } = await supabase
         .from('referrals')
         .select(`
@@ -121,6 +157,8 @@ export default function ReferralDashboard() {
           referred_at
         `)
         .eq('referrer_id', user.id);
+
+      console.log('Referrals result:', { referralsData, referralsError });
 
       if (referralsError) throw referralsError;
 
