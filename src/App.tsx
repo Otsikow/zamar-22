@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
 import { TranslationProvider } from "@/contexts/TranslationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { useReferralCapture } from "@/hooks/useReferralCapture";
+import BulletproofReferralTracker from "@/components/referrals/BulletproofReferralTracker";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
@@ -70,8 +70,12 @@ const queryClient = new QueryClient();
 
 // Component to capture referral codes on all pages
 const ReferralCaptureWrapper = ({ children }: { children: React.ReactNode }) => {
-  useReferralCapture();
-  return <>{children}</>;
+  return (
+    <>
+      <BulletproofReferralTracker />
+      {children}
+    </>
+  );
 };
 
 const App = () => (

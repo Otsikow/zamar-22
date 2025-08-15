@@ -112,6 +112,10 @@ const Auth = () => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
+      // Get stored referral code
+      const refCode = localStorage.getItem('ref_code') || 
+                     (document.cookie.match(/ref_code=([^;]+)/)?.[1]);
+      
       const { data, error } = await supabase.auth.signUp({
         email: signupForm.email,
         password: signupForm.password,
@@ -120,6 +124,7 @@ const Auth = () => {
           data: {
             first_name: signupForm.firstName,
             last_name: signupForm.lastName,
+            ref_code: refCode
           }
         }
       });
