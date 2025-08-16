@@ -1,6 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import FeaturedSongs from "@/components/sections/FeaturedSongs";
-import TestimonialsCarousel from "@/components/sections/TestimonialsCarousel";
+import CommunityTestimonies from "@/components/sections/CommunityTestimonies";
 import LiveCounter from "@/components/sections/LiveCounter";
 import Footer from "@/components/sections/Footer";
 import VideoShowcase from "@/components/sections/VideoShowcase";
@@ -15,7 +15,7 @@ const Index = () => {
         <WelcomeBanner />
         <AdGrid placement="home_hero" limit={8} className="container mx-auto my-6" title="Sponsored Spotlights" />
         <FeaturedSongs />
-        <TestimonialsCarousel />
+        <CommunityTestimonies />
         <LiveCounter />
         <VideoShowcase />
       </main>

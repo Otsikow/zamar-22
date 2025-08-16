@@ -91,26 +91,89 @@ export default function ReferralDashboard() {
     }
   }, [user]);
 
-  const generateReferralCode = () => {
+  const generateReferralCode = async () => {
     if (!user) return;
-    const code = `ZAMAR_${user.id.slice(-8).toUpperCase()}`;
-    setReferralCode(code);
+    
+    console.log('Generating referral code for user:', user.id);
+    
+    try {
+      // First check if user already has a referral code
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      console.log('Current profile:', { profile, profileError });
+      
+      if (profile?.referral_code) {
+        setReferralCode(profile.referral_code);
+        console.log('Using existing referral code:', profile.referral_code);
+      } else {
+        // Generate new code if none exists
+        console.log('No existing referral code found, generating new one...');
+        const { error: updateError } = await supabase.rpc('ensure_ref_code_for', {
+          user_id: user.id
+        });
+        
+        console.log('Generate code result:', { updateError });
+        
+        if (!updateError) {
+          // Fetch the newly generated code
+          const { data: updatedProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('referral_code')
+            .eq('id', user.id)
+            .maybeSingle();
+          
+          console.log('Fetched updated profile:', { updatedProfile, fetchError });
+          
+          if (updatedProfile?.referral_code) {
+            setReferralCode(updatedProfile.referral_code);
+            console.log('Generated new referral code:', updatedProfile.referral_code);
+          } else {
+            console.warn('Failed to generate or fetch referral code');
+            // Fallback to manual generation
+            const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+            setReferralCode(fallbackCode);
+            console.log('Using fallback referral code:', fallbackCode);
+          }
+        } else {
+          console.error('Error generating referral code:', updateError);
+          // Fallback to manual generation
+          const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+          setReferralCode(fallbackCode);
+          console.log('Using fallback referral code due to error:', fallbackCode);
+        }
+      }
+    } catch (error) {
+      console.error('Exception in generateReferralCode:', error);
+      // Ultimate fallback
+      const fallbackCode = `ZMR${user.id.slice(-6).toUpperCase()}`;
+      setReferralCode(fallbackCode);
+      console.log('Using ultimate fallback referral code:', fallbackCode);
+    }
   };
 
   const fetchReferralStats = async () => {
     if (!user) return;
 
     try {
-      // Fetch user's referral statistics
-      const { data: statsData, error: statsError } = await supabase
-        .rpc('get_user_referral_stats', { target_user_id: user.id });
-      
-      let userStats: any = undefined;
-      if (!statsError && statsData?.[0]) {
-        userStats = statsData[0];
+      // Use the new view for accurate totals
+      console.log('Fetching referral totals for user:', user.id);
+      const { data: totals, error: totalsError } = await supabase
+        .from('v_my_referral_totals')
+        .select('*')
+        .maybeSingle();
+
+      console.log('Totals result:', { totals, totalsError });
+
+      if (totalsError) {
+        console.error('Error fetching referral totals:', totalsError);
       }
 
       // Fetch referral activity with user details
+      console.log('Fetching referrals for user:', user.id);
       const { data: referralsData, error: referralsError } = await supabase
         .from('referrals')
         .select(`
@@ -120,6 +183,8 @@ export default function ReferralDashboard() {
           referred_at
         `)
         .eq('referrer_id', user.id);
+
+      console.log('Referrals result:', { referralsData, referralsError });
 
       if (referralsError) throw referralsError;
 
@@ -150,26 +215,6 @@ export default function ReferralDashboard() {
         .order('earned_at', { ascending: false });
 
       if (earningsError) throw earningsError;
-
-      // Fallback: if RPC failed, compute stats locally from fetched tables
-      if (!userStats) {
-        const direct = (referralsData || []).filter((r: any) => r.generation === 1).length || 0;
-        const indirect = (referralsData || []).filter((r: any) => r.generation === 2).length || 0;
-        let totalEarned = 0, paid = 0, pending = 0;
-        (earningsData || []).forEach((e: any) => {
-          const amt = Number(e.amount) || 0;
-          totalEarned += amt;
-          if (e.status === 'paid') paid += amt; else pending += amt;
-        });
-        userStats = {
-          total_referrals: direct + indirect,
-          active_referrals: direct,
-          inactive_referrals: indirect,
-          total_earned: totalEarned,
-          paid_earnings: paid,
-          pending_earnings: pending
-        };
-      }
 
       // Process monthly earnings data
       const monthlyEarningsMap = new Map();
@@ -236,15 +281,17 @@ export default function ReferralDashboard() {
       }) || [];
 
       const finalStats: ReferralStats = {
-        totalReferrals: Number(userStats.total_referrals),
-        activeReferrals: Number(userStats.active_referrals),
-        inactiveReferrals: Number(userStats.inactive_referrals),
-        totalEarned: Number(userStats.total_earned),
-        paidEarnings: Number(userStats.paid_earnings),
-        pendingPayout: Number(userStats.pending_earnings),
+        totalReferrals: Number(totals?.total_referrals || 0),
+        activeReferrals: Number(totals?.total_referrals || 0),
+        inactiveReferrals: 0,
+        totalEarned: Number(totals?.total_earned_pence || 0) / 100,
+        paidEarnings: Number(totals?.paid_out_pence || 0) / 100,
+        pendingPayout: Number(totals?.pending_payout_pence || 0) / 100,
         monthlyEarnings: Array.from(monthlyEarningsMap.values()),
         referralActivity
       };
+
+      console.log('Final stats:', finalStats);
 
       setStats(finalStats);
       setEarningsDetails(earningsDetails);

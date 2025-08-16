@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +26,18 @@ interface Request {
   assigned_admin: string | null;
   stripe_pi_id: string | null;
   updated_at: string;
+  key_message?: string;
+  style_genre?: string;
+  scripture_quote?: string;
+}
+
+interface UserProfile {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  referral_code: string | null;
+  created_at: string;
 }
 
 interface Asset {
@@ -45,9 +58,11 @@ export default function AdminCustomSongDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin, loading } = useIsAdmin();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [req, setReq] = useState<Request | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -85,6 +100,16 @@ export default function AdminCustomSongDetail() {
       setQuote(r?.price_cents ? (r.price_cents / 100).toFixed(2) : "");
       setSelectedAdmin(r?.assigned_admin || "");
       setStripePI(r?.stripe_pi_id || "");
+
+      // Fetch user profile if user_id exists
+      if (r?.user_id) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name, email, referral_code, created_at")
+          .eq("id", r.user_id)
+          .maybeSingle();
+        setUserProfile(profile);
+      }
 
       const { data: a } = await supabase
         .from("custom_song_assets")
@@ -207,11 +232,11 @@ export default function AdminCustomSongDetail() {
   };
 
   const sendMessage = async () => {
-    if (!id || !newMessage.trim()) return;
+    if (!id || !newMessage.trim() || !user) return;
     try {
       const { data, error } = await supabase
         .from("custom_song_messages")
-        .insert({ request_id: id, body: newMessage } as any)
+        .insert({ request_id: id, sender_id: user.id, body: newMessage } as any)
         .select()
         .single();
       if (error) throw error;
@@ -375,6 +400,122 @@ export default function AdminCustomSongDetail() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Contact Information Card */}
+          <Card>
+            <CardHeader><CardTitle>👤 Client Contact Information</CardTitle></CardHeader>
+            <CardContent>
+              {userProfile ? (
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Full Name</span>
+                      <div className="font-medium">
+                        {userProfile.first_name || userProfile.last_name 
+                          ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim()
+                          : '—'
+                        }
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Email</span>
+                      <div className="font-medium">
+                        {userProfile.email ? (
+                          <a 
+                            href={`mailto:${userProfile.email}`}
+                            className="text-primary hover:underline"
+                          >
+                            {userProfile.email}
+                          </a>
+                        ) : '—'}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">User ID</span>
+                      <div className="font-mono text-xs bg-muted px-2 py-1 rounded">
+                        {userProfile.id}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Referral Code</span>
+                      <div className="font-medium">
+                        {userProfile.referral_code || '—'}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Member Since</span>
+                      <div className="font-medium">
+                        {new Date(userProfile.created_at).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long", 
+                          year: "numeric"
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Actions */}
+                  <div className="pt-3 border-t border-border">
+                    <div className="flex gap-2 flex-wrap">
+                      {userProfile.email && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.open(`mailto:${userProfile.email}?subject=Regarding your Custom Song Request`)}
+                        >
+                          📧 Email Client
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => navigator.clipboard.writeText(userProfile.email || userProfile.id)}
+                      >
+                        📋 Copy Contact
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  {req?.user_id ? 'Loading client information...' : 'No client information available'}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Key Message & Scripture */}
+          {(req?.key_message || req?.scripture_quote) && (
+            <Card>
+              <CardHeader><CardTitle>📝 Request Details</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {req.key_message && (
+                  <div>
+                    <span className="text-muted-foreground text-sm">Key Message</span>
+                    <div className="mt-1 p-3 bg-muted/50 rounded-lg text-sm leading-relaxed">
+                      {req.key_message}
+                    </div>
+                  </div>
+                )}
+                {req.scripture_quote && (
+                  <div>
+                    <span className="text-muted-foreground text-sm">Scripture Quote</span>
+                    <div className="mt-1 p-3 bg-muted/50 rounded-lg text-sm italic">
+                      "{req.scripture_quote}"
+                    </div>
+                  </div>
+                )}
+                {req.style_genre && (
+                  <div>
+                    <span className="text-muted-foreground text-sm">Genre</span>
+                    <div className="mt-1 font-medium">
+                      {req.style_genre}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader><CardTitle>Assignment</CardTitle></CardHeader>

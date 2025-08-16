@@ -881,6 +881,51 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          billing_interval: string | null
+          category: string
+          created_at: string | null
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price_cents: number
+          stripe_price_id: string
+          stripe_product_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          billing_interval?: string | null
+          category: string
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price_cents: number
+          stripe_price_id: string
+          stripe_product_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          billing_interval?: string | null
+          category?: string
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price_cents?: number
+          stripe_price_id?: string
+          stripe_product_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
@@ -890,6 +935,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          pending_ref_code: string | null
           preferred_language: string | null
           referral_code: string | null
           referred_by: string | null
@@ -904,6 +950,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -918,6 +965,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -954,9 +1002,12 @@ export type Database = {
           created_at: string
           currency: string | null
           id: string
+          product_id: string | null
           song_id: string | null
           status: string | null
           stripe_payment_id: string | null
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -965,9 +1016,12 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          product_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -976,13 +1030,23 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          product_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchases_song_id_fkey"
             columns: ["song_id"]
@@ -991,6 +1055,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referral_clicks: {
+        Row: {
+          clicked_at: string
+          id: string
+          ip: string | null
+          ref_code: string
+          referrer_id: string | null
+          ua: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          id?: string
+          ip?: string | null
+          ref_code: string
+          referrer_id?: string | null
+          ua?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          id?: string
+          ip?: string | null
+          ref_code?: string
+          referrer_id?: string | null
+          ua?: string | null
+        }
+        Relationships: []
       }
       referral_config: {
         Row: {
@@ -1054,30 +1145,39 @@ export type Database = {
       }
       referrals: {
         Row: {
+          amount_pence: number
           created_at: string | null
           generation: number
           id: string
+          level: number
           referred_at: string | null
           referred_user_id: string
           referrer_id: string
+          status: string
           updated_at: string | null
         }
         Insert: {
+          amount_pence?: number
           created_at?: string | null
           generation: number
           id?: string
+          level?: number
           referred_at?: string | null
           referred_user_id: string
           referrer_id: string
+          status?: string
           updated_at?: string | null
         }
         Update: {
+          amount_pence?: number
           created_at?: string | null
           generation?: number
           id?: string
+          level?: number
           referred_at?: string | null
           referred_user_id?: string
           referrer_id?: string
+          status?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -1171,6 +1271,77 @@ export type Database = {
           },
         ]
       }
+      song_suggestions: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          fulfilled_at: string | null
+          id: string
+          preferred_language: string | null
+          scripture_reference: string | null
+          song_id: string | null
+          status: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          preferred_language?: string | null
+          scripture_reference?: string | null
+          song_id?: string | null
+          status?: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          preferred_language?: string | null
+          scripture_reference?: string | null
+          song_id?: string | null
+          status?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "song_suggestions_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       songs: {
         Row: {
           audio_url: string | null
@@ -1180,6 +1351,8 @@ export type Database = {
           id: string
           language: string | null
           occasion: string | null
+          suggested_by: string | null
+          suggested_by_display: string | null
           tags: string[] | null
           thumbnail_url: string | null
           title: string
@@ -1193,6 +1366,8 @@ export type Database = {
           id?: string
           language?: string | null
           occasion?: string | null
+          suggested_by?: string | null
+          suggested_by_display?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           title: string
@@ -1206,12 +1381,36 @@ export type Database = {
           id?: string
           language?: string | null
           occasion?: string | null
+          suggested_by?: string | null
+          suggested_by_display?: string | null
           tags?: string[] | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       synced_lyrics: {
         Row: {
@@ -1491,6 +1690,16 @@ export type Database = {
         }
         Relationships: []
       }
+      v_my_referral_totals: {
+        Row: {
+          me: string | null
+          paid_out_pence: number | null
+          pending_payout_pence: number | null
+          total_earned_pence: number | null
+          total_referrals: number | null
+        }
+        Relationships: []
+      }
       v_referral_earnings_detailed: {
         Row: {
           amount: number | null
@@ -1551,6 +1760,14 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      apply_referral: {
+        Args: { new_user: string; raw_ref: string }
+        Returns: undefined
+      }
+      approve_referral_for: {
+        Args: { order_total_pence: number; referred: string }
+        Returns: undefined
+      }
       approve_testimony: {
         Args: { p_admin: string; p_testimony_id: string }
         Returns: undefined
@@ -1558,6 +1775,10 @@ export type Database = {
       atomic_grant_first_admin: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      ensure_ref_code_for: {
+        Args: { user_id: string }
+        Returns: undefined
       }
       extract_single_ip: {
         Args: { ip_input: string }
@@ -1704,6 +1925,10 @@ export type Database = {
       mark_referral_earnings_as_paid: {
         Args: { earnings_ids: string[]; payout_method?: string }
         Returns: undefined
+      }
+      privacy_safe_name: {
+        Args: { u_id: string }
+        Returns: string
       }
       process_referral_earnings: {
         Args: { new_user: string; payment_amount: number }

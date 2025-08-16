@@ -25,6 +25,8 @@ interface Song {
   thumbnail_url: string | null;
   tags: string[] | null;
   featured: boolean | null;
+  suggested_by?: string;
+  suggested_by_display?: string;
 }
 
 interface Lyrics {
@@ -68,7 +70,7 @@ const SongDetail = () => {
       try {
         const { data, error } = await supabase
           .from("songs")
-          .select("*")
+          .select("*, suggested_by, suggested_by_display")
           .eq("id", id)
           .single();
 
@@ -299,6 +301,23 @@ const SongDetail = () => {
                     </Badge>
                   ))}
                 </div>
+
+                {/* Recognition Banner */}
+                {song.suggested_by && (
+                  <div className="bg-amber-500/10 border border-amber-400/30 rounded-lg p-4 mb-6">
+                    <p className="text-amber-200 text-sm flex items-center gap-2">
+                      🏆 This song was inspired by our supporter, <span className="font-semibold">{song.suggested_by_display}</span>. Thank you for shaping the sound of worship!
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-auto border-amber-400/30 text-amber-300 hover:bg-amber-500/20"
+                        onClick={handleShare}
+                      >
+                        Share
+                      </Button>
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Controls */}
