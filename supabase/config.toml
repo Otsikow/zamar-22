@@ -21,6 +21,9 @@ verify_jwt = false
 [functions.donations-create-checkout]
 verify_jwt = false
 
+[functions.ping]
+verify_jwt = false
+
 [functions.stripe-checkout-smoke]
 verify_jwt = false
 

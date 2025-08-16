@@ -277,13 +277,14 @@ const Donate = () => {
                         const { data, error } = await supabase.functions.invoke("stripe-checkout-smoke", {
                           body: {},
                         });
+                        console.log("SMOKE:", data); // This will show the real error details
                         if (error) throw error;
-                        if (!data?.url) throw new Error("No checkout URL returned");
+                        if (!data?.ok) throw new Error(data?.error || "Unknown error");
                         window.location.href = data.url;
                       } catch (e: any) {
                         console.error("Smoke test error:", e);
                         toast({
-                          title: "Smoke Test Error",
+                          title: "Smoke Test Error",  
                           description: e?.message ?? "Smoke test failed",
                           variant: 'destructive',
                         });
