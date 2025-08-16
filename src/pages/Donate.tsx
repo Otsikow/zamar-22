@@ -117,25 +117,25 @@ const Donate = () => {
     setIsProcessing(true);
     
     try {
-      // TODO: Implement Stripe payment integration
-      toast({
-        title: t('donate.payment_processing', 'Payment Processing'),
-        description: t('donate.payment_processing_desc', 'Stripe payment integration will be implemented here.'),
+      const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
+        body: { 
+          amount: amount, 
+          campaign: selectedCampaign,
+          donationType: donationType
+        },
       });
-      
-      // Simulate processing
-      setTimeout(() => {
-        setIsProcessing(false);
-        toast({
-          title: t('donate.thank_you', 'Thank You!'),
-          description: t('donate.success_message', 'Your donation helps us create meaningful music.'),
-        });
-      }, 2000);
-    } catch (error) {
+
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL returned");
+
+      // Redirect to Stripe checkout
+      window.location.href = data.url as string;
+    } catch (error: any) {
+      console.error("Donation checkout error:", error);
       setIsProcessing(false);
       toast({
         title: t('donate.error_title', 'Error'),
-        description: t('donate.error_desc', 'Payment failed. Please try again.'),
+        description: error?.message ?? t('donate.error_desc', 'Payment failed. Please try again.'),
         variant: 'destructive',
       });
     }
