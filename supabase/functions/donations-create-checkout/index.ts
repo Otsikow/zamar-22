@@ -2,10 +2,6 @@
 // Deno Deploy / Supabase Edge Function
 import Stripe from "https://esm.sh/stripe@14.23.0";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-06-20",
-});
-
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://www.zamarsongs.com";
 
 function corsHeaders(origin?: string) {
@@ -34,6 +30,8 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log("Processing donation request");
+    
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method not allowed" }), {
         status: 405,
@@ -41,7 +39,24 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Check if Stripe key exists
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("STRIPE_SECRET_KEY environment variable is not set");
+      return new Response(JSON.stringify({ error: "Stripe configuration error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      });
+    }
+    console.log("Stripe key found:", stripeKey ? "Yes" : "No");
+
+    // Initialize Stripe
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2024-06-20",
+    });
+
     const body = (await req.json()) as Body;
+    console.log("Request body:", body);
 
     // Basic validation
     const currency = (body.currency || "gbp").toLowerCase();
