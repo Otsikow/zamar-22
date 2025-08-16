@@ -107,37 +107,39 @@ const Donate = () => {
     const amount = getFinalAmount();
     if (!amount || parseFloat(amount) < 1) {
       toast({
-        title: t('donate.invalid_amount_title', 'Invalid Amount'),
-        description: t('donate.invalid_amount_desc', 'Please enter a valid donation amount.'),
+        title: "Invalid Amount",
+        description: "Enter at least £1",
         variant: 'destructive',
       });
       return;
     }
 
-    setIsProcessing(true);
+    const amount_cents = Math.round(parseFloat(amount) * 100);
     
+    setIsProcessing(true);
     try {
-      // TODO: Implement Stripe payment integration
-      toast({
-        title: t('donate.payment_processing', 'Payment Processing'),
-        description: t('donate.payment_processing_desc', 'Stripe payment integration will be implemented here.'),
+      const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
+        body: { 
+          amount_cents,
+          currency: 'GBP',
+          recurring: donationType === 'monthly',
+          campaign: selectedCampaign === 'general' ? 'General Fund' : campaigns.find(c => c.id === selectedCampaign)?.title
+        },
       });
-      
-      // Simulate processing
-      setTimeout(() => {
-        setIsProcessing(false);
-        toast({
-          title: t('donate.thank_you', 'Thank You!'),
-          description: t('donate.success_message', 'Your donation helps us create meaningful music.'),
-        });
-      }, 2000);
-    } catch (error) {
-      setIsProcessing(false);
+
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL returned");
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (e: any) {
+      console.error("Checkout error:", e);
       toast({
-        title: t('donate.error_title', 'Error'),
-        description: t('donate.error_desc', 'Payment failed. Please try again.'),
+        title: "Error",
+        description: e?.message ?? "Could not start checkout. Please try again.",
         variant: 'destructive',
       });
+      setIsProcessing(false);
     }
   };
 
