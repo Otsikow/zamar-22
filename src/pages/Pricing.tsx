@@ -5,10 +5,61 @@ import { Check, Star, Clock, Music, Cross, Heart, Users, Download, Megaphone } f
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
+import ProductCheckoutButton from "@/components/ui/product-checkout-button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price_cents: number;
+  currency: string;
+  billing_interval: string;
+  category: string;
+  is_active: boolean;
+}
 
 // Pricing page component
 const Pricing = () => {
   const { t } = useTranslation();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .order('price_cents', { ascending: true });
+        
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const formatPrice = (priceCents: number, currency: string = 'GBP') => {
+    const price = priceCents / 100;
+    return `£${price.toFixed(price % 1 === 0 ? 0 : 2)}`;
+  };
+
+  const getProductsByCategory = (category: string) => 
+    products.filter(p => p.category === category);
+
+  const customSongProducts = getProductsByCategory('custom_song');
+  const supporterProducts = getProductsByCategory('supporter');
+  const subscriptionProducts = getProductsByCategory('subscription');
+  const advertisingProducts = getProductsByCategory('advertising');
+  const downloadProducts = getProductsByCategory('download');
   const customSongTiers = [
     {
       name: t('pricing.essentials', 'Essentials'),
@@ -153,64 +204,60 @@ const Pricing = () => {
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-               {customSongTiers.map((tier, index) => {
-                 const IconComponent = tier.icon;
-                 return (
+              {customSongProducts.map((product, index) => {
+                const isPopular = product.name.includes('Signature');
+                const isLimited = product.name.includes('Premier');
+                const IconComponent = product.name.includes('Essential') ? Music : 
+                                   product.name.includes('Signature') ? Star : Clock;
+                
+                return (
                 <Card 
-                  key={tier.name} 
+                  key={product.id} 
                   className={`relative bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 ${
-                    tier.popular ? 'ring-2 ring-primary/20 shadow-gold' : ''
+                    isPopular ? 'ring-2 ring-primary/20 shadow-gold' : ''
                   }`}
                 >
-                  {tier.badge && (
+                  {(isPopular || isLimited) && (
                     <Badge className={`absolute -top-3 left-1/2 transform -translate-x-1/2 font-semibold ${
-                      tier.popular 
+                      isPopular 
                         ? 'bg-gradient-primary text-black' 
                         : 'bg-accent text-accent-foreground border border-primary/30'
                     }`}>
-                      {tier.badge}
+                      {isPopular ? t('pricing.most_popular', 'Most Popular') : t('pricing.limited_availability', 'Limited Availability')}
                     </Badge>
                   )}
                   
                   <CardHeader className="text-center pb-4">
                      <div className="flex justify-center mb-4">
-                       <div className={`p-3 rounded-full ${tier.popular ? 'bg-primary/30' : 'bg-primary/20'}`}>
+                       <div className={`p-3 rounded-full ${isPopular ? 'bg-primary/30' : 'bg-primary/20'}`}>
                          <IconComponent className="w-6 h-6 text-primary" />
                        </div>
                      </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
-                      {tier.name}
+                      {product.name.replace('Custom Song – ', '')}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground font-inter">
-                      {tier.description}
+                      {product.description}
                     </p>
                     <div className="text-4xl font-bold text-primary mt-4">
-                      {tier.price}
+                      {formatPrice(product.price_cents, product.currency)}
                     </div>
                   </CardHeader>
                   
                   <CardContent>
-                    <ul className="space-y-3 mb-8">
-                      {tier.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-3">
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="text-sm font-inter text-muted-foreground">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="mb-8">
+                      <p className="text-sm text-muted-foreground font-inter text-center">
+                        {t('pricing.personalized_creation', 'Personalized creation just for you')}
+                      </p>
+                    </div>
                     
-                    <Button 
-                      className="w-full" 
-                      variant={tier.popular ? "hero" : "outline"}
+                    <ProductCheckoutButton
+                      productId={product.id}
+                      label={t('pricing.order_now', 'Order Now')}
+                      variant={isPopular ? "hero" : "outline"}
                       size="lg"
-                      asChild
-                    >
-                      <Link to={`/request?tier=${tier.name.toLowerCase()}`}>
-                        {tier.cta}
-                      </Link>
-                    </Button>
+                      className="w-full"
+                    />
                   </CardContent>
                  </Card>
                  );
@@ -228,15 +275,20 @@ const Pricing = () => {
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {supporterPlans.map((plan, index) => (
+              {[...supporterProducts, ...subscriptionProducts].map((product, index) => {
+                const isLifetime = product.name.includes('Lifetime');
+                const isFamily = product.name.includes('Family');
+                const isYearly = product.billing_interval === 'yearly';
+                
+                return (
                 <Card 
-                  key={plan.name} 
+                  key={product.id} 
                   className="relative bg-gradient-card border-border hover:border-primary/30 transition-all duration-300"
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-4">
                        <div className="p-3 rounded-full bg-primary/20">
-                         {index === 0 ? (
+                         {isLifetime ? (
                            <Heart className="w-6 h-6 text-primary" />
                          ) : (
                            <Users className="w-6 h-6 text-primary" />
@@ -244,47 +296,48 @@ const Pricing = () => {
                        </div>
                     </div>
                     <CardTitle className="text-2xl font-playfair text-foreground">
-                      {plan.name}
+                      {product.name.replace('Subscription – ', '')}
                     </CardTitle>
-                    {plan.subtitle && (
+                    {isLifetime && (
                       <p className="text-sm text-primary font-semibold font-inter">
-                        {plan.subtitle}
+                        {t('pricing.only_first_500', 'Only first 500 supporters')}
+                      </p>
+                    )}
+                    {isFamily && (
+                      <p className="text-sm text-primary font-semibold font-inter">
+                        {t('pricing.up_to_5_accounts', 'up to 5 accounts')}
                       </p>
                     )}
                     <div className="mt-4">
                       <div className="text-4xl font-bold text-primary">
-                        {plan.price}
+                        {formatPrice(product.price_cents, product.currency)}{!isLifetime && `/${product.billing_interval === 'yearly' ? 'year' : 'month'}`}
                       </div>
-                       {plan.yearlyPrice && (
+                       {isYearly && (
                          <div className="text-sm text-muted-foreground">
-                           {t('pricing.or', 'or')} {plan.yearlyPrice} {plan.savings && `(${plan.savings})`}
+                           {t('pricing.save_money', 'Save money with yearly billing')}
                          </div>
                        )}
                     </div>
                   </CardHeader>
                   
                   <CardContent>
-                    <ul className="space-y-3 mb-8">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-3">
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="text-sm font-inter text-muted-foreground">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="mb-8">
+                      <p className="text-sm text-muted-foreground font-inter text-center">
+                        {product.description || t('pricing.full_access', 'Full access to platform features')}
+                      </p>
+                    </div>
                     
-                    <Button 
-                      className="w-full" 
+                    <ProductCheckoutButton
+                      productId={product.id}
+                      label={isLifetime ? t('pricing.become_supporter', 'Become a Supporter') : t('pricing.subscribe_now', 'Subscribe Now')}
                       variant="outline"
                       size="lg"
-                    >
-                      {plan.cta}
-                    </Button>
+                      className="w-full"
+                    />
                   </CardContent>
-                </Card>
-              ))}
+                 </Card>
+                );
+              })}
             </div>
           </div>
 
@@ -295,50 +348,91 @@ const Pricing = () => {
             </h2>
             
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-              {otherServices.map((service, index) => (
-                <Card key={service.category} className="bg-gradient-card border-border">
-                  <CardHeader className="text-center pb-4">
-                     <div className="flex justify-center mb-4">
-                       <div className="p-3 rounded-full bg-primary/20">
-                         {service.category === "Advertiser Packages" ? (
-                           <Megaphone className="w-6 h-6 text-primary" />
-                         ) : (
-                           <Download className="w-6 h-6 text-primary" />
-                         )}
-                       </div>
+              <Card className="bg-gradient-card border-border">
+                <CardHeader className="text-center pb-4">
+                   <div className="flex justify-center mb-4">
+                     <div className="p-3 rounded-full bg-primary/20">
+                       <Megaphone className="w-6 h-6 text-primary" />
                      </div>
-                    <CardTitle className="text-xl font-playfair text-foreground">
-                      {service.category}
-                    </CardTitle>
-                  </CardHeader>
+                   </div>
+                  <CardTitle className="text-xl font-playfair text-foreground">
+                    Advertiser Packages
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="space-y-3 mb-6">
+                    {advertisingProducts.map((product, index) => (
+                      <div key={product.id} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+                        <span className="text-sm font-inter text-muted-foreground">
+                          {product.name.replace('Advertiser – ', '')}
+                        </span>
+                        <span className="text-sm font-semibold text-primary">
+                          {formatPrice(product.price_cents)}/month
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                   
-                  <CardContent>
-                    <div className="space-y-3 mb-6">
-                      {service.plans.map((plan, planIndex) => (
-                        <div key={planIndex} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
-                          <span className="text-sm font-inter text-muted-foreground">
-                            {plan.name}
-                          </span>
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    size="lg"
+                    asChild
+                  >
+                    <Link to="/advertise">
+                      Advertise with Us
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-card border-border">
+                <CardHeader className="text-center pb-4">
+                   <div className="flex justify-center mb-4">
+                     <div className="p-3 rounded-full bg-primary/20">
+                       <Download className="w-6 h-6 text-primary" />
+                     </div>
+                   </div>
+                  <CardTitle className="text-xl font-playfair text-foreground">
+                    Pay-Per-Download
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="space-y-3 mb-6">
+                    {downloadProducts.map((product, index) => (
+                      <div key={product.id} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
+                        <span className="text-sm font-inter text-muted-foreground">
+                          {product.name.replace('Pay-Per-Download – ', '')}
+                        </span>
+                        <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-primary">
-                            {plan.price}
+                            {formatPrice(product.price_cents)}
                           </span>
+                          <ProductCheckoutButton
+                            productId={product.id}
+                            label="Buy"
+                            variant="outline"
+                            size="sm"
+                          />
                         </div>
-                      ))}
-                    </div>
-                    
-                    <Button 
-                      className="w-full" 
-                      variant="outline"
-                      size="lg"
-                      asChild
-                    >
-                      <Link to={service.category === "Advertiser Packages" ? "/advertise" : "/donate"}>
-                        {service.cta}
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    size="lg"
+                    asChild
+                  >
+                    <Link to="/songs">
+                      Browse Songs
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Donations Section */}
