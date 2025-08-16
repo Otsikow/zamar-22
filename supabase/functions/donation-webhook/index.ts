@@ -54,11 +54,15 @@ serve(async (req) => {
       const currency = session.currency?.toUpperCase() || 'GBP';
       const metadata = session.metadata || {};
       
-      // Check if donation already exists
+      // Find existing donation by user and amount (since we don't store checkout session)
       const { data: existingDonation } = await supabase
         .from('donations')
         .select('id')
-        .eq('stripe_checkout_session', session.id)
+        .eq('user_id', metadata.user_id || null)
+        .eq('amount', amount)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (existingDonation) {
@@ -66,8 +70,6 @@ serve(async (req) => {
         const { error } = await supabase
           .from('donations')
           .update({
-            amount,
-            currency,
             stripe_payment_id: session.payment_intent as string,
             status: 'completed'
           })
@@ -85,11 +87,9 @@ serve(async (req) => {
           .insert({
             user_id: metadata.user_id || null,
             amount,
-            currency,
             campaign: metadata.campaign || 'General Fund',
             type: metadata.type || 'one_time',
             stripe_payment_id: session.payment_intent as string,
-            stripe_checkout_session: session.id,
             status: 'completed'
           });
 
@@ -136,11 +136,9 @@ serve(async (req) => {
             .insert({
               user_id: metadata.user_id || null,
               amount: invoice.amount_paid / 100, // Convert from cents to decimal
-              currency: invoice.currency.toUpperCase(),
               campaign: metadata.campaign || 'General Fund',
               type: 'recurring',
               stripe_payment_id: invoice.payment_intent as string,
-              stripe_checkout_session: session.id,
               status: 'completed'
             });
 

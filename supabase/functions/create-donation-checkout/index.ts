@@ -15,6 +15,8 @@ serve(async (req) => {
   try {
     const { amount_cents, currency = 'GBP', recurring = false, campaign = 'General Fund' } = await req.json();
 
+    console.log("Creating donation checkout:", { amount_cents, currency, recurring, campaign });
+
     if (!amount_cents || amount_cents < 100) {
       throw new Error("Minimum donation is £1");
     }
@@ -32,10 +34,19 @@ serve(async (req) => {
       const token = authHeader.replace("Bearer ", "");
       const { data } = await supabaseClient.auth.getUser(token);
       user_id = data.user?.id || null;
+      console.log("User authenticated:", { user_id });
     }
 
+    // Check if Stripe key exists
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      console.error("STRIPE_SECRET_KEY environment variable is not set");
+      throw new Error("Stripe configuration error");
+    }
+    console.log("Stripe key found:", stripeKey ? "Yes" : "No");
+
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
@@ -98,10 +109,8 @@ serve(async (req) => {
     await supabase.from('donations').insert({
       user_id,
       amount: amount_cents / 100, // Store as decimal amount, not cents
-      currency,
       campaign,
       type: recurring ? 'recurring' : 'one_time',
-      stripe_checkout_session: session.id,
       status: 'pending'
     });
 
