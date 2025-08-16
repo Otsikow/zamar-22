@@ -117,19 +117,28 @@ const Donate = () => {
     setIsProcessing(true);
     
     try {
+      const amountGBP = Number(amount); // ensure numeric
+      const payload = {
+        amountGBP,
+        campaign_id: selectedCampaign || "general",
+        donor_name: "", // Add user name if available
+        donor_email: "", // Add user email if available
+      };
+
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
-        body: { 
-          amount: amount, 
-          campaign: selectedCampaign,
-          donationType: donationType
-        },
+        method: "POST",
+        body: payload,
       });
 
-      if (error) throw error;
-      if (!data?.url) throw new Error("No checkout URL returned");
+      if (error) {
+        throw new Error(error.message ?? "Donation could not start. Please try again.");
+      }
 
-      // Redirect to Stripe checkout
-      window.location.href = data.url as string;
+      if (data?.url) {
+        window.location.href = data.url; // Stripe-hosted payment page
+      } else {
+        throw new Error("Could not create checkout session.");
+      }
     } catch (error: any) {
       console.error("Donation checkout error:", error);
       setIsProcessing(false);
