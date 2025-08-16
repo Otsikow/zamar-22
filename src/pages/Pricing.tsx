@@ -60,121 +60,17 @@ const Pricing = () => {
   const subscriptionProducts = getProductsByCategory('subscription');
   const advertisingProducts = getProductsByCategory('advertising');
   const downloadProducts = getProductsByCategory('download');
-  const customSongTiers = [
-    {
-      name: t('pricing.essentials', 'Essentials'),
-      price: "£25",
-      popular: false,
-      badge: null,
-      features: [
-        t('pricing.feature_1_song', '1 song'),
-        t('pricing.feature_single_theme', 'Single theme'),
-        t('pricing.feature_1_genre', '1 genre choice'),
-        t('pricing.feature_delivery_3_4', 'Delivery in 3–4 days'),
-        t('pricing.feature_mp3_download', 'MP3 download'),
-        t('pricing.feature_basic_production', 'Basic production')
-      ],
-      icon: Music,
-      description: t('pricing.perfect_for_quick', 'Perfect for quick personal messages'),
-      cta: t('pricing.order_now', 'Order Now')
-    },
-    {
-      name: t('pricing.signature', 'Signature'),
-      price: "£60",
-      popular: true,
-      badge: t('pricing.most_popular', 'Most Popular'),
-      features: [
-        t('pricing.feature_1_song_2_versions', '1 song in 2 versions'),
-        t('pricing.feature_multiple_themes', 'Multiple themes'),
-        t('pricing.feature_pdf_lyrics', 'PDF lyrics included'),
-        t('pricing.feature_delivery_48_72', 'Delivery in 48–72 hrs'),
-        t('pricing.feature_high_quality_mp3', 'High-quality MP3'),
-        t('pricing.feature_professional_mixing', 'Professional mixing'),
-        t('pricing.feature_1_minor_revision', '1 minor revision')
-      ],
-      icon: Star,
-      description: t('pricing.most_popular_choice', 'Most popular choice for special occasions'),
-      cta: t('pricing.order_now', 'Order Now')
-    },
-    {
-      name: t('pricing.premier', 'Premier'),
-      price: "£129",
-      popular: false,
-      badge: t('pricing.limited_availability', 'Limited Availability'),
-      features: [
-        t('pricing.feature_2_songs_2_versions', '2 songs in 2 versions'),
-        t('pricing.feature_complex_storytelling', 'Complex storytelling'),
-        t('pricing.feature_free_major_revision', 'Free major revision'),
-        t('pricing.feature_delivery_24_48', 'Delivery in 24–48 hrs'),
-        t('pricing.feature_studio_quality', 'Studio-quality production'),
-        t('pricing.feature_mp3_wav_instrumental', 'MP3 + WAV + Instrumental versions'),
-        t('pricing.feature_priority_support', 'Priority support')
-      ],
-      icon: Clock,
-      description: t('pricing.premium_experience', 'Premium experience with fastest delivery'),
-      cta: t('pricing.order_now', 'Order Now')
-    }
-  ];
 
-  const supporterPlans = [
-    {
-      name: t('pricing.supporter_lifetime', 'Supporter Lifetime'),
-      price: "£49",
-      subtitle: t('pricing.only_first_500', 'Only first 500 supporters'),
-      features: [
-        t('pricing.ad_free_streaming', 'Ad-free streaming'),
-        t('pricing.unlimited_downloads', 'Unlimited downloads (songs & lyrics)'),
-        t('pricing.playlist_creation', 'Playlist creation'),
-        t('pricing.song_suggestion_submissions', 'Song suggestion submissions'),
-        t('pricing.access_my_library', 'Access to My Library')
-      ],
-      cta: t('pricing.become_supporter', 'Become a Supporter')
-    },
-    {
-      name: t('pricing.standard', 'Standard'),
-      price: "£6/month",
-      yearlyPrice: "£60/year",
-      savings: t('pricing.save_12', 'save £12'),
-      features: [
-        t('pricing.all_supporter_perks', 'All Supporter perks'),
-        t('pricing.exclusive_playlists', 'Exclusive playlists'),
-        t('pricing.early_access_new_releases', 'Early access to new releases'),
-        t('pricing.behind_scenes_content', 'Behind-the-scenes content')
-      ],
-      cta: t('pricing.subscribe_now', 'Subscribe Now')
-    },
-    {
-      name: t('pricing.family_church', 'Family/Church'),
-      price: "£12/month",
-      yearlyPrice: "£120/year",
-      subtitle: t('pricing.up_to_5_accounts', 'up to 5 accounts'),
-      features: [
-        t('pricing.all_standard_perks', 'All Standard perks for multiple users')
-      ],
-      cta: t('pricing.subscribe_now', 'Subscribe Now')
-    }
-  ];
-
-  const otherServices = [
-    {
-      category: "Advertiser Packages",
-      plans: [
-        { name: "Banner Ads", price: "£150/month" },
-        { name: "Audio Ads", price: "£300/month" },
-        { name: "Combo (Banner + Audio)", price: "£400/month" }
-      ],
-      cta: "Advertise with Us"
-    },
-    {
-      category: "Pay-Per-Download",
-      plans: [
-        { name: "Single Song", price: "£1.29" },
-        { name: "Album", price: "£4.99" },
-        { name: "Bundle: 10 songs", price: "£9.99" }
-      ],
-      cta: "Buy Now"
-    }
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading pricing options...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
