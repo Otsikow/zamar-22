@@ -107,39 +107,37 @@ const Donate = () => {
     const amount = getFinalAmount();
     if (!amount || parseFloat(amount) < 1) {
       toast({
-        title: "Invalid Amount",
-        description: "Enter at least £1",
+        title: t('donate.invalid_amount_title', 'Invalid Amount'),
+        description: t('donate.invalid_amount_desc', 'Please enter a valid donation amount.'),
         variant: 'destructive',
       });
       return;
     }
 
-    const amountNumber = parseFloat(amount);
-    const campaign = selectedCampaign === 'general' ? 'General Fund' : campaigns.find(c => c.id === selectedCampaign)?.title;
-    
     setIsProcessing(true);
+    
     try {
-      const { data, error } = await supabase.functions.invoke("donations-create-checkout", {
-        body: { 
-          amount: amountNumber,
-          currency: 'gbp',
-          campaign,
-        },
-      });
-
-      if (error) throw error;
-      if (!data?.url) throw new Error("No checkout URL returned");
-
-      // Redirect to Stripe Checkout
-      window.location.href = data.url;
-    } catch (e: any) {
-      console.error("Checkout error:", e);
+      // TODO: Implement Stripe payment integration
       toast({
-        title: "Error",
-        description: e?.message ?? "Could not start checkout. Please try again.",
+        title: t('donate.payment_processing', 'Payment Processing'),
+        description: t('donate.payment_processing_desc', 'Stripe payment integration will be implemented here.'),
+      });
+      
+      // Simulate processing
+      setTimeout(() => {
+        setIsProcessing(false);
+        toast({
+          title: t('donate.thank_you', 'Thank You!'),
+          description: t('donate.success_message', 'Your donation helps us create meaningful music.'),
+        });
+      }, 2000);
+    } catch (error) {
+      setIsProcessing(false);
+      toast({
+        title: t('donate.error_title', 'Error'),
+        description: t('donate.error_desc', 'Payment failed. Please try again.'),
         variant: 'destructive',
       });
-      setIsProcessing(false);
     }
   };
 
@@ -269,44 +267,6 @@ const Donate = () => {
                       ))}
                     </div>
                   </div>
-
-                  {/* Smoke Test Button - Temporary Debug */}
-                  <Button
-                    onClick={async () => {
-                      try {
-                        const { data, error } = await supabase.functions.invoke("stripe-checkout-smoke", {
-                          body: {},
-                        });
-                        console.log("SMOKE:", data); // This will show the real error details
-
-                        if (error) throw error;
-                        
-                        if (!data?.ok) {
-                          throw new Error(data?.error || data?.warning || "Smoke test failed");
-                        }
-                        
-                        if (!data.url) {
-                          throw new Error(
-                            `No URL. session_id=${data.session_id}, after_retrieve=${data.url_after_retrieve || "null"}`
-                          );
-                        }
-                        
-                        window.location.href = data.url;
-                      } catch (e: any) {
-                        console.error("Smoke test error:", e);
-                        toast({
-                          title: "Smoke Test Error",  
-                          description: e?.message ?? "Smoke test failed",
-                          variant: 'destructive',
-                        });
-                      }
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="mb-4 border-orange-500 text-orange-500 hover:bg-orange-50"
-                  >
-                    🔧 Stripe Smoke Test (£1)
-                  </Button>
 
                   {/* Donate Button */}
                   <Button

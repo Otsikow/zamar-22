@@ -58,12 +58,12 @@ const Header = () => {
           </Link>
 
           {/* Right Side - Auth & Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
-            <Button variant="secondary" size="sm" className="text-xs sm:text-sm px-1 sm:px-2 md:px-4 hidden xs:flex" asChild>
+          <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+            <Button variant="secondary" size="sm" className="text-xs sm:text-sm px-2 sm:px-4" asChild>
               <Link to="/advertise">Advertise</Link>
             </Button>
             {/* Language Selector */}
-            <LanguageSelector className="min-w-[60px] sm:min-w-[80px] md:min-w-[120px]" />
+            <LanguageSelector className="min-w-[80px] sm:min-w-[120px]" />
             {user ? (
               <>
                 {/* Notifications */}

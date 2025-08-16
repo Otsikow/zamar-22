@@ -41,9 +41,6 @@ import NotificationCenter from "./pages/NotificationCenter";
 import Terms from "./pages/Terms";
 import AboutUs from "./pages/AboutUs";
 import Pricing from "./pages/Pricing";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import DonationSuccess from "./pages/DonationSuccess";
-import DonationCancel from "./pages/DonationCancel";
 import Advertise from "./pages/Advertise";
 import Donate from "./pages/Donate";
 import ThankYou from "./pages/ThankYou";
@@ -104,12 +101,9 @@ const App = () => (
                     <Route path="/terms" element={<Terms />} />
                      <Route path="/legal" element={<LegalCompliance />} />
                      <Route path="/legal/gdpr" element={<GDPRPolicy />} />
-                     <Route path="/about" element={<AboutUs />} />
-                     <Route path="/pricing" element={<Pricing />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/donation-success" element={<DonationSuccess />} />
-        <Route path="/donation-cancel" element={<DonationCancel />} />
-                     <Route path="/advertise" element={<Advertise />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/advertise" element={<Advertise />} />
                     <Route path="/testimonies" element={<Testimonies />} />
                     <Route path="/testimony/:id" element={<TestimonyDetail />} />
                     <Route path="/testimonies/submit" element={<TestimoniesSubmit />} />

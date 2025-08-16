@@ -881,51 +881,6 @@ export type Database = {
         }
         Relationships: []
       }
-      products: {
-        Row: {
-          billing_interval: string | null
-          category: string
-          created_at: string | null
-          currency: string
-          description: string | null
-          id: string
-          is_active: boolean | null
-          name: string
-          price_cents: number
-          stripe_price_id: string
-          stripe_product_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          billing_interval?: string | null
-          category: string
-          created_at?: string | null
-          currency?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          name: string
-          price_cents: number
-          stripe_price_id: string
-          stripe_product_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          billing_interval?: string | null
-          category?: string
-          created_at?: string | null
-          currency?: string
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          name?: string
-          price_cents?: number
-          stripe_price_id?: string
-          stripe_product_id?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
@@ -1002,12 +957,9 @@ export type Database = {
           created_at: string
           currency: string | null
           id: string
-          product_id: string | null
           song_id: string | null
           status: string | null
           stripe_payment_id: string | null
-          stripe_payment_intent: string | null
-          stripe_session_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1016,12 +968,9 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
-          product_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
-          stripe_payment_intent?: string | null
-          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1030,23 +979,13 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
-          product_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
-          stripe_payment_intent?: string | null
-          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "purchases_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "purchases_song_id_fkey"
             columns: ["song_id"]
