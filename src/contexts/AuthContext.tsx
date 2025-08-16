@@ -31,15 +31,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Apply referral after sign in
-        if (event === 'SIGNED_IN' && session?.user) {
-          setTimeout(() => {
-            import('@/lib/referral').then(({ applyReferralAfterSignIn }) => {
-              applyReferralAfterSignIn(session.user.id);
-            });
-          }, 0);
-        }
       }
     );
 

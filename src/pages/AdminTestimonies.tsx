@@ -190,18 +190,6 @@ const AdminTestimonies = () => {
     activeTab === 'all' ? true : t.status === activeTab
   );
 
-  // Calculate counts for each category
-  const getCounts = () => {
-    return {
-      pending: testimonies.filter(t => t.status === 'pending').length,
-      approved: testimonies.filter(t => t.status === 'approved').length,
-      rejected: testimonies.filter(t => t.status === 'rejected').length,
-      all: testimonies.length
-    };
-  };
-
-  const counts = getCounts();
-
   if (adminLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">Loading...</div>
@@ -234,18 +222,10 @@ const AdminTestimonies = () => {
             <CardContent className="p-6">
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="pending">
-                    Pending {counts.pending > 0 && <Badge variant="secondary" className="ml-2">{counts.pending}</Badge>}
-                  </TabsTrigger>
-                  <TabsTrigger value="approved">
-                    Approved {counts.approved > 0 && <Badge variant="secondary" className="ml-2">{counts.approved}</Badge>}
-                  </TabsTrigger>
-                  <TabsTrigger value="rejected">
-                    Rejected {counts.rejected > 0 && <Badge variant="secondary" className="ml-2">{counts.rejected}</Badge>}
-                  </TabsTrigger>
-                  <TabsTrigger value="all">
-                    All {counts.all > 0 && <Badge variant="secondary" className="ml-2">{counts.all}</Badge>}
-                  </TabsTrigger>
+                  <TabsTrigger value="pending">Pending</TabsTrigger>
+                  <TabsTrigger value="approved">Approved</TabsTrigger>
+                  <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                  <TabsTrigger value="all">All</TabsTrigger>
                 </TabsList>
               </Tabs>
             </CardContent>

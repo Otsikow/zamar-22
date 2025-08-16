@@ -8,7 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NowPlayingProvider } from "@/contexts/NowPlayingContext";
 import { TranslationProvider } from "@/contexts/TranslationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import BulletproofReferralTracker from "@/components/referrals/BulletproofReferralTracker";
+import { useReferralCapture } from "@/hooks/useReferralCapture";
 import Header from "@/components/navigation/Header";
 import BottomNav from "@/components/navigation/BottomNav";
 import MiniPlayer from "@/components/player/MiniPlayer";
@@ -62,20 +62,13 @@ import FAQ from "./pages/FAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import WelcomeOnSignIn from "@/components/auth/WelcomeOnSignIn";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
-import TestimonyDetail from "./pages/TestimonyDetail";
-import SuggestSong from "./pages/SuggestSong";
-import AdminSuggestions from "./pages/AdminSuggestions";
 
 const queryClient = new QueryClient();
 
 // Component to capture referral codes on all pages
 const ReferralCaptureWrapper = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <>
-      <BulletproofReferralTracker />
-      {children}
-    </>
-  );
+  useReferralCapture();
+  return <>{children}</>;
 };
 
 const App = () => (
@@ -105,7 +98,6 @@ const App = () => (
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/advertise" element={<Advertise />} />
                     <Route path="/testimonies" element={<Testimonies />} />
-                    <Route path="/testimony/:id" element={<TestimonyDetail />} />
                     <Route path="/testimonies/submit" element={<TestimoniesSubmit />} />
                     <Route path="/testimonies/my-submissions" element={<ProtectedRoute><TestimoniesMySubmissions /></ProtectedRoute>} />
                     {/* Public Routes */}
@@ -121,10 +113,9 @@ const App = () => (
                     <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-                     <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
-                     <Route path="/suggest-song" element={<ProtectedRoute><SuggestSong /></ProtectedRoute>} />
-                     <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
-                     <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
+                    <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
+                    <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
+                    <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -152,10 +143,9 @@ const App = () => (
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/referral-ops" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/custom-songs" element={<ProtectedRoute><AdminCustomSongs /></ProtectedRoute>} />
-                     <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
-                     <Route path="/admin/suggestions" element={<ProtectedRoute><AdminSuggestions /></ProtectedRoute>} />
-                     <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
-                     <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
+                    <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
+                    <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
+                    <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     
                      <Route path="*" element={<NotFound />} />
                    </Routes>

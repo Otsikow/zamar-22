@@ -5,31 +5,11 @@ import BackButton from '@/components/ui/back-button';
 const GlobalBack = () => {
   const location = useLocation();
 
-  // Hide on pages that already have their own back buttons or don't need them
-  const hiddenPages = [
-    "/", 
-    "/auth", 
-    "/admin/chat",
-    "/admin/custom-songs",
-    "/analytics",
-    "/create-playlist",
-    "/manage-playlists",
-    "/request-song",
-    "/song-player",
-    "/terms",
-    "/testimonies/my-submissions",
-    "/public-playlists"
-  ];
+  // Hide on home page and auth page
+  // Also hide on admin chat inbox page as it has its own specialized back buttons
+  const hiddenPages = ["/", "/auth", "/admin/chat"];
   
-  // Also hide on dynamic routes that have their own back buttons
-  const isDynamicRouteWithBackButton = 
-    location.pathname.startsWith("/playlist/") ||
-    location.pathname.startsWith("/public-playlist/") ||
-    location.pathname.startsWith("/song/") ||
-    location.pathname.startsWith("/testimony/") ||
-    location.pathname.startsWith("/admin/custom-songs/");
-  
-  if (hiddenPages.includes(location.pathname) || isDynamicRouteWithBackButton) return null;
+  if (hiddenPages.includes(location.pathname)) return null;
 
   return (
     <div className="container mx-auto px-4 max-w-5xl pt-16">

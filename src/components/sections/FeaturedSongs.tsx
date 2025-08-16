@@ -18,8 +18,6 @@ interface Song {
   thumbnail_url: string;
   audio_url?: string;
   tags: string[];
-  suggested_by?: string;
-  suggested_by_display?: string;
 }
 
 const FeaturedSongs = () => {
@@ -34,7 +32,7 @@ const FeaturedSongs = () => {
       try {
         const { data, error } = await supabase
           .from('songs')
-          .select('*, suggested_by, suggested_by_display')
+          .select('*')
           .eq('featured', true)
           .limit(12);
         
@@ -165,18 +163,6 @@ const FeaturedSongs = () => {
                     </Badge>
                   ))}
                 </div>
-                
-                {/* Recognition Badge */}
-                {song.suggested_by && (
-                  <div className="mt-2">
-                    <Badge 
-                      variant="secondary" 
-                      className="text-xs bg-amber-500/15 text-amber-300 border border-amber-400/30 rounded-full px-2 py-1"
-                    >
-                      💡 Inspired by {song.suggested_by_display || 'A Supporter'}
-                    </Badge>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}
