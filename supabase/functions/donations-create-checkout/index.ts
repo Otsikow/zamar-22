@@ -2,7 +2,7 @@
 // Deno Deploy / Supabase Edge Function
 import Stripe from "https://esm.sh/stripe@14.23.0";
 
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://www.zamarsongs.com";
+const SITE_URL = Deno.env.get("SITE_URL") ?? "https://your-domain.com";
 
 function corsHeaders(origin?: string) {
   return {
