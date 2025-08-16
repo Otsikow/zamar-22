@@ -278,8 +278,19 @@ const Donate = () => {
                           body: {},
                         });
                         console.log("SMOKE:", data); // This will show the real error details
+
                         if (error) throw error;
-                        if (!data?.ok) throw new Error(data?.error || "Unknown error");
+                        
+                        if (!data?.ok) {
+                          throw new Error(data?.error || data?.warning || "Smoke test failed");
+                        }
+                        
+                        if (!data.url) {
+                          throw new Error(
+                            `No URL. session_id=${data.session_id}, after_retrieve=${data.url_after_retrieve || "null"}`
+                          );
+                        }
+                        
                         window.location.href = data.url;
                       } catch (e: any) {
                         console.error("Smoke test error:", e);
