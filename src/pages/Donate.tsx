@@ -114,16 +114,16 @@ const Donate = () => {
       return;
     }
 
-    const amount_cents = Math.round(parseFloat(amount) * 100);
+    const amountNumber = parseFloat(amount);
+    const campaign = selectedCampaign === 'general' ? 'General Fund' : campaigns.find(c => c.id === selectedCampaign)?.title;
     
     setIsProcessing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
+      const { data, error } = await supabase.functions.invoke("donations-create-checkout", {
         body: { 
-          amount_cents,
-          currency: 'GBP',
-          recurring: donationType === 'monthly',
-          campaign: selectedCampaign === 'general' ? 'General Fund' : campaigns.find(c => c.id === selectedCampaign)?.title
+          amount: amountNumber,
+          currency: 'gbp',
+          campaign,
         },
       });
 
