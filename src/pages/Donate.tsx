@@ -270,6 +270,32 @@ const Donate = () => {
                     </div>
                   </div>
 
+                  {/* Smoke Test Button - Temporary Debug */}
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const { data, error } = await supabase.functions.invoke("stripe-checkout-smoke", {
+                          body: {},
+                        });
+                        if (error) throw error;
+                        if (!data?.url) throw new Error("No checkout URL returned");
+                        window.location.href = data.url;
+                      } catch (e: any) {
+                        console.error("Smoke test error:", e);
+                        toast({
+                          title: "Smoke Test Error",
+                          description: e?.message ?? "Smoke test failed",
+                          variant: 'destructive',
+                        });
+                      }
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="mb-4 border-orange-500 text-orange-500 hover:bg-orange-50"
+                  >
+                    🔧 Stripe Smoke Test (£1)
+                  </Button>
+
                   {/* Donate Button */}
                   <Button
                     onClick={handleDonate}
