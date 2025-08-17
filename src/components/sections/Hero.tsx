@@ -192,9 +192,9 @@ const Hero = () => {
               className="bg-primary text-black font-semibold text-sm sm:text-base px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 w-full mt-6"
               asChild
             >
-              <Link to="/donate">
+              <Link to="/contact">
                 <Heart className="w-5 h-5 mr-2" />
-                {t('hero.donate_now', 'Donate Now')}
+                {t('hero.contact_us', 'Contact Us')}
               </Link>
             </Button>
           </div>

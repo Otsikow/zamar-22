@@ -77,27 +77,25 @@ Deno.serve(async (req) => {
       });
 
       console.log("Single song purchase recorded:", meta.song_id);
-    } else {
-      // Handle regular donations (both one-time and recurring)
+    } else if (meta.type === "donation") {
+      // Handle donations (both one-time and recurring)
       const isRecurring = meta.recurring === 'true' || s.mode === 'subscription';
       
       await supabase.from("donations").insert({
-        user_id: meta.user_id && meta.user_id !== 'anonymous' ? meta.user_id : null,
+        user_id: null, // Allow anonymous donations
         amount: Math.round(amount / 100), // Convert from pence to pounds
         currency,
-        recurring: isRecurring,
+        type: isRecurring ? 'monthly' : 'one-time',
         stripe_customer_id: s.customer,
         stripe_subscription_id: s.subscription || null,
         stripe_payment_intent: paymentIntent,
         stripe_checkout_session: s.id,
-        campaign: meta.campaign_id ?? "general",
         status: "completed",
       });
       
-      console.log(`${isRecurring ? 'Recurring' : 'One-time'} donation recorded:`, {
+      console.log(`${isRecurring ? 'Monthly' : 'One-time'} donation recorded:`, {
         amount: amount / 100,
-        currency,
-        campaign: meta.campaign_id
+        currency
       });
     }
 

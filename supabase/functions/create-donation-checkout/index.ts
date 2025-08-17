@@ -1,91 +1,84 @@
-// supabase/functions/create-donation-checkout/index.ts
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 import Stripe from 'https://esm.sh/stripe@16.5.0?target=deno'
 
-const cors = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { status: 200, headers: cors })
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { status: 200, headers: corsHeaders })
+  }
 
   try {
-    const bodyText = await req.text()
-    const payload = bodyText ? JSON.parse(bodyText) : {}
-    const { amount: rawAmount, recurring = false, email, campaign_id, campaign_name, user_id } = payload
+    const body = await req.json()
+    const { amount, recurring = false, email } = body
 
-    console.log('Donation checkout request:', {
-      amount: rawAmount,
-      recurring,
-      campaign_id,
-      campaign_name,
-      user_id,
-      email
-    })
+    console.log('Donation request:', { amount, recurring, email })
 
-    // accept 5, "5", "£5", "5.00"
-    const parsed = String(rawAmount ?? '25').replace(/[^\d.]/g, '')
-    const amountInPence = Math.max(100, Math.round(Number(parsed) * 100))
-
-    console.log('Parsed amount:', { raw: rawAmount, parsed, amountInPence, recurring })
-
+    // Validate required environment variables
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
     const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
     
-    if (!STRIPE_SECRET_KEY) throw new Error('Missing STRIPE_SECRET_KEY (sk_...)')
-    
+    if (!STRIPE_SECRET_KEY) {
+      throw new Error('Missing STRIPE_SECRET_KEY')
+    }
+
     console.log('Environment check:', {
       hasStripeKey: !!STRIPE_SECRET_KEY,
       stripeKeyPrefix: STRIPE_SECRET_KEY?.substring(0, 7),
       appUrl: APP_URL
     })
 
-    const stripe = new Stripe(STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() })
+    // Initialize Stripe
+    const stripe = new Stripe(STRIPE_SECRET_KEY, {
+      httpClient: Stripe.createFetchHttpClient(),
+    })
+
+    // Convert amount to pence and ensure minimum
+    const amountInPence = Math.max(100, Math.round(Number(amount) * 100))
 
     let session
 
     if (recurring) {
-      // 🔄 Recurring donation via subscription
+      // Monthly recurring donation
       session = await stripe.checkout.sessions.create({
         mode: 'subscription',
-        customer_email: email,
+        customer_email: email || undefined,
         line_items: [{
           price_data: {
             currency: 'gbp',
             recurring: { interval: 'month' },
-            product_data: { name: campaign_name || 'Monthly Donation to Zamar' },
+            product_data: { name: 'Monthly Donation to Zamar' },
             unit_amount: amountInPence,
           },
           quantity: 1,
         }],
         metadata: {
-          campaign_id: String(campaign_id ?? ''),
-          campaign_name: campaign_name || 'General Fund',
-          user_id: String(user_id ?? ''),
+          type: 'donation',
           recurring: 'true',
         },
         success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${APP_URL}/donate`,
       })
     } else {
-      // 💵 One-time donation
+      // One-time donation
       session = await stripe.checkout.sessions.create({
         mode: 'payment',
-        customer_email: email,
+        customer_email: email || undefined,
         line_items: [{
           price_data: {
             currency: 'gbp',
-            product_data: { name: campaign_name || 'One-Time Donation to Zamar' },
+            product_data: { name: 'One-Time Donation to Zamar' },
             unit_amount: amountInPence,
           },
           quantity: 1,
         }],
         metadata: {
-          campaign_id: String(campaign_id ?? ''),
-          campaign_name: campaign_name || 'General Fund',
-          user_id: String(user_id ?? ''),
+          type: 'donation',
           recurring: 'false',
         },
         success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -93,19 +86,22 @@ Deno.serve(async (req) => {
       })
     }
 
+    console.log('Checkout session created:', session.id)
+
     return new Response(JSON.stringify({ url: session.url }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...cors },
     })
-  } catch (e) {
-    const msg = (e as any)?.message || String(e)
-    console.error('create-donation-checkout error:', e) // shows stack in Supabase Logs
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.error('Donation checkout error:', error)
+    
     return new Response(JSON.stringify({
-      error: msg,
-      hint: 'Check STRIPE_SECRET_KEY (sk_...), numeric amount, and APP_URL.',
+      error: errorMessage,
+      hint: 'Check STRIPE_SECRET_KEY, amount validation, and environment setup.',
     }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
       status: 400,
-      headers: { 'Content-Type': 'application/json', ...cors },
     })
   }
 })

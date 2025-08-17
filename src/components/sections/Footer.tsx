@@ -106,18 +106,6 @@ const Footer = () => {
                   {t('footer.contact_us', 'Contact Us')}
                 </Link>
               </li>
-              <li>
-                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                  <Heart className="w-4 h-4" />
-                  {t('footer.donate', 'Donate')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                  <HeartHandshake className="w-4 h-4" />
-                  {t('footer.support_mission', 'Support Our Mission')}
-                </Link>
-              </li>
             </ul>
           </div>
         </div>

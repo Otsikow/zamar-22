@@ -133,9 +133,9 @@ const App = () => (
                     <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                    <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
-                    <Route path="/donate" element={<ProtectedRoute><Donate /></ProtectedRoute>} />
-                    <Route path="/thank-you" element={<ProtectedRoute><ThankYou /></ProtectedRoute>} />
+                     <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
+                     <Route path="/donate" element={<Donate />} />
+                     <Route path="/thank-you" element={<ProtectedRoute><ThankYou /></ProtectedRoute>} />
                     
                     {/* Referral Routes */}
                     <Route path="/referrals" element={<ProtectedRoute><ReferralDashboardComponent /></ProtectedRoute>} />
