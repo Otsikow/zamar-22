@@ -167,11 +167,16 @@ export const SuggestSongModal = ({ open, onOpenChange }: SuggestSongModalProps) 
               </SelectTrigger>
               <SelectContent className="bg-background border z-[10000]">
                 <SelectItem value="English">English</SelectItem>
-                <SelectItem value="Twi">Twi</SelectItem>
-                <SelectItem value="Yoruba">Yoruba</SelectItem>
-                <SelectItem value="Hausa">Hausa</SelectItem>
-                <SelectItem value="Swahili">Swahili</SelectItem>
                 <SelectItem value="Spanish">Spanish</SelectItem>
+                <SelectItem value="French">French</SelectItem>
+                <SelectItem value="German">German</SelectItem>
+                <SelectItem value="Italian">Italian</SelectItem>
+                <SelectItem value="Portuguese">Portuguese</SelectItem>
+                <SelectItem value="Russian">Russian</SelectItem>
+                <SelectItem value="Chinese">Chinese</SelectItem>
+                <SelectItem value="Japanese">Japanese</SelectItem>
+                <SelectItem value="Arabic">Arabic</SelectItem>
+                <SelectItem value="Hindi">Hindi</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
