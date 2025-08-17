@@ -47,6 +47,17 @@ interface CustomSong {
   created_at: string;
 }
 
+interface SongSuggestion {
+  id: string;
+  title: string | null;
+  description: string | null;
+  scripture_reference: string | null;
+  status: string;
+  created_at: string;
+  fulfilled_at: string | null;
+  admin_notes: string | null;
+}
+
 interface Playlist {
   id: string;
   name: string;
@@ -76,8 +87,10 @@ const Library = () => {
   const [customSongs, setCustomSongs] = useState<CustomSong[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [favourites, setFavourites] = useState<Favourite[]>([]);
+  const [suggestions, setSuggestions] = useState<SongSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("songs");
+  const [customSubTab, setCustomSubTab] = useState("songs");
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { playQueue } = useNowPlaying();
 
@@ -96,13 +109,14 @@ const Library = () => {
       }
       setUser(session.user);
       
-      // Fetch user's purchases, requests, custom songs, playlists, and favourites
+      // Fetch user's purchases, requests, custom songs, playlists, favourites, and suggestions
       await Promise.all([
         fetchPurchases(session.user.id),
         fetchRequests(session.user.id),
         fetchCustomSongs(session.user.id),
         fetchPlaylists(session.user.id),
         fetchFavourites(session.user.id),
+        fetchSuggestions(session.user.id),
       ]);
 
       setIsLoading(false);
@@ -259,6 +273,40 @@ const Library = () => {
     }
   };
 
+  const fetchSuggestions = async (userId: string) => {
+    try {
+      console.log("Fetching suggestions for user:", userId);
+      
+      const { data, error } = await supabase
+        .from("song_suggestions")
+        .select("id, title, description, scripture_reference, status, created_at, fulfilled_at, admin_notes")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      console.log("Suggestions query result:", { data, error });
+
+      if (error) {
+        console.error("Database error:", error);
+        toast({
+          title: t('errors.fetchSuggestionsTitle', 'Error fetching suggestions'),
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
+      console.log("Setting suggestions:", data);
+      setSuggestions(data || []);
+    } catch (error: any) {
+      console.error("Error fetching suggestions:", error);
+      toast({
+        title: t('errors.general', 'Error'),
+        description: t('errors.fetchSuggestionsDescription', 'Failed to load your song suggestions. Please try refreshing the page.'),
+        variant: "destructive",
+      });
+    }
+  };
+
   const fetchFavourites = async (userId: string) => {
     try {
       // Cast to any to avoid type errors until Supabase types are refreshed
@@ -392,11 +440,11 @@ const Library = () => {
               </TabsTrigger>
               <TabsTrigger value="custom">
                 <Gift className="w-4 h-4" />
-                {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length})
+                {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length + requests.length})
               </TabsTrigger>
-              <TabsTrigger value="requests">
-                <Calendar className="w-4 h-4" />
-                {t('library.tabs.myRequests', 'My Suggestions')} ({requests.length})
+              <TabsTrigger value="suggestions">
+                <Lightbulb className="w-4 h-4" />
+                {t('library.tabs.mySuggestions', 'My Suggestions')} ({suggestions.length})
               </TabsTrigger>
             </TabsList>
 
@@ -631,202 +679,296 @@ const Library = () => {
               )}
             </TabsContent>
 
-            {/* Custom Songs Tab */}
+            {/* Custom Songs Tab - with nested tabs */}
             <TabsContent value="custom" className="mt-6">
-              {customSongs.length === 0 ? (
-                <Card className="bg-gradient-card border-border">
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                      <Music2 className="w-8 h-8 text-black" />
-                    </div>
-                    <h3 className="text-xl font-playfair text-foreground mb-2">
-                      {t('library.noCustomSongs', 'No custom songs yet.')}
-                    </h3>
-                    <p className="text-muted-foreground font-inter mb-6">
-                      {t('library.noCustomSongsDescription', 'Request your own song and see it here when ready.')}
-                    </p>
-                    <Button asChild className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-black">
-                      <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-               ) : (
-                <div className="space-y-4">
-                  {/* Header with Create Button */}
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-foreground">Your Custom Songs</h3>
-                    <Button asChild size="sm" className="gap-2">
-                      <Link to="/request-song">
-                        <Plus className="w-4 h-4" />
-                        Create New Song
-                      </Link>
-                    </Button>
-                  </div>
-                  
-                  <div className="grid gap-6 md:grid-cols-2">
-                  {customSongs.map((song) => (
-                    <Card 
-                      key={song.id} 
-                      className={`bg-gradient-card border transition-all duration-300 hover:shadow-lg ${
-                        song.status === 'delivered' 
-                          ? 'border-amber-400/50 shadow-amber-400/20 shadow-lg bg-gradient-to-br from-amber-50/5 to-orange-50/5' 
-                          : 'border-border hover:border-primary/30'
-                      }`}
-                    >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-lg font-playfair font-bold text-foreground mb-2 flex items-center gap-2">
-                              🎁 {song.song_title}
-                            </CardTitle>
-                            <div className="flex items-center gap-2">
-                              <Badge 
-                                variant={song.status === 'delivered' ? 'default' : 'secondary'}
-                                className={song.status === 'delivered' 
-                                  ? 'bg-amber-400/20 text-amber-700 border-amber-400/30' 
-                                  : 'bg-blue-100 text-blue-700 border-blue-200'
-                                }
-                              >
-                                {song.status === 'delivered' ? `✨ ${t('library.delivered', 'Delivered')}` : song.status === 'created' ? `🎵 ${t('library.created', 'Created')}` : `⏳ ${t('library.pending', 'Pending')}`}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent className="space-y-4">
-                        {/* Audio Player */}
-                        {song.audio_url && (
-                          <div className="bg-accent/30 rounded-lg p-4">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                                <Music2 className="w-5 h-5 text-white" />
-                              </div>
-                              <span className="font-medium text-foreground">{t('library.yourCustomSong', 'Your Custom Song')}</span>
-                            </div>
-                            <audio 
-                              controls 
-                              className="w-full h-10"
-                              style={{
-                                filter: 'sepia(20%) saturate(70%) hue-rotate(35deg) brightness(1.1)',
-                              }}
-                            >
-                              <source src={song.audio_url} type="audio/mpeg" />
-                              Your browser does not support the audio element.
-                            </audio>
-                          </div>
-                        )}
+              <Tabs value={customSubTab} onValueChange={setCustomSubTab}>
+                <TabsList>
+                  <TabsTrigger value="songs">
+                    <Gift className="w-4 h-4" />
+                    Custom Songs ({customSongs.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="requests">
+                    <Calendar className="w-4 h-4" />
+                    My Requests ({requests.length})
+                  </TabsTrigger>
+                </TabsList>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap gap-2">
-                          {song.lyrics_url && (
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              asChild
-                              className="flex-1 min-w-0"
-                            >
-                              <a 
-                                href={song.lyrics_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                download
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                📄 {t('library.downloadLyrics', 'Download Lyrics')}
-                              </a>
-                            </Button>
-                          )}
-                          
-                          {song.audio_url && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              asChild
-                              className="flex-1 min-w-0"
-                            >
-                              <a 
-                                href={song.audio_url} 
-                                download={`${song.song_title}.mp3`}
-                              >
-                                <Download className="w-4 h-4 mr-2" />
-                                {t('library.download', 'Download')} Song
-                              </a>
-                            </Button>
-                          )}
+                {/* Custom Songs SubTab */}
+                <TabsContent value="songs" className="mt-6">
+                  {customSongs.length === 0 ? (
+                    <Card className="bg-gradient-card border-border">
+                      <CardContent className="p-8 text-center">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                          <Music2 className="w-8 h-8 text-black" />
                         </div>
-
-                        {/* Timestamp */}
-                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t border-border/50">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(song.created_at)}
-                          </span>
-                          {song.status === 'delivered' && (
-                            <span className="text-amber-600 font-medium">✨ Ready to enjoy!</span>
-                          )}
-                        </div>
+                        <h3 className="text-xl font-playfair text-foreground mb-2">
+                          {t('library.noCustomSongs', 'No custom songs yet.')}
+                        </h3>
+                        <p className="text-muted-foreground font-inter mb-6">
+                          {t('library.noCustomSongsDescription', 'Request your own song and see it here when ready.')}
+                        </p>
+                        <Button asChild className="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-black">
+                          <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                        </Button>
                       </CardContent>
                     </Card>
-                   ))}
-                  </div>
-                </div>
-              )}
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Header with Create Button */}
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold text-foreground">Your Custom Songs</h3>
+                        <Button asChild size="sm" className="gap-2">
+                          <Link to="/request-song">
+                            <Plus className="w-4 h-4" />
+                            Create New Song
+                          </Link>
+                        </Button>
+                      </div>
+                      
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {customSongs.map((song) => (
+                          <Card 
+                            key={song.id} 
+                            className={`bg-gradient-card border transition-all duration-300 hover:shadow-lg ${
+                              song.status === 'delivered' 
+                                ? 'border-amber-400/50 shadow-amber-400/20 shadow-lg bg-gradient-to-br from-amber-50/5 to-orange-50/5' 
+                                : 'border-border hover:border-primary/30'
+                            }`}
+                          >
+                            <CardHeader>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <CardTitle className="text-lg font-playfair font-bold text-foreground mb-2 flex items-center gap-2">
+                                    🎁 {song.song_title}
+                                  </CardTitle>
+                                  <div className="flex items-center gap-2">
+                                    <Badge 
+                                      variant={song.status === 'delivered' ? 'default' : 'secondary'}
+                                      className={song.status === 'delivered' 
+                                        ? 'bg-amber-400/20 text-amber-700 border-amber-400/30' 
+                                        : 'bg-blue-100 text-blue-700 border-blue-200'
+                                      }
+                                    >
+                                      {song.status === 'delivered' ? `✨ ${t('library.delivered', 'Delivered')}` : song.status === 'created' ? `🎵 ${t('library.created', 'Created')}` : `⏳ ${t('library.pending', 'Pending')}`}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardHeader>
+                            
+                            <CardContent className="space-y-4">
+                              {/* Audio Player */}
+                              {song.audio_url && (
+                                <div className="bg-accent/30 rounded-lg p-4">
+                                  <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                                      <Music2 className="w-5 h-5 text-white" />
+                                    </div>
+                                    <span className="font-medium text-foreground">{t('library.yourCustomSong', 'Your Custom Song')}</span>
+                                  </div>
+                                  <audio 
+                                    controls 
+                                    className="w-full h-10"
+                                    style={{
+                                      filter: 'sepia(20%) saturate(70%) hue-rotate(35deg) brightness(1.1)',
+                                    }}
+                                  >
+                                    <source src={song.audio_url} type="audio/mpeg" />
+                                    Your browser does not support the audio element.
+                                  </audio>
+                                </div>
+                              )}
+
+                              {/* Action Buttons */}
+                              <div className="flex flex-wrap gap-2">
+                                {song.lyrics_url && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    asChild
+                                    className="flex-1 min-w-0"
+                                  >
+                                    <a 
+                                      href={song.lyrics_url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      download
+                                    >
+                                      <Download className="w-4 h-4 mr-2" />
+                                      📄 {t('library.downloadLyrics', 'Download Lyrics')}
+                                    </a>
+                                  </Button>
+                                )}
+                                
+                                {song.audio_url && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    asChild
+                                    className="flex-1 min-w-0"
+                                  >
+                                    <a 
+                                      href={song.audio_url} 
+                                      download={`${song.song_title}.mp3`}
+                                    >
+                                      <Download className="w-4 h-4 mr-2" />
+                                      {t('library.download', 'Download')} Song
+                                    </a>
+                                  </Button>
+                                )}
+                              </div>
+
+                              {/* Timestamp */}
+                              <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t border-border/50">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  {formatDate(song.created_at)}
+                                </span>
+                                {song.status === 'delivered' && (
+                                  <span className="text-amber-600 font-medium">✨ Ready to enjoy!</span>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* My Requests SubTab */}
+                <TabsContent value="requests" className="mt-6">
+                  {requests.length === 0 ? (
+                    <Card className="bg-gradient-card border-border">
+                      <CardContent className="p-8 text-center">
+                        <Clock className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                        <h3 className="text-xl font-playfair text-foreground mb-2">
+                          {t('library.noRequestsYet', 'No requests yet')}
+                        </h3>
+                        <p className="text-muted-foreground font-inter mb-6">
+                          {t('library.noRequestsDescription', 'You haven\'t made any custom song requests yet. Create your first request to get started.')}
+                        </p>
+                        <Button asChild>
+                          <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-4">
+                      {requests.map((request) => (
+                        <Card key={request.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="font-playfair font-semibold text-foreground text-lg">
+                                    {request.occasion} Song
+                                  </h3>
+                                  {getStatusIcon(request.status)}
+                                </div>
+                                
+                                <div className="space-y-2 mb-4">
+                                  <p className="text-sm text-muted-foreground">
+                                    <span className="font-medium">{t('library.genre', 'Genre')}:</span> {request.style_genre}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    <span className="font-medium">{t('library.tier', 'Tier')}:</span> {request.tier}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    <span className="font-medium">{t('library.message', 'Message')}:</span> {request.key_message}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <span>{t('library.requestedOn', 'Requested on')} {formatDate(request.created_at)}</span>
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex flex-col items-end gap-2">
+                                {getStatusBadge(request.status)}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </TabsContent>
 
-            {/* My Requests Tab */}
-            <TabsContent value="requests" className="mt-6">
-              {requests.length === 0 ? (
+            {/* My Suggestions Tab */}
+            <TabsContent value="suggestions" className="mt-6">
+              {suggestions.length === 0 ? (
                 <Card className="bg-gradient-card border-border">
                   <CardContent className="p-8 text-center">
-                    <Clock className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                    <Lightbulb className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                     <h3 className="text-xl font-playfair text-foreground mb-2">
-                      {t('library.noRequestsYet', 'No requests yet')}
+                      {t('library.noSuggestionsYet', 'No suggestions yet')}
                     </h3>
                     <p className="text-muted-foreground font-inter mb-6">
-                      {t('library.noRequestsDescription', 'You haven\'t made any custom song requests yet. Create your first request to get started.')}
+                      {t('library.noSuggestionsDescription', 'You haven\'t made any song suggestions yet. Share your ideas to help us create meaningful music.')}
                     </p>
-                    <Button asChild>
-                      <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
+                    <Button onClick={() => setShowSuggestModal(true)}>
+                      <Lightbulb className="w-4 h-4 mr-2" />
+                      {t('library.suggestSong', 'Suggest a Song')}
                     </Button>
                   </CardContent>
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {requests.map((request) => (
-                    <Card key={request.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
+                  {/* Header with Suggest Button */}
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-foreground">Your Song Suggestions</h3>
+                    <Button onClick={() => setShowSuggestModal(true)} size="sm" className="gap-2">
+                      <Plus className="w-4 h-4" />
+                      New Suggestion
+                    </Button>
+                  </div>
+                  
+                  {suggestions.map((suggestion) => (
+                    <Card key={suggestion.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                             <h3 className="font-playfair font-semibold text-foreground text-lg">
-                                {request.occasion} Song
+                              <h3 className="font-playfair font-semibold text-foreground text-lg">
+                                {suggestion.title || 'Untitled Suggestion'}
                               </h3>
-                              {getStatusIcon(request.status)}
+                              {getStatusIcon(suggestion.status)}
                             </div>
                             
                             <div className="space-y-2 mb-4">
-                              <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">{t('library.genre', 'Genre')}:</span> {request.style_genre}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                <span className="font-medium">{t('library.tier', 'Tier')}:</span> {request.tier}
-                              </p>
-                              <p className="text-sm text-muted-foreground line-clamp-2">
-                                <span className="font-medium">Message:</span> {request.key_message}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
+                              {suggestion.description && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">{t('library.description', 'Description')}:</span> {suggestion.description}
+                                </p>
+                              )}
+                              {suggestion.scripture_reference && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">{t('library.scriptureReference', 'Scripture Reference')}:</span> {suggestion.scripture_reference}
+                                </p>
+                              )}
+                              {suggestion.admin_notes && (
+                                <p className="text-sm text-muted-foreground">
+                                  <span className="font-medium">{t('library.adminNotes', 'Admin Notes')}:</span> {suggestion.admin_notes}
+                                </p>
+                              )}
+                              <p className="text-sm text-muted-foreground flex items-center gap-2">
                                 <Calendar className="w-4 h-4" />
-                                {t('library.requestedOn', 'Requested on')} {formatDate(request.created_at)}
-                              </div>
+                                <span>{t('library.suggestedOn', 'Suggested on')} {formatDate(suggestion.created_at)}</span>
+                              </p>
+                              {suggestion.fulfilled_at && (
+                                <p className="text-sm text-green-600 flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4" />
+                                  <span>{t('library.fulfilledOn', 'Fulfilled on')} {formatDate(suggestion.fulfilled_at)}</span>
+                                </p>
+                              )}
                             </div>
                           </div>
-
+                          
                           <div className="flex flex-col items-end gap-2">
-                            {getStatusBadge(request.status)}
+                            {getStatusBadge(suggestion.status)}
                           </div>
                         </div>
                       </CardContent>
