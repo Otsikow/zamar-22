@@ -66,6 +66,7 @@ import ReferralAnalytics from "./pages/ReferralAnalytics";
 import TestimonyDetail from "./pages/TestimonyDetail";
 import SuggestSong from "./pages/SuggestSong";
 import AdminSuggestions from "./pages/AdminSuggestions";
+import LibrarySuggestions from "./pages/LibrarySuggestions";
 
 const queryClient = new QueryClient();
 
@@ -122,7 +123,8 @@ const App = () => (
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                    <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
+                     <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
+                     <Route path="/library/suggestions" element={<ProtectedRoute><LibrarySuggestions /></ProtectedRoute>} />
                      <Route path="/request-song" element={<ProtectedRoute><RequestSong /></ProtectedRoute>} />
                      <Route path="/suggest-song" element={<ProtectedRoute><SuggestSong /></ProtectedRoute>} />
                      <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />

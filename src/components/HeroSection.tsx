@@ -15,6 +15,7 @@ type Props = {
   secondaryHref?: string;
   secondaryLabel?: string;
   bgImageUrl?: string; // optional
+  onSuggestClick?: () => void;
 };
 
 export default function HeroSection({
@@ -28,6 +29,7 @@ export default function HeroSection({
   secondaryHref = "/about",
   secondaryLabel = "How it works",
   bgImageUrl,
+  onSuggestClick,
 }: Props) {
   const { t } = useTranslation();
 
@@ -83,8 +85,12 @@ export default function HeroSection({
                 <span className="ml-2">→</span>
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to={secondaryHref}>{t('hero.see_examples', secondaryLabel)}</Link>
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={onSuggestClick}
+            >
+              {t('hero.suggest_song', 'Suggest a Song')}
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link to="/radio">{t('hero.radio', 'Radio')}</Link>
