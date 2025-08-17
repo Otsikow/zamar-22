@@ -165,7 +165,7 @@ export const SuggestSongModal = ({ open, onOpenChange }: SuggestSongModalProps) 
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border z-[10000]">
                 <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Twi">Twi</SelectItem>
                 <SelectItem value="Yoruba">Yoruba</SelectItem>
