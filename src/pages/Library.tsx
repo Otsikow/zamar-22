@@ -403,47 +403,40 @@ const Library = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {purchases.map((purchase) => (
                     <Card key={purchase.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
-                      <CardContent className="p-8">
-                        <div className="flex items-center gap-6">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
                           {/* Thumbnail */}
-                           <div className="w-20 h-20 rounded-xl overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0 shadow-lg">
+                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                              <img 
                                src={zamarLogo} 
                                alt={purchase.songs.title}
-                               className="w-full h-full object-contain p-2 bg-transparent"
+                               className="w-full h-full object-contain p-1 bg-transparent"
                              />
                           </div>
 
                           {/* Song Info */}
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-bold text-foreground text-xl mb-3 truncate">
+                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug whitespace-normal break-normal">
                               {purchase.songs.title}
                             </h3>
-                            <div className="flex flex-col gap-2">
-                              <div className="flex items-center gap-3 text-base text-muted-foreground">
-                                <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
-                                <span className="font-medium">{t('library.purchasedOn', 'Purchased on')}</span>
-                                <span className="text-foreground font-medium">{formatDate(purchase.created_at)}</span>
-                              </div>
-                              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Music2 className="w-4 h-4 text-primary flex-shrink-0" />
-                                <span>Ready to play and download</span>
-                              </div>
-                            </div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              {t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}
+                            </p>
                           </div>
 
                           {/* Actions */}
-                          <div className="flex gap-3 flex-shrink-0">
-                            <Button size="default" variant="outline" asChild className="min-w-[100px]">
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" asChild>
                               <Link to={`/songs/${purchase.songs.id}`}>
                                 {t('library.view', 'View')}
                               </Link>
                             </Button>
                             {purchase.songs.audio_url && (
-                              <Button size="default" asChild className="min-w-[100px]">
+                              <Button size="sm" asChild>
                                 <a
                                   href={purchase.songs.audio_url ?? "#"}
                                   download={`${purchase.songs.title}.mp3`}
@@ -500,39 +493,32 @@ const Library = () => {
                   </div>
                   {favourites.map((fav, idx) => (
                     <Card key={idx} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
-                      <CardContent className="p-8">
-                        <div className="flex items-center gap-6">
-                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0 shadow-lg">
-                            <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-2 bg-transparent" />
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
+                            <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-bold text-foreground text-xl mb-3 truncate">
+                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug whitespace-normal break-normal">
                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
                             </h3>
-                            <div className="flex flex-col gap-2">
-                              <div className="flex items-center gap-3 text-base text-muted-foreground">
-                                <Heart className="w-5 h-5 text-pink-500 flex-shrink-0" />
-                                <span className="font-medium">{t('library.savedOn', 'Saved on')}</span>
-                                <span className="text-foreground font-medium">{formatDate(fav.created_at)}</span>
-                              </div>
-                              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Music2 className="w-4 h-4 text-primary flex-shrink-0" />
-                                <span>Ready to play</span>
-                              </div>
-                            </div>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              {t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}
+                            </p>
                           </div>
-                          <div className="flex gap-3 flex-shrink-0">
+                          <div className="flex gap-2">
                             {fav.songs?.id && (
-                              <Button size="default" variant="outline" asChild className="min-w-[100px]">
+                              <Button size="sm" variant="outline" asChild>
                                 <Link to={`/songs/${fav.songs.id}`}>
                                   {t('library.view', 'View')}
                                 </Link>
                               </Button>
                             )}
                             {fav.songs?.audio_url && (
-                               <Button size="default" onClick={() => {
+                               <Button size="sm" onClick={() => {
                                 playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
-                               }} className="min-w-[100px]">
+                               }}>
                                 {t('library.play', 'Play')}
                               </Button>
                             )}
@@ -752,52 +738,40 @@ const Library = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {requests.map((request) => (
                     <Card key={request.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
-                      <CardContent className="p-8">
-                        <div className="flex items-start justify-between gap-6">
-                          <div className="flex-1 space-y-4">
-                            <div className="flex items-center gap-3">
-                             <h3 className="font-playfair font-bold text-foreground text-xl">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg">
                                 {request.occasion} Song
                               </h3>
                               {getStatusIcon(request.status)}
                             </div>
                             
-                            <div className="space-y-3">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <p className="text-base text-muted-foreground flex items-center gap-3">
-                                  <Music2 className="w-5 h-5 text-primary" />
-                                  <span className="font-medium">{t('library.genre', 'Genre')}:</span>
-                                  <span className="text-foreground font-medium">{request.style_genre}</span>
-                                </p>
-                                <p className="text-base text-muted-foreground flex items-center gap-3">
-                                  <Gift className="w-5 h-5 text-primary" />
-                                  <span className="font-medium">{t('library.tier', 'Tier')}:</span> 
-                                  <span className="text-foreground font-medium">{request.tier}</span>
-                                </p>
-                              </div>
-                              <div className="bg-accent/20 rounded-lg p-4 border border-border/30">
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  <span className="font-medium text-foreground">Your Message:</span>
-                                </p>
-                                <p className="text-foreground leading-relaxed">
-                                  {request.key_message}
-                                </p>
-                              </div>
+                            <div className="space-y-2 mb-4">
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">{t('library.genre', 'Genre')}:</span> {request.style_genre}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                <span className="font-medium">{t('library.tier', 'Tier')}:</span> {request.tier}
+                              </p>
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                <span className="font-medium">Message:</span> {request.key_message}
+                              </p>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2 border-t border-border/30">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 text-primary" />
-                                <span className="font-medium">{t('library.requestedOn', 'Requested on')}</span>
-                                <span className="text-foreground font-medium">{formatDate(request.created_at)}</span>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                {t('library.requestedOn', 'Requested on')} {formatDate(request.created_at)}
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                          <div className="flex flex-col items-end gap-2">
                             {getStatusBadge(request.status)}
                           </div>
                         </div>
