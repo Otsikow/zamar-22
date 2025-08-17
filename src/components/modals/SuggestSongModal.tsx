@@ -102,7 +102,7 @@ export const SuggestSongModal = ({ open, onOpenChange }: SuggestSongModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto z-[60]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-primary" />
