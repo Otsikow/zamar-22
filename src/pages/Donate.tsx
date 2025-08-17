@@ -135,6 +135,8 @@ const Donate = () => {
         body: payload,
       });
 
+      console.log("Function response:", { data, error });
+
       if (error) {
         console.error("Function error:", error);
         throw new Error(error.message ?? "Donation could not start. Please try again.");
@@ -142,19 +144,20 @@ const Donate = () => {
 
       if (data?.url) {
         console.log("Redirecting to checkout:", data.url);
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       } else {
         console.error("No URL in response:", data);
         throw new Error("Could not create checkout session.");
       }
     } catch (error: any) {
       console.error("Donation checkout error:", error);
-      setIsProcessing(false);
       toast({
         title: t('donate.error_title', 'Error'),
         description: error?.message ?? t('donate.error_desc', 'Payment failed. Please try again.'),
         variant: 'destructive',
       });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
