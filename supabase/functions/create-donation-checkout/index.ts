@@ -16,9 +16,19 @@ Deno.serve(async (req) => {
     const payload = bodyText ? JSON.parse(bodyText) : {}
     const rawAmount = payload.amount
 
+    console.log('Donation checkout request:', {
+      amount: rawAmount,
+      campaign_id: payload.campaign_id,
+      campaign_name: payload.campaign_name,
+      user_id: payload.user_id,
+      email: payload.email
+    })
+
     // accept 5, "5", "£5", "5.00"
     const parsed = String(rawAmount ?? '25').replace(/[^\d.]/g, '')
     const amountInPence = Math.max(100, Math.round(Number(parsed) * 100))
+
+    console.log('Parsed amount:', { raw: rawAmount, parsed, amountInPence })
 
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
     const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
@@ -49,7 +59,7 @@ Deno.serve(async (req) => {
         user_id: String(payload.user_id ?? ''),
       },
       customer_email: payload.email || undefined,
-      success_url: `${APP_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/donate`,
     })
 
