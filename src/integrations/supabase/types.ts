@@ -1873,14 +1873,14 @@ export type Database = {
       admin_list_orders: {
         Args: { p_q?: string; p_status?: string }
         Returns: {
-          amount: number | null
-          created_at: string | null
-          id: string | null
-          status: string | null
-          tier: string | null
-          updated_at: string | null
-          user_email: string | null
-          user_id: string | null
+          amount: number
+          created_at: string
+          id: string
+          status: string
+          tier: string
+          updated_at: string
+          user_email: string
+          user_id: string
         }[]
       }
       admin_soft_delete_user: {
