@@ -262,10 +262,10 @@ const SongPlayer = () => {
                   <Volume2 className="w-4 h-4 text-muted-foreground" />
                   <PlayerSlider
                     variant="volume"
-                    value={[state.volume]}
-                    max={1}
-                    step={0.01}
-                    onValueChange={(v) => setVolume(v[0])}
+                    value={[Math.round(state.volume * 100)]}
+                    max={100}
+                    step={1}
+                    onValueChange={(v) => setVolume(v[0] / 100)}
                     className="flex-1"
                   />
                 </div>
