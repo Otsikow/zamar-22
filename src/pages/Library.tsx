@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList, Heart } from "lucide-react";
+import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList, Heart, Lightbulb, Plus } from "lucide-react";
 import FavouriteButton from "@/components/FavouriteButton";
+import { SuggestSongModal } from "@/components/modals/SuggestSongModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
@@ -77,6 +78,7 @@ const Library = () => {
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("songs");
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { playQueue } = useNowPlaying();
 
   useEffect(() => {
@@ -343,9 +345,27 @@ const Library = () => {
                 {t('library.title', 'My Library').split(' ')[1] || 'Library'}
               </span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-inter mb-6">
               {t('library.subtitle', 'Track your custom song requests and access your completed songs.')}
             </p>
+            
+            {/* Quick Actions */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+              <Button 
+                onClick={() => setShowSuggestModal(true)}
+                className="gap-2"
+                variant="outline"
+              >
+                <Lightbulb className="w-4 h-4" />
+                Suggest A Song
+              </Button>
+              <Button asChild className="gap-2">
+                <Link to="/request-song">
+                  <Plus className="w-4 h-4" />
+                  Create Custom Song
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {/* Sidebar ad for desktop */}
@@ -630,8 +650,20 @@ const Library = () => {
                     </Button>
                   </CardContent>
                 </Card>
-              ) : (
-                <div className="grid gap-6 md:grid-cols-2">
+               ) : (
+                <div className="space-y-4">
+                  {/* Header with Create Button */}
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-foreground">Your Custom Songs</h3>
+                    <Button asChild size="sm" className="gap-2">
+                      <Link to="/request-song">
+                        <Plus className="w-4 h-4" />
+                        Create New Song
+                      </Link>
+                    </Button>
+                  </div>
+                  
+                  <div className="grid gap-6 md:grid-cols-2">
                   {customSongs.map((song) => (
                     <Card 
                       key={song.id} 
@@ -736,7 +768,8 @@ const Library = () => {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                   ))}
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -806,7 +839,12 @@ const Library = () => {
 
         </div>
       </main>
-
+      
+      <SuggestSongModal 
+        open={showSuggestModal} 
+        onOpenChange={setShowSuggestModal}
+      />
+      
       <Footer />
     </div>
   );
