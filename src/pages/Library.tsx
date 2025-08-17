@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList, Heart } from "lucide-react";
+import FavouriteButton from "@/components/FavouriteButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
@@ -521,23 +522,28 @@ const Library = () => {
                              </p>
                            </div>
 
-                           {/* Actions - Full width at bottom */}
-                           <div className="flex gap-2 pt-2">
-                             {fav.songs?.id && (
-                               <Button size="sm" variant="outline" asChild>
-                                 <Link to={`/songs/${fav.songs.id}`}>
-                                   {t('library.view', 'View')}
-                                 </Link>
-                               </Button>
-                             )}
-                             {fav.songs?.audio_url && (
-                                <Button size="sm" onClick={() => {
-                                 playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
-                                }}>
-                                 {t('library.play', 'Play')}
-                               </Button>
-                             )}
-                           </div>
+                            {/* Actions - Full width at bottom */}
+                            <div className="flex items-center justify-between pt-2">
+                              <div className="flex gap-2">
+                                {fav.songs?.id && (
+                                  <Button size="sm" variant="outline" asChild>
+                                    <Link to={`/songs/${fav.songs.id}`}>
+                                      {t('library.view', 'View')}
+                                    </Link>
+                                  </Button>
+                                )}
+                                {fav.songs?.audio_url && (
+                                   <Button size="sm" onClick={() => {
+                                    playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
+                                   }}>
+                                    {t('library.play', 'Play')}
+                                  </Button>
+                                )}
+                              </div>
+                              {fav.songs?.id && (
+                                <FavouriteButton songId={fav.songs.id} size="sm" />
+                              )}
+                            </div>
                          </div>
                       </CardContent>
                     </Card>
