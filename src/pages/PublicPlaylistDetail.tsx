@@ -15,6 +15,7 @@ interface Playlist {
   name: string;
   description: string | null;
   created_at: string;
+  show_creator: boolean;
   profiles?: {
     first_name: string | null;
     last_name: string | null;
@@ -92,7 +93,8 @@ const PublicPlaylistDetail = () => {
           name,
           description,
           created_at,
-          user_id
+          user_id,
+          show_creator
         `)
         .eq('id', id)
         .eq('is_public', true)
@@ -345,6 +347,7 @@ const PublicPlaylistDetail = () => {
   };
 
   const getCreatorName = () => {
+    if (!playlist?.show_creator) return 'Anonymous';
     if (playlist?.profiles?.first_name || playlist?.profiles?.last_name) {
       return `${playlist.profiles.first_name || ''} ${playlist.profiles.last_name || ''}`.trim();
     }

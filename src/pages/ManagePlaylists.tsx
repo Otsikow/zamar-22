@@ -19,6 +19,7 @@ interface Playlist {
   name: string;
   description: string | null;
   is_public: boolean;
+  show_creator: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -34,14 +35,16 @@ const ManagePlaylists = () => {
   const [editForm, setEditForm] = useState({
     name: '',
     description: '',
-    is_public: false
+    is_public: false,
+    show_creator: true
   });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createForm, setCreateForm] = useState({
     name: '',
     description: '',
-    is_public: false
+    is_public: false,
+    show_creator: true
   });
   const [creating, setCreating] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -82,7 +85,8 @@ const ManagePlaylists = () => {
     setEditForm({
       name: playlist.name,
       description: playlist.description || '',
-      is_public: playlist.is_public
+      is_public: playlist.is_public,
+      show_creator: playlist.show_creator
     });
     setIsEditDialogOpen(true);
   };
@@ -96,7 +100,8 @@ const ManagePlaylists = () => {
         .update({
           name: editForm.name.trim(),
           description: editForm.description.trim() || null,
-          is_public: editForm.is_public
+          is_public: editForm.is_public,
+          show_creator: editForm.show_creator
         })
         .eq('id', editingPlaylist.id);
 
@@ -170,6 +175,7 @@ const ManagePlaylists = () => {
           name: createForm.name.trim(),
           description: createForm.description.trim() || null,
           is_public: createForm.is_public,
+          show_creator: createForm.show_creator,
           user_id: user!.id,
         });
 
@@ -181,7 +187,7 @@ const ManagePlaylists = () => {
       });
 
       setIsCreateDialogOpen(false);
-      setCreateForm({ name: '', description: '', is_public: false });
+      setCreateForm({ name: '', description: '', is_public: false, show_creator: true });
       fetchPlaylists();
     } catch (error) {
       console.error('Error creating playlist:', error);
@@ -370,6 +376,21 @@ const ManagePlaylists = () => {
                 onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, is_public: checked }))}
               />
             </div>
+            {editForm.is_public && (
+              <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <div className="space-y-1">
+                  <Label htmlFor="edit-show-creator">Show Creator Name</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Display your name as the playlist creator, or remain anonymous
+                  </p>
+                </div>
+                <Switch
+                  id="edit-show-creator"
+                  checked={editForm.show_creator}
+                  onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, show_creator: checked }))}
+                />
+              </div>
+            )}
             <div className="flex gap-3 pt-4">
               <Button
                 variant="outline"
@@ -429,6 +450,21 @@ const ManagePlaylists = () => {
                 onCheckedChange={(checked) => setCreateForm(prev => ({ ...prev, is_public: checked }))}
               />
             </div>
+            {createForm.is_public && (
+              <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
+                <div className="space-y-1">
+                  <Label htmlFor="create-show-creator">Show Creator Name</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Display your name as the playlist creator, or remain anonymous
+                  </p>
+                </div>
+                <Switch
+                  id="create-show-creator"
+                  checked={createForm.show_creator}
+                  onCheckedChange={(checked) => setCreateForm(prev => ({ ...prev, show_creator: checked }))}
+                />
+              </div>
+            )}
             <div className="flex gap-3 pt-4">
               <Button
                 variant="outline"

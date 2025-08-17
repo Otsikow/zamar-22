@@ -21,7 +21,8 @@ const CreatePlaylist = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    is_public: false
+    is_public: false,
+    show_creator: true
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,6 +55,7 @@ const CreatePlaylist = () => {
           name: formData.name.trim(),
           description: formData.description.trim() || null,
           is_public: formData.is_public,
+          show_creator: formData.show_creator,
           user_id: user.id
         });
 
@@ -153,6 +155,25 @@ const CreatePlaylist = () => {
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
                 />
               </div>
+
+              {/* Show Creator Toggle - only visible when public */}
+              {formData.is_public && (
+                <div className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-primary/5">
+                  <div className="space-y-1">
+                    <Label htmlFor="show_creator" className="text-sm font-medium">
+                      {t('playlist.show_creator', 'Show Creator Name')}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('playlist.show_creator_desc', 'Display your name as the playlist creator, or remain anonymous')}
+                    </p>
+                  </div>
+                  <Switch
+                    id="show_creator"
+                    checked={formData.show_creator}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_creator: checked }))}
+                  />
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="flex gap-3 pt-4">
