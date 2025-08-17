@@ -418,32 +418,32 @@ const Library = () => {
                           </div>
 
                           {/* Song Info */}
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed whitespace-normal break-words">
+                          <div className="flex-1 min-w-0 space-y-3 overflow-hidden">
+                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words hyphens-auto overflow-wrap-anywhere">
                               {purchase.songs.title}
                             </h3>
                             <div className="space-y-2">
-                              <p className="text-base text-muted-foreground flex items-center gap-3">
-                                <Calendar className="w-5 h-5 text-primary" />
+                              <p className="text-base text-muted-foreground flex items-center gap-3 flex-wrap">
+                                <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
                                 <span className="font-medium">{t('library.purchasedOn', 'Purchased on')}</span>
                                 <span className="text-foreground font-medium">{formatDate(purchase.created_at)}</span>
                               </p>
                               <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Music2 className="w-4 h-4 text-primary" />
+                                <Music2 className="w-4 h-4 text-primary flex-shrink-0" />
                                 <span>Ready to play and download</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Actions */}
-                          <div className="flex flex-col gap-3 flex-shrink-0">
-                            <Button size="default" variant="outline" asChild className="min-w-[100px]">
+                          <div className="flex flex-col gap-3 flex-shrink-0 ml-4">
+                            <Button size="default" variant="outline" asChild className="min-w-[100px] whitespace-nowrap">
                               <Link to={`/songs/${purchase.songs.id}`}>
                                 {t('library.view', 'View')}
                               </Link>
                             </Button>
                             {purchase.songs.audio_url && (
-                              <Button size="default" asChild className="min-w-[100px]">
+                              <Button size="default" asChild className="min-w-[100px] whitespace-nowrap">
                                 <a
                                   href={purchase.songs.audio_url ?? "#"}
                                   download={`${purchase.songs.title}.mp3`}
@@ -505,25 +505,25 @@ const Library = () => {
                           <div className="w-20 h-20 rounded-xl overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0 shadow-lg">
                             <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-2 bg-transparent" />
                           </div>
-                          <div className="flex-1 min-w-0 space-y-3">
-                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed whitespace-normal break-words">
+                          <div className="flex-1 min-w-0 space-y-3 overflow-hidden">
+                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words hyphens-auto overflow-wrap-anywhere">
                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
                             </h3>
                             <div className="space-y-2">
-                              <p className="text-base text-muted-foreground flex items-center gap-3">
-                                <Heart className="w-5 h-5 text-pink-500" />
+                              <p className="text-base text-muted-foreground flex items-center gap-3 flex-wrap">
+                                <Heart className="w-5 h-5 text-pink-500 flex-shrink-0" />
                                 <span className="font-medium">{t('library.savedOn', 'Saved on')}</span>
                                 <span className="text-foreground font-medium">{formatDate(fav.created_at)}</span>
                               </p>
                               <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Music2 className="w-4 h-4 text-primary" />
+                                <Music2 className="w-4 h-4 text-primary flex-shrink-0" />
                                 <span>Ready to play</span>
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-3 flex-shrink-0">
+                          <div className="flex flex-col gap-3 flex-shrink-0 ml-4">
                             {fav.songs?.id && (
-                              <Button size="default" variant="outline" asChild className="min-w-[100px]">
+                              <Button size="default" variant="outline" asChild className="min-w-[100px] whitespace-nowrap">
                                 <Link to={`/songs/${fav.songs.id}`}>
                                   {t('library.view', 'View')}
                                 </Link>
@@ -532,7 +532,7 @@ const Library = () => {
                             {fav.songs?.audio_url && (
                                <Button size="default" onClick={() => {
                                 playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
-                               }} className="min-w-[100px]">
+                               }} className="min-w-[100px] whitespace-nowrap">
                                 {t('library.play', 'Play')}
                               </Button>
                             )}
