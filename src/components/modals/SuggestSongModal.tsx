@@ -101,9 +101,10 @@ export const SuggestSongModal = ({ open, onOpenChange }: SuggestSongModalProps) 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto z-[60]">
-        <DialogHeader>
+    <div style={{ zIndex: 9999 }}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto !z-[9999]">
+          <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-primary" />
             Suggest a Song
@@ -204,7 +205,8 @@ export const SuggestSongModal = ({ open, onOpenChange }: SuggestSongModalProps) 
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
