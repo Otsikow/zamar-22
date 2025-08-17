@@ -252,16 +252,6 @@ const SongDetail = () => {
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Back Button */}
-          <div className="mb-8">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/songs">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Library
-              </Link>
-            </Button>
-          </div>
-
           {/* Song Details */}
           <div className="grid md:grid-cols-2 gap-12 mb-12">
             {/* Album Art */}
