@@ -42,6 +42,19 @@ Deno.serve(async (req) => {
       }).eq("id", meta.order_id);
 
       console.log("Custom song order marked as paid:", meta.order_id);
+    } else if (meta.type === "single_song" && meta.song_id) {
+      // Handle single song purchases
+      await supabase.from("purchases").insert({
+        user_id: meta.user_id,
+        song_id: meta.song_id,
+        amount: s.amount_total,
+        currency: s.currency,
+        status: "completed",
+        stripe_payment_id: paymentIntent,
+        stripe_session_id: s.id
+      });
+
+      console.log("Single song purchase recorded:", meta.song_id);
     } else {
       // Handle regular donations
       await supabase.from("donations").insert({

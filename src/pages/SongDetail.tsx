@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Play, Pause, Download, Share2, Music2, Volume2, SkipBack, SkipForward, Scroll } from "lucide-react";
+import { SingleSongPurchaseSheet } from "@/components/modals/SingleSongPurchaseSheet";
 import SocialShare from "@/components/ui/social-share";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -47,6 +48,7 @@ const SongDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+  const [showPurchaseSheet, setShowPurchaseSheet] = useState(false);
 
   // Check if this song is currently playing
   const isPlaying = state.currentSong?.id === song?.id && state.isPlaying;
@@ -174,7 +176,7 @@ const SongDetail = () => {
     });
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!song?.audio_url) {
       toast({
         title: "Error",
@@ -184,7 +186,43 @@ const SongDetail = () => {
       return;
     }
 
-    // Create a temporary anchor element to trigger download
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to download songs",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if user has purchased this song
+    const { data: purchase, error } = await supabase
+      .from('purchases')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('song_id', song.id)
+      .eq('status', 'completed')
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking purchase:', error);
+      toast({
+        title: "Error",
+        description: "Failed to verify purchase status",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!purchase) {
+      // Show purchase modal
+      setShowPurchaseSheet(true);
+      return;
+    }
+
+    // User has purchased, proceed with download
     const link = document.createElement('a');
     link.href = song.audio_url;
     link.download = `${song.title} - Zamar Artists.mp3`;
@@ -546,6 +584,19 @@ const SongDetail = () => {
       </main>
 
       <Footer />
+
+      {/* Purchase Sheet */}
+      {song && (
+        <SingleSongPurchaseSheet
+          open={showPurchaseSheet}
+          onOpenChange={setShowPurchaseSheet}
+          song={{
+            id: song.id,
+            title: song.title,
+            thumbnail_url: song.thumbnail_url,
+          }}
+        />
+      )}
     </div>
   );
 };

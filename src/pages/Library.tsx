@@ -723,16 +723,41 @@ const Library = () => {
                                   <Button 
                                     size="sm" 
                                     variant="outline"
-                                    asChild
                                     className="flex-1 min-w-0"
+                                    onClick={async () => {
+                                      // Check if user has purchased this song
+                                      const { data: { user } } = await supabase.auth.getUser();
+                                      if (!user) return;
+
+                                      const { data: purchase } = await supabase
+                                        .from('purchases')
+                                        .select('id')
+                                        .eq('user_id', user.id)
+                                        .eq('song_id', song.id)
+                                        .eq('status', 'completed')
+                                        .single();
+
+                                      if (!purchase) {
+                                        // Show purchase modal - would need to implement this
+                                        toast({
+                                          title: "Purchase Required",
+                                          description: "Please purchase this song to download it",
+                                          variant: "destructive",
+                                        });
+                                        return;
+                                      }
+
+                                      // User has purchased, proceed with download
+                                      const link = document.createElement('a');
+                                      link.href = song.audio_url;
+                                      link.download = `${song.song_title}.mp3`;
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      document.body.removeChild(link);
+                                    }}
                                   >
-                                    <a 
-                                      href={song.audio_url} 
-                                      download={`${song.song_title}.mp3`}
-                                    >
-                                      <Download className="w-4 h-4 mr-2" />
-                                      {t('library.download', 'Download')} Song
-                                    </a>
+                                    <Download className="w-4 h-4 mr-2" />
+                                    {t('library.download', 'Download')} Song
                                   </Button>
                                 )}
                               </div>
