@@ -240,7 +240,7 @@ const ManagePlaylists = () => {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => navigate('/public-playlists')}
+              onClick={() => navigate('/playlists/public')}
               className="border-primary/30 text-primary hover:bg-primary/10"
             >
               <List className="h-4 w-4 mr-2" />

@@ -18,13 +18,13 @@ const GlobalBack = () => {
     "/song-player",
     "/terms",
     "/testimonies/my-submissions",
-    "/public-playlists"
+    "/playlists/public"
   ];
   
   // Also hide on dynamic routes that have their own back buttons
   const isDynamicRouteWithBackButton = 
     location.pathname.startsWith("/playlist/") ||
-    location.pathname.startsWith("/public-playlist/") ||
+    location.pathname.startsWith("/playlists/") ||
     location.pathname.startsWith("/song/") ||
     location.pathname.startsWith("/testimony/") ||
     location.pathname.startsWith("/admin/custom-songs/");
