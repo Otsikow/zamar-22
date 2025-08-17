@@ -116,15 +116,7 @@ const Donate = () => {
       return;
     }
 
-    // Check if user is authenticated for donations
-    if (!user) {
-      toast({
-        title: t('donate.signin_required_title', 'Sign In Required'),
-        description: t('donate.signin_required_desc', 'Please sign in to make a donation. This helps us track your giving and provide proper receipts.'),
-        variant: 'destructive',
-      });
-      return;
-    }
+    // Authentication is optional for donations
 
     setIsProcessing(true);
     

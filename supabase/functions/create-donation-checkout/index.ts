@@ -27,38 +27,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Create Supabase client for authentication
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
-
-    // Authenticate user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Authentication required" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-      });
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) {
-      return new Response(JSON.stringify({ error: `Authentication error: ${userError.message}` }), {
-        status: 401,
-        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-      });
-    }
-    
-    const user = userData.user;
-    if (!user?.email) {
-      return new Response(JSON.stringify({ error: "User not authenticated or email not available" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-      });
-    }
-
     const { amountGBP, campaign_id, donor_name, donor_email } = await req.json();
 
     // Basic validation
@@ -86,7 +54,7 @@ Deno.serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      customer_email: user.email,
+      customer_email: donor_email || "guest@zamarsongs.com",
       line_items: [
         {
           price_data: {
@@ -104,8 +72,8 @@ Deno.serve(async (req) => {
       cancel_url: `${APP_BASE_URL}/donate`,
       metadata: {
         campaign_id: campaign_id ?? "general",
-        donor_name: donor_name ?? "",
-        user_id: user.id,
+        donor_name: donor_name ?? "Anonymous",
+        donor_email: donor_email ?? "guest@zamarsongs.com",
       },
     });
 
