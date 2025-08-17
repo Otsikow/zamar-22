@@ -16,7 +16,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.create-donation-checkout]
-verify_jwt = false
+verify_jwt = true
 
 [functions.grant-admin-once]
 verify_jwt = true

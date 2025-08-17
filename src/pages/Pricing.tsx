@@ -346,17 +346,17 @@ const Pricing = () => {
                   {t('pricing.ministry_description', 'Help us continue creating faith-based music, supporting translation projects, and spreading the Gospel through music worldwide.')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                   <Button variant="hero" size="lg" asChild>
-                      <Link to="/pricing">
-                        {t('pricing.get_started', 'Get Started')}
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="lg" asChild>
-                      <Link to="/contact">
-                        {t('pricing.contact_us', 'Contact Us')}
-                      </Link>
+                  <Button variant="hero" size="lg" asChild>
+                     <Link to="/donate">
+                       {t('pricing.give_now', 'Give Now')}
+                     </Link>
                    </Button>
-                 </div>
+                   <Button variant="outline" size="lg" asChild>
+                     <Link to="/donate?type=recurring">
+                       {t('pricing.monthly_giving', 'Monthly Giving')}
+                     </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

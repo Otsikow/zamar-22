@@ -51,6 +51,7 @@ const More = () => {
     { label: t("more.pricing", "Pricing"), icon: CreditCard, action: () => navigate('/pricing') },
     { label: t("more.referral_calculator", "Referral Calculator"), icon: DollarSign, action: () => navigate('/referral') },
     { label: t("more.testimonies", "Testimonies"), icon: MessageCircle, action: () => navigate('/testimonies') },
+    { label: t("more.donate", "Donate"), icon: Heart, action: () => navigate('/donate') },
     { label: t("more.settings", "Settings"), icon: Sliders, action: () => navigate('/settings') },
     { label: t("more.logout", "Logout"), icon: LogOut, action: handleLogout, variant: "destructive" as const }
   ];

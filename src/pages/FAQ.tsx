@@ -180,19 +180,19 @@ const FAQ = () => {
       ]
     },
     {
-      title: "Support",
+      title: "Donations",
       items: [
         {
-          q: "How can I support Zamar?",
+          q: "How can I donate to Zamar?",
           a: (
             <>
-              You can support us by <a className="underline hover:text-primary" href="/pricing">upgrading to Supporter</a>, sharing our music, and leaving testimonies about how our songs have impacted you.
+              Visit the <a className="underline hover:text-primary" href="/donate">Donate</a> page to give a one-time or recurring gift. Donations help with translations, outreach, and platform development.
             </>
           )
         },
         {
-          q: "Do I need an account to make purchases?",
-          a: (<>No. You can purchase songs and upgrade to Supporter without creating an account.</>)
+          q: "Do I need an account to donate?",
+          a: (<>No. Anyone can donate without logging in.</>)
         }
       ]
     },
