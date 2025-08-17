@@ -418,8 +418,8 @@ const Library = () => {
                           </div>
 
                           {/* Song Info */}
-                          <div className="flex-1 min-w-0 space-y-3 overflow-hidden">
-                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words hyphens-auto overflow-wrap-anywhere">
+                          <div className="flex-1 min-w-0 space-y-3">
+                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words">
                               {purchase.songs.title}
                             </h3>
                             <div className="space-y-2">
@@ -505,8 +505,8 @@ const Library = () => {
                           <div className="w-20 h-20 rounded-xl overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0 shadow-lg">
                             <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-2 bg-transparent" />
                           </div>
-                          <div className="flex-1 min-w-0 space-y-3 overflow-hidden">
-                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words hyphens-auto overflow-wrap-anywhere">
+                          <div className="flex-1 min-w-0 space-y-3">
+                            <h3 className="font-playfair font-bold text-foreground text-xl leading-relaxed break-words">
                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
                             </h3>
                             <div className="space-y-2">
