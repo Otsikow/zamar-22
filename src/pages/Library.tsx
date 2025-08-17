@@ -415,44 +415,42 @@ const Library = () => {
                              </h3>
                            </div>
 
-                           {/* Thumbnail and Actions Row */}
-                           <div className="flex items-center justify-between gap-4">
-                             <div className="flex items-center gap-3">
-                               {/* Thumbnail */}
-                               <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                                 <img 
-                                   src={zamarLogo} 
-                                   alt={purchase.songs.title}
-                                   className="w-full h-full object-contain p-1 bg-transparent"
-                                 />
-                               </div>
-                               
-                               {/* Date Info */}
-                               <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                 <Calendar className="w-4 h-4 flex-shrink-0" />
-                                 <span className="whitespace-nowrap">{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
-                               </p>
+                           {/* Thumbnail and Date Row */}
+                           <div className="flex items-center gap-3">
+                             {/* Thumbnail */}
+                             <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
+                               <img 
+                                 src={zamarLogo} 
+                                 alt={purchase.songs.title}
+                                 className="w-full h-full object-contain p-1 bg-transparent"
+                               />
                              </div>
+                             
+                             {/* Date Info */}
+                             <p className="text-sm text-muted-foreground flex items-center gap-2">
+                               <Calendar className="w-4 h-4 flex-shrink-0" />
+                               <span>{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
+                             </p>
+                           </div>
 
-                             {/* Actions */}
-                             <div className="flex gap-2 flex-shrink-0">
-                               <Button size="sm" variant="outline" asChild>
-                                 <Link to={`/songs/${purchase.songs.id}`}>
-                                   {t('library.view', 'View')}
-                                 </Link>
+                           {/* Actions - Full width at bottom */}
+                           <div className="flex gap-2 pt-2">
+                             <Button size="sm" variant="outline" asChild>
+                               <Link to={`/songs/${purchase.songs.id}`}>
+                                 {t('library.view', 'View')}
+                               </Link>
+                             </Button>
+                             {purchase.songs.audio_url && (
+                               <Button size="sm" asChild>
+                                 <a
+                                   href={purchase.songs.audio_url ?? "#"}
+                                   download={`${purchase.songs.title}.mp3`}
+                                 >
+                                   <Download className="w-4 h-4 mr-2" />
+                                   {t('library.download', 'Download')}
+                                 </a>
                                </Button>
-                               {purchase.songs.audio_url && (
-                                 <Button size="sm" asChild>
-                                   <a
-                                     href={purchase.songs.audio_url ?? "#"}
-                                     download={`${purchase.songs.title}.mp3`}
-                                   >
-                                     <Download className="w-4 h-4 mr-2" />
-                                     {t('library.download', 'Download')}
-                                   </a>
-                                 </Button>
-                               )}
-                             </div>
+                             )}
                            </div>
                          </div>
                       </CardContent>
@@ -509,38 +507,36 @@ const Library = () => {
                              </h3>
                            </div>
 
-                           {/* Thumbnail and Actions Row */}
-                           <div className="flex items-center justify-between gap-4">
-                             <div className="flex items-center gap-3">
-                               {/* Thumbnail */}
-                               <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                                 <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
-                               </div>
-                               
-                               {/* Date Info */}
-                               <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                 <Calendar className="w-4 h-4 flex-shrink-0" />
-                                 <span className="whitespace-nowrap">{t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}</span>
-                               </p>
+                           {/* Thumbnail and Date Row */}
+                           <div className="flex items-center gap-3">
+                             {/* Thumbnail */}
+                             <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
+                               <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
                              </div>
+                             
+                             {/* Date Info */}
+                             <p className="text-sm text-muted-foreground flex items-center gap-2">
+                               <Calendar className="w-4 h-4 flex-shrink-0" />
+                               <span>{t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}</span>
+                             </p>
+                           </div>
 
-                             {/* Actions */}
-                             <div className="flex gap-2 flex-shrink-0">
-                               {fav.songs?.id && (
-                                 <Button size="sm" variant="outline" asChild>
-                                   <Link to={`/songs/${fav.songs.id}`}>
-                                     {t('library.view', 'View')}
-                                   </Link>
-                                 </Button>
-                               )}
-                               {fav.songs?.audio_url && (
-                                  <Button size="sm" onClick={() => {
-                                   playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
-                                  }}>
-                                   {t('library.play', 'Play')}
-                                 </Button>
-                               )}
-                             </div>
+                           {/* Actions - Full width at bottom */}
+                           <div className="flex gap-2 pt-2">
+                             {fav.songs?.id && (
+                               <Button size="sm" variant="outline" asChild>
+                                 <Link to={`/songs/${fav.songs.id}`}>
+                                   {t('library.view', 'View')}
+                                 </Link>
+                               </Button>
+                             )}
+                             {fav.songs?.audio_url && (
+                                <Button size="sm" onClick={() => {
+                                 playQueue([{ id: fav.songs!.id, title: fav.songs!.title, artist: 'Zamar', duration: 0, url: fav.songs!.audio_url || undefined, cover: zamarLogo }], 0);
+                                }}>
+                                 {t('library.play', 'Play')}
+                               </Button>
+                             )}
                            </div>
                          </div>
                       </CardContent>
