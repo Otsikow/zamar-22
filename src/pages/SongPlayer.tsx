@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, RotateCcw, Volume2, ArrowLeft, SkipForward, SkipBack, Maximize2, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
+import { Play, Pause, RotateCcw, Volume2, SkipForward, SkipBack, Maximize2, MoreHorizontal, Repeat, Shuffle } from "lucide-react";
 import PlayerSlider from "@/components/player/PlayerSlider";
 import { useNowPlaying } from "@/contexts/NowPlayingContext";
 import { extractScriptureFromLyrics } from "@/lib/utils";
@@ -187,12 +187,6 @@ const SongPlayer = () => {
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Back Button */}
-          <Link to="/songs" className="inline-flex items-center mb-6 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Songs
-          </Link>
-
           {/* Song Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between gap-3">
