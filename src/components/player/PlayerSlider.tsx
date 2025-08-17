@@ -23,24 +23,26 @@ export default function PlayerSlider({
       <SliderPrimitive.Track
         className="relative w-full grow overflow-hidden rounded-full bg-muted shadow-inner h-[12px]"
       >
-        {/* Filled range with golden color */}
+        {/* Filled range with primary gradient */}
         <SliderPrimitive.Range
-          className="absolute h-full rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg ring-1 ring-yellow-400/50"
+          className="absolute h-full rounded-full bg-gradient-to-r from-primary/90 to-primary shadow-lg ring-1 ring-primary/50"
         />
       </SliderPrimitive.Track>
 
-      {/* Enhanced Radio-style Thumb with golden styling */}
+      {/* Enhanced Radio-style Thumb with professional styling */}
       <SliderPrimitive.Thumb
         className={cn(
-          "block h-6 w-6 md:h-7 md:w-7 rounded-full border-4 border-yellow-400 bg-background",
-          "shadow-[0_0_0_3px_hsl(var(--primary)/0.3),0_2px_8px_rgba(0,0,0,0.15),0_0_20px_hsl(var(--primary)/0.2)]",
-          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400/30",
+          "relative block h-5 w-5 md:h-6 md:w-6 rounded-full border-2 border-primary bg-background",
+          "shadow-[0_2px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           "disabled:pointer-events-none disabled:opacity-50",
-          "transition-all duration-200 ease-out",
-          "hover:scale-110 hover:shadow-[0_0_0_4px_hsl(var(--primary)/0.4),0_4px_12px_rgba(0,0,0,0.2),0_0_30px_hsl(var(--primary)/0.3)]",
-          "cursor-grab active:cursor-grabbing active:scale-105 active:shadow-[0_0_0_2px_hsl(var(--primary)/0.5),0_2px_6px_rgba(0,0,0,0.25)]",
-          // Add a subtle glow effect
-          "before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-r before:from-yellow-400/20 before:to-yellow-500/20 before:blur-sm before:-z-10"
+          "transition-all duration-200 ease-out transform-gpu",
+          "hover:scale-110 hover:border-primary/80",
+          "cursor-grab active:cursor-grabbing active:scale-105",
+          "after:absolute after:inset-1 after:rounded-full after:bg-primary after:scale-0 after:transition-transform after:duration-200",
+          "hover:after:scale-75 active:after:scale-90",
+          // Ensure it's always visible and interactive
+          "z-10 pointer-events-auto"
         )}
         aria-label="Slider handle"
       />
