@@ -145,7 +145,7 @@ const SongPlayer = () => {
   };
 
   const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0]; // Volume is already 0-1, no need to divide by 100
+    const newVolume = value[0] / 100;
     setVolume(newVolume);
   };
 
@@ -265,7 +265,7 @@ const SongPlayer = () => {
                     value={[state.volume]}
                     max={1}
                     step={0.01}
-                    onValueChange={handleVolumeChange}
+                    onValueChange={(v) => setVolume(v[0])}
                     className="flex-1"
                   />
                 </div>
