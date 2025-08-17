@@ -116,32 +116,35 @@ const Donate = () => {
       return;
     }
 
-    // Authentication is optional for donations
-
     setIsProcessing(true);
     
     try {
-      const amountGBP = Number(amount); // ensure numeric
+      const amountGBP = Number(amount);
       const payload = {
         amountGBP,
         campaign_id: selectedCampaign || "general",
-        donor_name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+        donor_name: user?.user_metadata?.first_name && user?.user_metadata?.last_name 
           ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` 
           : "",
-        donor_email: user.email || "",
+        donor_email: user?.email || "",
       };
+
+      console.log("Calling donation function with payload:", payload);
 
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
         body: payload,
       });
 
       if (error) {
+        console.error("Function error:", error);
         throw new Error(error.message ?? "Donation could not start. Please try again.");
       }
 
       if (data?.url) {
-        window.location.href = data.url; // Stripe-hosted payment page
+        console.log("Redirecting to checkout:", data.url);
+        window.location.href = data.url;
       } else {
+        console.error("No URL in response:", data);
         throw new Error("Could not create checkout session.");
       }
     } catch (error: any) {

@@ -1,22 +1,36 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-export const cors = {
-  allowHeaders: "authorization, x-client-info, apikey, content-type",
-  allowMethods: "GET, POST, OPTIONS",
-  allowOrigins: ["https://www.zamarsongs.com", "https://zamarsongs.com", "http://localhost:3000", "https://lovable.dev"],
+// Environment-based CORS configuration
+const getAllowedOrigins = () => {
+  const envOrigins = Deno.env.get("ALLOWED_ORIGINS");
+  if (envOrigins) {
+    return envOrigins.split(",").map(s => s.trim()).filter(Boolean);
+  }
+  
+  // Default fallback origins
+  return [
+    "https://www.zamarsongs.com",
+    "https://zamarsongs.com",
+    "http://localhost:3000"
+  ];
 };
 
 function corsHeaders(origin: string | null) {
-  // For development, allow any lovable.dev subdomain or the configured origins
+  const allowedOrigins = getAllowedOrigins();
+  
+  // For development, allow any lovable.dev subdomain
   const isLovableDev = origin?.includes('lovable.dev');
-  const isConfiguredOrigin = cors.allowOrigins.includes(origin ?? "");
-  const allowOrigin = isLovableDev || isConfiguredOrigin ? origin! : cors.allowOrigins[0];
+  const isConfiguredOrigin = allowedOrigins.includes(origin ?? "");
+  
+  const allowOrigin = (isLovableDev || isConfiguredOrigin) ? origin! : "https://www.zamarsongs.com";
   
   return {
     "Access-Control-Allow-Origin": allowOrigin,
-    "Access-Control-Allow-Headers": cors.allowHeaders,
-    "Access-Control-Allow-Methods": cors.allowMethods,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin"
   };
 }
 
