@@ -42,6 +42,28 @@ Deno.serve(async (req) => {
       }).eq("id", meta.order_id);
 
       console.log("Custom song order marked as paid:", meta.order_id);
+    } else if (meta.type === "upgrade" && meta.order_id && meta.upgrade_to) {
+      // Handle order upgrades
+      const tierAmounts = { basic: 2500, pro: 6000, premium: 12900 };
+      const newAmount = tierAmounts[meta.upgrade_to as keyof typeof tierAmounts];
+      
+      await supabase.from("custom_song_orders").update({
+        tier: meta.upgrade_to,
+        amount: newAmount,
+        updated_at: new Date().toISOString()
+      }).eq("id", meta.order_id);
+
+      console.log(`Order upgraded to ${meta.upgrade_to}:`, meta.order_id);
+    } else if (meta.type === "resume" && meta.order_id) {
+      // Handle resumed payments for existing orders
+      await supabase.from("custom_song_orders").update({
+        status: "paid",
+        stripe_payment_intent: paymentIntent,
+        stripe_session_id: s.id,
+        updated_at: new Date().toISOString()
+      }).eq("id", meta.order_id);
+
+      console.log("Resumed payment completed for order:", meta.order_id);
     } else if (meta.type === "single_song" && meta.song_id) {
       // Handle single song purchases
       await supabase.from("purchases").insert({

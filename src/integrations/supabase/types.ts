@@ -1742,19 +1742,6 @@ export type Database = {
       }
     }
     Views: {
-      admin_orders: {
-        Row: {
-          amount: number | null
-          created_at: string | null
-          id: string | null
-          status: string | null
-          tier: string | null
-          updated_at: string | null
-          user_email: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
       public_profiles: {
         Row: {
           created_at: string | null

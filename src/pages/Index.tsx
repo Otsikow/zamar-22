@@ -11,12 +11,10 @@ import WelcomeBanner from "@/components/auth/WelcomeBanner";
 import AdGrid from "@/components/ads/AdGrid";
 import { SuggestSongModal } from "@/components/modals/SuggestSongModal";
 import { AuthRequiredSheet } from "@/components/modals/AuthRequiredSheet";
-import { UpgradeSheet } from "@/components/modals/UpgradeSheet";
 const Index = () => {
   const { user } = useAuth();
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [showAuthSheet, setShowAuthSheet] = useState(false);
-  const [showUpgradeSheet, setShowUpgradeSheet] = useState(false);
 
   const handleSuggestClick = () => {
     if (!user) {
@@ -24,15 +22,8 @@ const Index = () => {
       return;
     }
 
-    // For now, we'll assume all authenticated users can suggest
-    // In a real app, you'd check membership_tier here
-    const isSupporter = true; // user.membership_tier === 'supporter' || user.role === 'admin'
-    
-    if (!isSupporter) {
-      setShowUpgradeSheet(true);
-    } else {
-      setShowSuggestModal(true);
-    }
+    // For authenticated users, open the suggest modal directly
+    setShowSuggestModal(true);
   };
 
   return (
@@ -60,10 +51,6 @@ const Index = () => {
       <AuthRequiredSheet 
         open={showAuthSheet} 
         onOpenChange={setShowAuthSheet}
-      />
-      <UpgradeSheet 
-        open={showUpgradeSheet} 
-        onOpenChange={setShowUpgradeSheet}
       />
     </>
   );

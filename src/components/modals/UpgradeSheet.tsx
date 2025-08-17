@@ -1,82 +1,128 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { useMemo, useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Crown, Sparkles, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+type Tier = "basic" | "pro" | "premium";
+
+const AMOUNTS: Record<Tier, number> = { 
+  basic: 2500,    // £25
+  pro: 6000,      // £60  
+  premium: 12900  // £129
+};
+
+const LABELS: Record<Tier, string> = { 
+  basic: "Basic (£25)", 
+  pro: "Pro (£60)", 
+  premium: "Premium (£129)" 
+};
 
 interface UpgradeSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  orderId: string;
+  currentTier: Tier;
 }
 
-export const UpgradeSheet = ({ open, onOpenChange }: UpgradeSheetProps) => {
+export function UpgradeSheet({ open, onOpenChange, orderId, currentTier }: UpgradeSheetProps) {
+  const [target, setTarget] = useState<Tier | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  const options = useMemo(() => {
+    const order = ["basic", "pro", "premium"] as Tier[];
+    const idx = order.indexOf(currentTier);
+    return order.slice(idx + 1);
+  }, [currentTier]);
+
+  const delta = useMemo(() => 
+    target ? Math.max(0, AMOUNTS[target] - AMOUNTS[currentTier]) : 0, 
+    [target, currentTier]
+  );
+
+  async function handleUpgrade() {
+    if (!target) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-upgrade-session', {
+        body: { order_id: orderId, target_tier: target }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
+      toast({
+        title: "Upgrade Failed",
+        description: "Failed to start upgrade process. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl">
-        <SheetHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-            <Crown className="h-8 w-8 text-primary" />
-          </div>
-          <SheetTitle className="text-xl">Become a Supporter</SheetTitle>
-          <SheetDescription className="text-base">
-            Support our mission and unlock the ability to suggest songs that inspire you
-          </SheetDescription>
+      <SheetContent className="max-w-md">
+        <SheetHeader>
+          <SheetTitle>Upgrade your package</SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-4 mt-6">
-          <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 rounded-2xl border border-primary/20">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <h4 className="font-semibold text-primary">Supporter Benefits</h4>
-            </div>
-            <ul className="text-sm space-y-2">
-              <li className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-primary/70" />
-                Suggest songs and get credited
-              </li>
-              <li className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-primary/70" />
-                Ad-free listening experience
-              </li>
-              <li className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-primary/70" />
-                Support faith-based music creation
-              </li>
-              <li className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-primary/70" />
-                Early access to new releases
-              </li>
-            </ul>
-          </div>
-
-          <Button asChild size="lg" className="w-full gap-2">
-            <Link to="/pricing" onClick={() => onOpenChange(false)}>
-              <Crown className="h-5 w-5" />
-              Go Ad-Free & Suggest
-            </Link>
-          </Button>
+        <div className="grid gap-3 mt-4">
+          {options.map(tier => {
+            const delta = AMOUNTS[tier] - AMOUNTS[currentTier];
+            return (
+              <button 
+                key={tier}
+                onClick={() => setTarget(tier)}
+                className={cn(
+                  "w-full text-left rounded-2xl border p-4 hover:border-primary transition-colors",
+                  target === tier 
+                    ? "border-primary ring-2 ring-primary/30 bg-primary/5" 
+                    : "border-border"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-lg font-semibold">
+                    {LABELS[tier].split(" ")[0]} Upgrade
+                  </div>
+                  <div className="text-lg font-bold text-primary">
+                    £{(delta / 100).toFixed(2)}
+                  </div>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Pay the difference and unlock {LABELS[tier]} features.
+                </div>
+              </button>
+            );
+          })}
           
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="w-full" 
-            onClick={() => onOpenChange(false)}
-          >
-            Maybe Later
-          </Button>
-
-          <div className="bg-muted/50 p-4 rounded-2xl mt-6">
-            <p className="text-xs text-muted-foreground text-center">
-              Your support helps us create more faith-inspired music and reach more hearts with worship
-            </p>
-          </div>
+          {options.length === 0 && (
+            <div className="text-sm text-muted-foreground text-center py-8">
+              You're already on the Premium tier.
+            </div>
+          )}
         </div>
+
+        <SheetFooter className="mt-6">
+          <Button 
+            disabled={!target || delta <= 0 || loading} 
+            onClick={handleUpgrade}
+            className="w-full"
+          >
+            {loading ? "Redirecting..." : `Upgrade for £${(delta / 100).toFixed(2)}`}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
-};
+}

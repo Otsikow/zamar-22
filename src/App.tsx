@@ -49,6 +49,7 @@ import Testimonies from "./pages/Testimonies";
 import TestimoniesSubmit from "./pages/TestimoniesSubmit";
 import TestimoniesMySubmissions from "./pages/TestimoniesMySubmissions";
 import AdminTestimonies from "./pages/AdminTestimonies";
+import AdminOrders from "./pages/AdminOrders";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import ReferralCalculator from "./pages/ReferralCalculator";
 import PlaylistDetail from "./pages/PlaylistDetail";
@@ -155,8 +156,9 @@ const App = () => (
                     <Route path="/admin/donations" element={<ProtectedRoute><AdminDonationAnalytics /></ProtectedRoute>} />
                     <Route path="/admin/referral-payouts" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
                     <Route path="/admin/referral-ops" element={<ProtectedRoute><AdminReferralPayoutDashboard /></ProtectedRoute>} />
-                    <Route path="/admin/custom-songs" element={<ProtectedRoute><AdminCustomSongs /></ProtectedRoute>} />
-                     <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
+                     <Route path="/admin/custom-songs" element={<ProtectedRoute><AdminCustomSongs /></ProtectedRoute>} />
+                     <Route path="/admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+                      <Route path="/admin/custom-requests/:id" element={<ProtectedRoute><AdminCustomSongDetail /></ProtectedRoute>} />
                      <Route path="/admin/suggestions" element={<ProtectedRoute><AdminSuggestions /></ProtectedRoute>} />
                      <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
                      <Route path="/admin/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
