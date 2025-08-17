@@ -149,7 +149,7 @@ const Terms = () => {
               </CardHeader>
               <CardContent className="prose prose-sm max-w-none">
                 <p>
-                  {t('terms.contact.content', 'If you have any questions about these Terms & Conditions, please contact us at support@zamar.com')}
+                  {t('terms.contact.content', 'If you have any questions about these Terms & Conditions, please contact us at info@zamarsongs.com')}
                 </p>
               </CardContent>
             </Card>

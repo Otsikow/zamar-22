@@ -224,8 +224,8 @@ const ThankYou = () => {
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground font-inter">
               Questions? Email us at{" "}
-              <a href="mailto:support@zamar.com" className="text-primary hover:underline">
-                support@zamar.com
+              <a href="mailto:info@zamarsongs.com" className="text-primary hover:underline">
+                info@zamarsongs.com
               </a>
             </p>
           </div>
