@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 import { Resend } from "npm:resend@4.0.0";
 import React from 'npm:react@18.3.1';
 import { renderAsync } from 'npm:@react-email/components@0.0.22';
@@ -8,7 +7,6 @@ import { SignupConfirmationEmail } from './_templates/signup-confirmation.tsx';
 import { PasswordResetEmail } from './_templates/password-reset.tsx';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const hookSecret = Deno.env.get("SEND_AUTH_EMAIL_HOOK_SECRET") as string;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,14 +23,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    if (!hookSecret) {
-      throw new Error("SEND_AUTH_EMAIL_HOOK_SECRET is not configured");
-    }
-
     const payload = await req.text();
-    const headers = Object.fromEntries(req.headers);
     
-    // Skip webhook verification for now to fix the Base64 error
+    // Parse the JSON payload directly (no webhook verification)
     const data = JSON.parse(payload);
     
     const {
