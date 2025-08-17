@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Music2, Play, Eye, User, Calendar } from 'lucide-react';
+import { ArrowLeft, Music2, Play, Eye, User, Calendar, Heart, MessageCircle, PlayCircle, Send, Trash2 } from 'lucide-react';
+import { useNowPlaying } from '@/contexts/NowPlayingContext';
 const zamarLogo = "/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png";
 
 interface Playlist {
@@ -33,19 +35,52 @@ interface PlaylistSong {
   songs: Song;
 }
 
+interface PlaylistComment {
+  id: string;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  profiles: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
+}
+
 const PublicPlaylistDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const { playQueue } = useNowPlaying();
   
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [playlistSongs, setPlaylistSongs] = useState<PlaylistSong[]>([]);
+  const [comments, setComments] = useState<PlaylistComment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
+    checkUser();
     if (id) {
       fetchPlaylistData();
+      fetchComments();
+      fetchLikesData();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (id && user !== undefined) {
+      fetchLikesData();
+    }
+  }, [user, id]);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user || null);
+  };
 
   const fetchPlaylistData = async () => {
     try {
@@ -109,9 +144,216 @@ const PublicPlaylistDetail = () => {
     }
   };
 
+  const fetchLikesData = async () => {
+    if (!id) return;
+    
+    try {
+      // Get total likes count
+      const { count } = await supabase
+        .from('playlist_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('playlist_id', id);
+      
+      setLikesCount(count || 0);
+
+      // Check if current user has liked this playlist
+      if (user) {
+        const { data } = await supabase
+          .from('playlist_likes')
+          .select('id')
+          .eq('playlist_id', id)
+          .eq('user_id', user.id)
+          .single();
+        
+        setIsLiked(!!data);
+      }
+    } catch (error) {
+      console.error('Error fetching likes data:', error);
+    }
+  };
+
+  const fetchComments = async () => {
+    if (!id) return;
+    
+    try {
+      // First get comments
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('playlist_comments')
+        .select('id, comment, created_at, updated_at, user_id')
+        .eq('playlist_id', id)
+        .order('created_at', { ascending: false });
+
+      if (commentsError) throw commentsError;
+
+      // Then get profile data for each comment
+      const commentsWithProfiles = await Promise.all(
+        (commentsData || []).map(async (comment) => {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('first_name, last_name')
+            .eq('id', comment.user_id)
+            .single();
+
+          return {
+            ...comment,
+            profiles: profileData
+          };
+        })
+      );
+
+      setComments(commentsWithProfiles);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const handleLike = async () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please log in to like playlists",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        // Unlike
+        await supabase
+          .from('playlist_likes')
+          .delete()
+          .eq('playlist_id', id)
+          .eq('user_id', user.id);
+        
+        setIsLiked(false);
+        setLikesCount(prev => Math.max(0, prev - 1));
+      } else {
+        // Like
+        await supabase
+          .from('playlist_likes')
+          .insert({
+            playlist_id: id,
+            user_id: user.id
+          });
+        
+        setIsLiked(true);
+        setLikesCount(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update like status",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSubmitComment = async () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please log in to comment",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!newComment.trim()) return;
+
+    setSubmittingComment(true);
+    try {
+      const { error } = await supabase
+        .from('playlist_comments')
+        .insert({
+          playlist_id: id,
+          user_id: user.id,
+          comment: newComment.trim()
+        });
+
+      if (error) throw error;
+
+      setNewComment('');
+      await fetchComments();
+      
+      toast({
+        title: "Comment added",
+        description: "Your comment has been posted successfully"
+      });
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to post comment",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('playlist_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      await fetchComments();
+      toast({
+        title: "Comment deleted",
+        description: "Your comment has been removed"
+      });
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete comment",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePlayAll = () => {
+    const playableSongs = playlistSongs
+      .filter(ps => ps.songs.audio_url)
+      .map(ps => ({
+        id: ps.songs.id,
+        title: ps.songs.title,
+        artist: 'Zamar',
+        duration: 0,
+        url: ps.songs.audio_url!,
+        cover: zamarLogo,
+      }));
+
+    if (playableSongs.length > 0) {
+      playQueue(playableSongs, 0);
+      toast({
+        title: "Playing playlist",
+        description: `Started playing ${playableSongs.length} songs`
+      });
+    } else {
+      toast({
+        title: "No playable songs",
+        description: "This playlist doesn't have any audio files",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getCreatorName = () => {
     if (playlist?.profiles?.first_name || playlist?.profiles?.last_name) {
       return `${playlist.profiles.first_name || ''} ${playlist.profiles.last_name || ''}`.trim();
+    }
+    return 'Anonymous';
+  };
+
+  const getCommentorName = (comment: PlaylistComment) => {
+    if (comment.profiles?.first_name || comment.profiles?.last_name) {
+      return `${comment.profiles.first_name || ''} ${comment.profiles.last_name || ''}`.trim();
     }
     return 'Anonymous';
   };
@@ -178,6 +420,24 @@ const PublicPlaylistDetail = () => {
           </div>
         </div>
 
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          {playlistSongs.length > 0 && (
+            <Button onClick={handlePlayAll} className="gap-2">
+              <PlayCircle className="w-5 h-5" />
+              Play All ({playlistSongs.filter(ps => ps.songs.audio_url).length} songs)
+            </Button>
+          )}
+          <Button 
+            variant={isLiked ? "default" : "outline"} 
+            onClick={handleLike}
+            className="gap-2"
+          >
+            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+            {isLiked ? 'Liked' : 'Like'} ({likesCount})
+          </Button>
+        </div>
+
         {/* Playlist Songs */}
         {playlistSongs.length === 0 ? (
           <Card className="border-primary/20">
@@ -242,6 +502,90 @@ const PublicPlaylistDetail = () => {
             ))}
           </div>
         )}
+
+        {/* Comments Section */}
+        <div className="mt-12">
+          <Card className="border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                Comments ({comments.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Add Comment */}
+              {user ? (
+                <div className="space-y-3">
+                  <Textarea
+                    placeholder="Add a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={handleSubmitComment}
+                      disabled={!newComment.trim() || submittingComment}
+                      className="gap-2"
+                    >
+                      <Send className="w-4 h-4" />
+                      {submittingComment ? 'Posting...' : 'Post Comment'}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Card className="bg-muted/50">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-muted-foreground">
+                      <Link to="/auth" className="text-primary hover:underline">
+                        Log in
+                      </Link>{' '}
+                      to leave a comment
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Comments List */}
+              {comments.length === 0 ? (
+                <div className="text-center py-8">
+                  <MessageCircle className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No comments yet. Be the first to comment!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {comments.map((comment) => (
+                    <Card key={comment.id} className="bg-muted/30">
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-foreground">
+                              {getCommentorName(comment)}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {new Date(comment.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {user?.id === comment.user_id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <p className="text-foreground whitespace-pre-wrap">{comment.comment}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

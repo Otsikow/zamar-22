@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Music2, Search, Calendar, User, Play } from 'lucide-react';
+import { ArrowLeft, Music2, Search, Calendar, User, Play, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PublicPlaylist {
@@ -14,6 +14,7 @@ interface PublicPlaylist {
   description: string | null;
   created_at: string;
   song_count?: number;
+  likes_count?: number;
   profiles?: {
     first_name: string | null;
     last_name: string | null;
@@ -46,11 +47,18 @@ const PublicPlaylists = () => {
 
       if (error) throw error;
 
-      // Get song counts and profile data for each playlist
+      // Get song counts, likes counts and profile data for each playlist
       const playlistsWithCounts = await Promise.all(
         (data || []).map(async (playlist) => {
-          const { count } = await supabase
+          // Get song count
+          const { count: songCount } = await supabase
             .from('playlist_songs')
+            .select('*', { count: 'exact', head: true })
+            .eq('playlist_id', playlist.id);
+
+          // Get likes count
+          const { count: likesCount } = await supabase
+            .from('playlist_likes')
             .select('*', { count: 'exact', head: true })
             .eq('playlist_id', playlist.id);
 
@@ -63,7 +71,8 @@ const PublicPlaylists = () => {
 
           return {
             ...playlist,
-            song_count: count || 0,
+            song_count: songCount || 0,
+            likes_count: likesCount || 0,
             profiles: profileData
           };
         })
@@ -185,6 +194,10 @@ const PublicPlaylists = () => {
                       <div className="flex items-center gap-1">
                         <Music2 className="w-4 h-4" />
                         <span>{playlist.song_count} songs</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        <span>{playlist.likes_count} likes</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
