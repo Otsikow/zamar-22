@@ -89,7 +89,7 @@ const Library = () => {
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [suggestions, setSuggestions] = useState<SongSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("songs");
+  const [activeTab, setActiveTab] = useState("custom");
   const [customSubTab, setCustomSubTab] = useState("songs");
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const { playQueue } = useNowPlaying();
@@ -426,9 +426,9 @@ const Library = () => {
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
             <TabsList aria-label="Library sections">
-              <TabsTrigger value="songs">
-                <Music2 className="w-4 h-4" />
-                {t('library.tabs.mySongs', 'My Songs')} ({purchases.length})
+              <TabsTrigger value="custom">
+                <Gift className="w-4 h-4" />
+                {t('library.tabs.mySongs', 'My Songs')} ({customSongs.length + requests.length})
               </TabsTrigger>
               <TabsTrigger value="favourites">
                 <Heart className="w-4 h-4" />
@@ -438,96 +438,12 @@ const Library = () => {
                 <ClipboardList className="w-4 h-4" />
                 {t('library.tabs.playlists', 'Playlists')} ({playlists.length})
               </TabsTrigger>
-              <TabsTrigger value="custom">
-                <Gift className="w-4 h-4" />
-                {t('library.tabs.customSongs', 'Custom Songs')} ({customSongs.length + requests.length})
-              </TabsTrigger>
               <TabsTrigger value="suggestions">
                 <Lightbulb className="w-4 h-4" />
                 {t('library.tabs.mySuggestions', 'My Suggestions')} ({suggestions.length})
               </TabsTrigger>
             </TabsList>
 
-
-            {/* My Songs Tab */}
-            <TabsContent value="songs" className="mt-6">
-              {purchases.length === 0 ? (
-                <Card className="bg-gradient-card border-border">
-                  <CardContent className="p-8 text-center">
-                    <Music2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-xl font-playfair text-foreground mb-2">
-                      {t('library.noSongsYet', 'No Songs Yet')}
-                    </h3>
-                    <p className="text-muted-foreground font-inter mb-6">
-                      {t('library.noSongsDescription', 'You haven\'t purchased any songs yet. Start by exploring our library or requesting a custom song.')}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button asChild>
-                        <Link to="/songs">{t('library.browseSongs', 'Browse Songs')}</Link>
-                      </Button>
-                      <Button variant="outline" asChild>
-                        <Link to="/request-song">{t('library.requestCustomSong', 'Request Custom Song')}</Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {purchases.map((purchase) => (
-                    <Card key={purchase.id} className="bg-gradient-card border-border hover:border-primary/30 transition-colors">
-                      <CardContent className="p-6">
-                         <div className="space-y-3">
-                           {/* Song Title - Full width at top */}
-                           <div className="w-full">
-                             <h3 className="font-playfair font-semibold text-foreground text-lg leading-snug">
-                               {purchase.songs.title}
-                             </h3>
-                           </div>
-
-                           {/* Thumbnail and Date Row */}
-                           <div className="flex items-center gap-3">
-                             {/* Thumbnail */}
-                             <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
-                               <img 
-                                 src={zamarLogo} 
-                                 alt={purchase.songs.title}
-                                 className="w-full h-full object-contain p-1 bg-transparent"
-                               />
-                             </div>
-                             
-                             {/* Date Info */}
-                             <p className="text-sm text-muted-foreground flex items-center gap-2">
-                               <Calendar className="w-4 h-4 flex-shrink-0" />
-                               <span>{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
-                             </p>
-                           </div>
-
-                           {/* Actions - Full width at bottom */}
-                           <div className="flex gap-2 pt-2">
-                             <Button size="sm" variant="outline" asChild>
-                               <Link to={`/songs/${purchase.songs.id}`}>
-                                 {t('library.view', 'View')}
-                               </Link>
-                             </Button>
-                             {purchase.songs.audio_url && (
-                               <Button size="sm" asChild>
-                                 <a
-                                   href={purchase.songs.audio_url ?? "#"}
-                                   download={`${purchase.songs.title}.mp3`}
-                                 >
-                                   <Download className="w-4 h-4 mr-2" />
-                                   {t('library.download', 'Download')}
-                                 </a>
-                               </Button>
-                             )}
-                           </div>
-                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
 
             {/* Favourites Tab */}
             <TabsContent value="favourites" className="mt-6">
