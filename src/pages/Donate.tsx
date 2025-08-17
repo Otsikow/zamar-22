@@ -119,15 +119,16 @@ const Donate = () => {
     setIsProcessing(true);
     
     try {
-      const payload = {
-        amount: Number(amount),
-        currency: "gbp",
-        campaign: campaigns.find(c => c.id === selectedCampaign)?.title || "General Fund",
-        customer_email: user?.email || undefined,
-      };
-
+      const selectedCampaignData = campaigns.find(c => c.id === selectedCampaign);
+      
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
-        body: payload,
+        body: {
+          amount: Number(amount),
+          campaign_id: selectedCampaign,
+          campaign_name: selectedCampaignData?.title || "General Fund",
+          user_id: user?.id || null,
+          email: user?.email || undefined,
+        },
       });
 
       if (error) {
@@ -135,7 +136,7 @@ const Donate = () => {
       }
 
       if (data?.url) {
-        window.location.href = data.url; // Stripe-hosted payment page
+        window.location.href = data.url;
       } else {
         throw new Error("Could not create checkout session.");
       }

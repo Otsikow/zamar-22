@@ -1,69 +1,66 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import Stripe from "npm:stripe@14.24.0";
+// supabase/functions/create-donation-checkout/index.ts
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
+import Stripe from 'https://esm.sh/stripe@16.5.0?target=deno'
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: cors })
   }
 
   try {
-    const { amount, currency = "gbp", campaign = "General Fund", customer_email, success_url, cancel_url } = await req.json();
+    const { amount, campaign_id, campaign_name, user_id, email } = await req.json().catch(() => ({}))
 
-    if (!amount || Number.isNaN(Number(amount))) {
-      return new Response(JSON.stringify({ error: "Amount is required" }), { 
-        status: 400, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      });
-    }
+    // Basic input guard – default to £25 if not provided
+    const amountInPence = Number.isFinite(amount) ? Math.max(100, Math.round(Number(amount) * 100)) : 2500
 
-    const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeSecret) {
-      return new Response(JSON.stringify({ error: "Stripe secret missing" }), { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      });
-    }
+    const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
+    const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
+    if (!STRIPE_SECRET_KEY) throw new Error('Missing STRIPE_SECRET_KEY')
 
-    const stripe = new Stripe(stripeSecret, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() })
 
-    const unit_amount = Math.round(Number(amount) * 100); // £ → pence
-
-    const siteUrl = Deno.env.get("SITE_URL") ?? "https://www.zamarsongs.com";
-    const successUrl = success_url ?? `${siteUrl}/donations/thanks?ok=1`;
-    const cancelUrl = cancel_url ?? `${siteUrl}/donations/cancelled`;
-
+    // Create a one-off payment Checkout Session with dynamic amount
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: customer_email || undefined,
+      mode: 'payment',
+      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency,
-            unit_amount,
-            product_data: { name: `Donation – ${campaign}` },
+            currency: 'gbp',
+            product_data: {
+              name: campaign_name || 'Zamar Donation',
+              metadata: { campaign_id: String(campaign_id || ''), app: 'zamar' },
+            },
+            unit_amount: amountInPence, // e.g., 2500 = £25.00
           },
           quantity: 1,
         },
       ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      payment_method_types: ["card"],
-    });
+      metadata: {
+        campaign_id: String(campaign_id || ''),
+        campaign_name: campaign_name || 'General Fund',
+        user_id: String(user_id || ''),
+      },
+      customer_email: email || undefined,
+      success_url: `${APP_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${APP_URL}/donate`,
+    })
 
     return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
-    });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message ?? "Unknown error" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+      headers: { 'Content-Type': 'application/json', ...cors },
+    })
+  } catch (e) {
+    console.error('create-donation-checkout error:', e)
+    return new Response(JSON.stringify({ error: (e as Error).message ?? 'Unknown error' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...cors },
+    })
   }
-});
+})
