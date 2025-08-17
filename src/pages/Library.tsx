@@ -419,12 +419,12 @@ const Library = () => {
 
                            {/* Song Info */}
                            <div className="flex-1 min-w-0 pr-4">
-                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 break-words">
                                {purchase.songs.title}
                              </h3>
-                             <p className="text-sm text-muted-foreground flex items-center gap-2 truncate">
+                             <p className="text-sm text-muted-foreground flex items-center gap-2">
                                <Calendar className="w-4 h-4 flex-shrink-0" />
-                               <span className="truncate">{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
+                               <span>{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
                              </p>
                            </div>
 
@@ -499,12 +499,12 @@ const Library = () => {
                             <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
                           </div>
                            <div className="flex-1 min-w-0 pr-4">
-                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 break-words">
                                {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
                              </h3>
-                             <p className="text-sm text-muted-foreground flex items-center gap-2 truncate">
+                             <p className="text-sm text-muted-foreground flex items-center gap-2">
                                <Calendar className="w-4 h-4 flex-shrink-0" />
-                               <span className="truncate">{t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}</span>
+                               <span>{t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}</span>
                              </p>
                            </div>
                           <div className="flex gap-2">
