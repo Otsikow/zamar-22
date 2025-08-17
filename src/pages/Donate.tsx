@@ -124,6 +124,7 @@ const Donate = () => {
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
         body: {
           amount: Number(amount), // Pass as number, not string
+          recurring: donationType === 'monthly',
           campaign_id: selectedCampaign,
           campaign_name: selectedCampaignData?.title || "General Fund",
           user_id: user?.id || null,

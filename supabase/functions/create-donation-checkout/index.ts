@@ -14,21 +14,22 @@ Deno.serve(async (req) => {
   try {
     const bodyText = await req.text()
     const payload = bodyText ? JSON.parse(bodyText) : {}
-    const rawAmount = payload.amount
+    const { amount: rawAmount, recurring = false, email, campaign_id, campaign_name, user_id } = payload
 
     console.log('Donation checkout request:', {
       amount: rawAmount,
-      campaign_id: payload.campaign_id,
-      campaign_name: payload.campaign_name,
-      user_id: payload.user_id,
-      email: payload.email
+      recurring,
+      campaign_id,
+      campaign_name,
+      user_id,
+      email
     })
 
     // accept 5, "5", "£5", "5.00"
     const parsed = String(rawAmount ?? '25').replace(/[^\d.]/g, '')
     const amountInPence = Math.max(100, Math.round(Number(parsed) * 100))
 
-    console.log('Parsed amount:', { raw: rawAmount, parsed, amountInPence })
+    console.log('Parsed amount:', { raw: rawAmount, parsed, amountInPence, recurring })
 
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
     const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
@@ -43,25 +44,54 @@ Deno.serve(async (req) => {
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() })
 
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [{
-        price_data: {
-          currency: 'gbp',
-          product_data: { name: payload.campaign_name || 'Zamar Donation' },
-          unit_amount: amountInPence,
+    let session
+
+    if (recurring) {
+      // 🔄 Recurring donation via subscription
+      session = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        customer_email: email,
+        line_items: [{
+          price_data: {
+            currency: 'gbp',
+            recurring: { interval: 'month' },
+            product_data: { name: campaign_name || 'Monthly Donation to Zamar' },
+            unit_amount: amountInPence,
+          },
+          quantity: 1,
+        }],
+        metadata: {
+          campaign_id: String(campaign_id ?? ''),
+          campaign_name: campaign_name || 'General Fund',
+          user_id: String(user_id ?? ''),
+          recurring: 'true',
         },
-        quantity: 1,
-      }],
-      metadata: {
-        campaign_id: String(payload.campaign_id ?? ''),
-        campaign_name: payload.campaign_name || 'General Fund',
-        user_id: String(payload.user_id ?? ''),
-      },
-      customer_email: payload.email || undefined,
-      success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${APP_URL}/donate`,
-    })
+        success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${APP_URL}/donate`,
+      })
+    } else {
+      // 💵 One-time donation
+      session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer_email: email,
+        line_items: [{
+          price_data: {
+            currency: 'gbp',
+            product_data: { name: campaign_name || 'One-Time Donation to Zamar' },
+            unit_amount: amountInPence,
+          },
+          quantity: 1,
+        }],
+        metadata: {
+          campaign_id: String(campaign_id ?? ''),
+          campaign_name: campaign_name || 'General Fund',
+          user_id: String(user_id ?? ''),
+          recurring: 'false',
+        },
+        success_url: `${APP_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${APP_URL}/donate`,
+      })
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
