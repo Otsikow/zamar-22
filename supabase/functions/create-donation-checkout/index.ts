@@ -3,11 +3,15 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 export const cors = {
   allowHeaders: "authorization, x-client-info, apikey, content-type",
   allowMethods: "GET, POST, OPTIONS",
-  allowOrigins: ["https://www.zamarsongs.com", "https://zamarsongs.com", "http://localhost:3000"],
+  allowOrigins: ["https://www.zamarsongs.com", "https://zamarsongs.com", "http://localhost:3000", "https://lovable.dev"],
 };
 
 function corsHeaders(origin: string | null) {
-  const allowOrigin = cors.allowOrigins.includes(origin ?? "") ? origin! : cors.allowOrigins[0];
+  // For development, allow any lovable.dev subdomain or the configured origins
+  const isLovableDev = origin?.includes('lovable.dev');
+  const isConfiguredOrigin = cors.allowOrigins.includes(origin ?? "");
+  const allowOrigin = isLovableDev || isConfiguredOrigin ? origin! : cors.allowOrigins[0];
+  
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Headers": cors.allowHeaders,
