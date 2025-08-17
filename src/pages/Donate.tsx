@@ -152,10 +152,10 @@ const Donate = () => {
       setIsProcessing(false);
       
       // Surface the real error message in the toast
-      const errorMessage = error?.message || error?.error || "Payment failed. Please try again.";
+      const errorMessage = error?.message || error?.error || "Unknown error";
       toast({
         title: t('donate.error_title', 'Donation Error'),
-        description: errorMessage,
+        description: `Donation failed: ${errorMessage}`,
         variant: 'destructive',
       });
     }

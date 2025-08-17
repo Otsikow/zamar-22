@@ -22,7 +22,14 @@ Deno.serve(async (req) => {
 
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
     const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
-    if (!STRIPE_SECRET_KEY) throw new Error('Missing STRIPE_SECRET_KEY')
+    
+    if (!STRIPE_SECRET_KEY) throw new Error('Missing STRIPE_SECRET_KEY (sk_...)')
+    
+    console.log('Environment check:', {
+      hasStripeKey: !!STRIPE_SECRET_KEY,
+      stripeKeyPrefix: STRIPE_SECRET_KEY?.substring(0, 7),
+      appUrl: APP_URL
+    })
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() })
 
@@ -51,8 +58,12 @@ Deno.serve(async (req) => {
       headers: { 'Content-Type': 'application/json', ...cors },
     })
   } catch (e) {
-    console.error('create-donation-checkout error:', e)
-    return new Response(JSON.stringify({ error: String((e as Error).message || e) }), {
+    const msg = (e as any)?.message || String(e)
+    console.error('create-donation-checkout error:', e) // shows stack in Supabase Logs
+    return new Response(JSON.stringify({
+      error: msg,
+      hint: 'Check STRIPE_SECRET_KEY (sk_...), numeric amount, and APP_URL.',
+    }), {
       status: 400,
       headers: { 'Content-Type': 'application/json', ...cors },
     })
