@@ -1,21 +1,65 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Library, Home, Heart } from "lucide-react";
+import { CheckCircle, Library, Home, Heart, CreditCard } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const ThankYou = () => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const sessionId = searchParams.get('session_id');
   const type = searchParams.get('type');
   const requestId = searchParams.get('request_id');
+  const tier = searchParams.get('tier') || 'basic';
   
   // Only show as donation if explicitly marked as donation
   const isDonation = type === 'donation';
   const isCustomSong = type === 'custom_song';
   const hasPayment = !!sessionId; // Only show payment processed if we have a session ID
+
+  const handleProceedToPayment = async () => {
+    if (!requestId) {
+      toast({
+        title: "Error",
+        description: "Request ID not found. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    
+    try {
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-custom-song-checkout", {
+        body: {
+          request_id: requestId,
+          tier: tier,
+        },
+      });
+
+      if (checkoutError || !checkoutData?.url) {
+        throw new Error(checkoutData?.error || checkoutError?.message || "Failed to create payment session");
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = checkoutData.url;
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast({
+        title: "Payment Error",
+        description: error instanceof Error ? error.message : "Failed to redirect to payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +191,18 @@ const ThankYou = () => {
               </>
             ) : (
               <>
+                {!hasPayment && isCustomSong && requestId && (
+                  <Button 
+                    onClick={handleProceedToPayment}
+                    disabled={isProcessingPayment}
+                    size="lg" 
+                    className="w-full mb-4"
+                  >
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    {isProcessingPayment ? "Processing..." : "Proceed to Payment"}
+                  </Button>
+                )}
+                
                 <Button asChild size="lg" className="w-full">
                   <Link to="/library">
                     <Library className="w-5 h-5 mr-2" />
