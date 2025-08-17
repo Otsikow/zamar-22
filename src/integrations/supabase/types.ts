@@ -1742,6 +1742,19 @@ export type Database = {
       }
     }
     Views: {
+      admin_orders: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          id: string | null
+          status: string | null
+          tier: string | null
+          updated_at: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       public_profiles: {
         Row: {
           created_at: string | null
@@ -1856,6 +1869,19 @@ export type Database = {
           p_user_id: string
         }
         Returns: undefined
+      }
+      admin_list_orders: {
+        Args: { p_q?: string; p_status?: string }
+        Returns: {
+          amount: number | null
+          created_at: string | null
+          id: string | null
+          status: string | null
+          tier: string | null
+          updated_at: string | null
+          user_email: string | null
+          user_id: string | null
+        }[]
       }
       admin_soft_delete_user: {
         Args: { target_user_id: string }
