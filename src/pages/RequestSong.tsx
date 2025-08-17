@@ -91,27 +91,43 @@ const RequestSong = () => {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      // First, create the custom song request
+      const { data: requestData, error } = await supabase
         .from("custom_song_requests")
         .insert({
           user_id: user.id,
           occasion: data.occasion,
-          style_genre: data.styleGenre,
+          style_genre: data.styleGenre,  
           language: data.language || null,
           key_message: data.keyMessage,
           scripture_quote: data.scriptureQuote || null,
           tier: data.tier,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
       toast({
         title: "Request Submitted!",
-        description: "Your custom song request has been submitted successfully.",
+        description: "Redirecting to payment...",
       });
 
-      // Redirect to thank you page
-      navigate("/thank-you");
+      // Create checkout session for payment
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-custom-song-checkout", {
+        body: {
+          request_id: requestData.id,
+          tier: data.tier,
+        },
+      });
+
+      if (checkoutError || !checkoutData?.url) {
+        throw new Error(checkoutData?.error || "Failed to create payment session");
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = checkoutData.url;
+      
     } catch (error: any) {
       toast({
         title: "Error",

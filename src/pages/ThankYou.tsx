@@ -9,7 +9,13 @@ const ThankYou = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const isDonation = searchParams.has('session_id') || searchParams.get('type') === 'donation';
+  const type = searchParams.get('type');
+  const requestId = searchParams.get('request_id');
+  
+  // Only show as donation if explicitly marked as donation
+  const isDonation = type === 'donation';
+  const isCustomSong = type === 'custom_song';
+  const hasPayment = !!sessionId; // Only show payment processed if we have a session ID
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,14 +41,18 @@ const ThankYou = () => {
             <h2 className="text-xl md:text-2xl font-playfair text-primary mb-6">
               {isDonation 
                 ? t('thank_you.donation_subtitle', 'Your generous donation has been received.')
-                : 'Your custom song request has been received.'
+                : isCustomSong && hasPayment
+                  ? 'Your custom song request has been received and paid for.'
+                  : 'Your request has been submitted.'
               }
             </h2>
             
             <p className="text-lg text-muted-foreground font-inter leading-relaxed">
               {isDonation 
                 ? t('thank_you.donation_description', 'Your contribution helps us create meaningful music that inspires, heals, and brings hope to communities around the world.')
-                : 'We\'ll get started right away. You\'ll receive a confirmation email and can track your request in your Library.'
+                : isCustomSong && hasPayment
+                  ? 'Thank you for your payment! We\'ll get started on your custom song right away. You\'ll receive a confirmation email and can track your request in your Library.'
+                  : 'Your request has been submitted but payment is still required to begin production.'
               }
             </p>
           </div>
@@ -94,13 +104,23 @@ const ThankYou = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-center gap-2 text-primary">
                       <CheckCircle className="w-5 h-5" />
-                      <span className="font-inter font-medium">Request Submitted Successfully</span>
+                      <span className="font-inter font-medium">
+                        {hasPayment ? 'Request Submitted & Paid Successfully' : 'Request Submitted Successfully'}
+                      </span>
                     </div>
                     
                     <div className="text-sm text-muted-foreground font-inter space-y-2">
-                      <p>✓ Confirmation email sent</p>
-                      <p>✓ Payment processed</p>
-                      <p>✓ Production team notified</p>
+                      <p>✓ Request submitted</p>
+                      {hasPayment && (
+                        <>
+                          <p>✓ Payment processed</p>
+                          <p>✓ Production team notified</p>
+                          <p>✓ Confirmation email sent</p>
+                        </>
+                      )}
+                      {!hasPayment && (
+                        <p className="text-amber-600">⏳ Payment required to begin production</p>
+                      )}
                     </div>
                   </div>
                 </div>
