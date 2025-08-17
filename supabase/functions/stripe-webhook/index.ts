@@ -33,17 +33,28 @@ Deno.serve(async (req) => {
     const currency = s.currency;
     const meta = s.metadata || {};
 
-    // Insert donation record
-    await supabase.from("donations").insert({
-      stripe_payment_intent: paymentIntent,
-      stripe_checkout_session: s.id,
-      amount_pennies: amount,
-      currency,
-      campaign_id: meta.campaign_id ?? "general",
-      donor_name: meta.donor_name ?? null,
-      donor_email: s.customer_details?.email ?? null,
-      status: "succeeded",
-    });
+    // Handle custom song orders
+    if (meta.type === "custom_song_order" && meta.order_id) {
+      await supabase.from("custom_song_orders").update({
+        status: "paid",
+        stripe_payment_intent: paymentIntent,
+        updated_at: new Date().toISOString()
+      }).eq("id", meta.order_id);
+
+      console.log("Custom song order marked as paid:", meta.order_id);
+    } else {
+      // Handle regular donations
+      await supabase.from("donations").insert({
+        stripe_payment_intent: paymentIntent,
+        stripe_checkout_session: s.id,
+        amount_pennies: amount,
+        currency,
+        campaign_id: meta.campaign_id ?? "general",
+        donor_name: meta.donor_name ?? null,
+        donor_email: s.customer_details?.email ?? null,
+        status: "succeeded",
+      });
+    }
 
     // Process referral earnings if user is identified
     if (meta.user_id && meta.user_id !== "anonymous") {

@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Download, Music2, Clock, CheckCircle, Loader, XCircle, Calendar, Library as LibraryIcon, Gift, ClipboardList, Heart, Lightbulb, Plus } from "lucide-react";
 import FavouriteButton from "@/components/FavouriteButton";
 import { SuggestSongModal } from "@/components/modals/SuggestSongModal";
+import { PackagePickerSheet } from "@/components/modals/PackagePickerSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation, getLocaleForLanguage } from "@/contexts/TranslationContext";
@@ -92,6 +93,7 @@ const Library = () => {
   const [activeTab, setActiveTab] = useState("custom");
   const [customSubTab, setCustomSubTab] = useState("songs");
   const [showSuggestModal, setShowSuggestModal] = useState(false);
+  const [showPackagePicker, setShowPackagePicker] = useState(false);
   const { playQueue } = useNowPlaying();
 
   useEffect(() => {
@@ -407,11 +409,12 @@ const Library = () => {
                 <Lightbulb className="w-4 h-4" />
                 Suggest A Song
               </Button>
-              <Button asChild className="gap-2">
-                <Link to="/request-song">
-                  <Plus className="w-4 h-4" />
-                  Create Custom Song
-                </Link>
+              <Button 
+                onClick={() => setShowPackagePicker(true)}
+                className="gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create Custom Song
               </Button>
             </div>
           </div>
@@ -901,6 +904,11 @@ const Library = () => {
       <SuggestSongModal 
         open={showSuggestModal} 
         onOpenChange={setShowSuggestModal}
+      />
+      
+      <PackagePickerSheet 
+        open={showPackagePicker} 
+        onOpenChange={setShowPackagePicker}
       />
       
       <Footer />

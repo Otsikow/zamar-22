@@ -31,6 +31,13 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
+    // Service role client for database operations
+    const supabaseService = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("No authorization header provided");
@@ -46,24 +53,25 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     // Parse request body
-    const { product_id } = await req.json();
-    if (!product_id) {
-      throw new Error("product_id is required");
+    const { order_id, tier, amount } = await req.json();
+    if (!order_id || !tier || !amount) {
+      throw new Error("order_id, tier, and amount are required");
     }
 
-    // Get product details from Supabase
-    const { data: product, error: productError } = await supabaseClient
-      .from("products")
+    // Verify order exists and belongs to user
+    const { data: order, error: orderError } = await supabaseService
+      .from("custom_song_orders")
       .select("*")
-      .eq("id", product_id)
-      .eq("is_active", true)
+      .eq("id", order_id)
+      .eq("user_id", user.id)
+      .eq("status", "pending")
       .single();
 
-    if (productError || !product) {
-      throw new Error("Product not found or inactive");
+    if (orderError || !order) {
+      throw new Error("Order not found or access denied");
     }
 
-    logStep("Product found", { productId: product.id, name: product.name });
+    logStep("Order verified", { orderId: order.id, tier: order.tier });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
@@ -81,7 +89,8 @@ serve(async (req) => {
       logStep("No existing customer found");
     }
 
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const origin = req.headers.get("origin") || "https://wtnebvhrjnpygkftjreo.supabase.co";
+    const SITE_URL = Deno.env.get("SITE_URL") || origin;
 
     // Create checkout session
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
@@ -89,36 +98,41 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: product.stripe_price_id,
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: `Custom Song - ${tier.charAt(0).toUpperCase() + tier.slice(1)} Package`,
+              description: `Custom song creation with ${tier} tier features`,
+            },
+            unit_amount: amount, // amount in pence
+          },
           quantity: 1,
         },
       ],
-      mode: product.billing_interval === "one_time" ? "payment" : "subscription",
-      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/pricing`,
+      mode: "payment",
+      success_url: `${SITE_URL}/library?status=success&order_id=${order.id}`,
+      cancel_url: `${SITE_URL}/library?status=cancelled&order_id=${order.id}`,
       metadata: {
         user_id: user.id,
-        product_id: product.id,
-        price_id: product.stripe_price_id,
+        order_id: order.id,
+        tier: tier,
+        type: "custom_song_order"
       },
     };
 
-    // Add subscription-specific options
-    if (product.billing_interval !== "one_time") {
-      sessionConfig.subscription_data = {
-        metadata: {
-          user_id: user.id,
-          product_id: product.id,
-        },
-      };
-    }
-
     const session = await stripe.checkout.sessions.create(sessionConfig);
+    
+    // Update order with session ID
+    await supabaseService
+      .from("custom_song_orders")
+      .update({ stripe_session_id: session.id })
+      .eq("id", order.id);
     
     logStep("Checkout session created", { 
       sessionId: session.id, 
       url: session.url,
-      mode: sessionConfig.mode 
+      orderId: order.id,
+      tier 
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
