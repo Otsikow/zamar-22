@@ -86,17 +86,34 @@ const SocialShare: React.FC<SocialShareProps> = ({
   };
 
   const handleNativeShare = async () => {
+    console.log('More Options clicked, navigator.share available:', !!navigator.share);
+    
     if (navigator.share) {
       try {
+        console.log('Attempting native share with:', { title, text: description, url });
         await navigator.share({
           title,
           text: description,
           url,
         });
+        console.log('Native share successful');
         setIsOpen(false);
       } catch (error) {
-        // User cancelled or error occurred
+        console.error('Native share failed:', error);
+        // Fallback to copy link if native share fails
+        toast({
+          title: "Share not available",
+          description: "Copying link instead.",
+        });
+        handleCopyLink();
       }
+    } else {
+      console.log('Navigator share not available, falling back to copy');
+      toast({
+        title: "Share not available",
+        description: "Copying link instead.",
+      });
+      handleCopyLink();
     }
   };
 
