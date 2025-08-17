@@ -417,16 +417,16 @@ const Library = () => {
                              />
                           </div>
 
-                          {/* Song Info */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug whitespace-normal break-normal">
-                              {purchase.songs.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground flex items-center gap-2">
-                              <Calendar className="w-4 h-4" />
-                              {t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}
-                            </p>
-                          </div>
+                           {/* Song Info */}
+                           <div className="flex-1 min-w-0 pr-4">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                               {purchase.songs.title}
+                             </h3>
+                             <p className="text-sm text-muted-foreground flex items-center gap-2 truncate">
+                               <Calendar className="w-4 h-4 flex-shrink-0" />
+                               <span className="truncate">{t('library.purchasedOn', 'Purchased on')} {formatDate(purchase.created_at)}</span>
+                             </p>
+                           </div>
 
                           {/* Actions */}
                           <div className="flex gap-2">
@@ -498,15 +498,15 @@ const Library = () => {
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))] flex-shrink-0">
                             <img src={zamarLogo} alt={fav.songs?.title || 'Song'} className="w-full h-full object-contain p-1 bg-transparent" />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 leading-snug whitespace-normal break-normal">
-                              {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
-                            </h3>
-                            <p className="text-sm text-muted-foreground flex items-center gap-2">
-                              <Calendar className="w-4 h-4" />
-                              {t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}
-                            </p>
-                          </div>
+                           <div className="flex-1 min-w-0 pr-4">
+                             <h3 className="font-playfair font-semibold text-foreground text-lg mb-1 truncate">
+                               {fav.songs?.title || t('library.unknownSong', 'Unknown Song')}
+                             </h3>
+                             <p className="text-sm text-muted-foreground flex items-center gap-2 truncate">
+                               <Calendar className="w-4 h-4 flex-shrink-0" />
+                               <span className="truncate">{t('library.savedOn', 'Saved on')} {formatDate(fav.created_at)}</span>
+                             </p>
+                           </div>
                           <div className="flex gap-2">
                             {fav.songs?.id && (
                               <Button size="sm" variant="outline" asChild>
