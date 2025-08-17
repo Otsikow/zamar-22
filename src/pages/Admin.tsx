@@ -375,14 +375,14 @@ const [activeTab, setActiveTab] = useState(initialTab);
       // Upload audio file to storage
       const audioFileName = `${Date.now()}_${songForm.audioFile.name}`;
         const { data: audioData, error: audioError } = await supabase.storage
-          .from('advertisements')
+          .from('songs')
           .upload(audioFileName, songForm.audioFile);
 
         if (audioError) throw audioError;
 
         // Get public URL for the audio file
         const { data: { publicUrl: audioUrl } } = supabase.storage
-          .from('advertisements')
+          .from('songs')
           .getPublicUrl(audioFileName);
 
       // Insert song into database
