@@ -396,7 +396,7 @@ const Library = () => {
               </TabsTrigger>
               <TabsTrigger value="requests">
                 <Calendar className="w-4 h-4" />
-                {t('library.tabs.myRequests', 'My Requests')} ({requests.length})
+                {t('library.tabs.myRequests', 'My Suggestions')} ({requests.length})
               </TabsTrigger>
             </TabsList>
 
