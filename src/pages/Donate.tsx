@@ -116,27 +116,14 @@ const Donate = () => {
       return;
     }
 
-    // Check if user is authenticated for donations
-    if (!user) {
-      toast({
-        title: t('donate.signin_required_title', 'Sign In Required'),
-        description: t('donate.signin_required_desc', 'Please sign in to make a donation. This helps us track your giving and provide proper receipts.'),
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setIsProcessing(true);
     
     try {
-      const amountGBP = Number(amount); // ensure numeric
       const payload = {
-        amountGBP,
-        campaign_id: selectedCampaign || "general",
-        donor_name: user.user_metadata?.first_name && user.user_metadata?.last_name 
-          ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` 
-          : "",
-        donor_email: user.email || "",
+        amount: Number(amount),
+        currency: "gbp",
+        campaign: campaigns.find(c => c.id === selectedCampaign)?.title || "General Fund",
+        customer_email: user?.email || undefined,
       };
 
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
