@@ -108,10 +108,15 @@ const RequestSong = () => {
 
       if (error) throw error;
 
+      console.log("Created request:", requestData);
+
       toast({
         title: "Request Submitted!",
         description: "Redirecting to payment...",
       });
+
+      // Wait a moment to ensure database commit
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Create checkout session for payment
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke("create-custom-song-checkout", {
@@ -121,8 +126,10 @@ const RequestSong = () => {
         },
       });
 
+      console.log("Checkout response:", { checkoutData, checkoutError });
+
       if (checkoutError || !checkoutData?.url) {
-        throw new Error(checkoutData?.error || "Failed to create payment session");
+        throw new Error(checkoutData?.error || checkoutError?.message || "Failed to create payment session");
       }
 
       // Redirect to Stripe checkout

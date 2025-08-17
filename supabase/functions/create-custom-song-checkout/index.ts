@@ -25,10 +25,11 @@ serve(async (req) => {
       throw new Error("STRIPE_SECRET_KEY is not set");
     }
 
-    // Create Supabase client for authentication
+    // Create Supabase client using service role for database access
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
     );
 
     const authHeader = req.headers.get("Authorization");
@@ -51,7 +52,9 @@ serve(async (req) => {
       throw new Error("request_id and tier are required");
     }
 
-    // Get the custom song request to verify ownership
+    logStep("Looking for request", { request_id, tier, user_id: user.id });
+
+    // Get the custom song request to verify ownership - using service role for reliable access
     const { data: customRequest, error: requestError } = await supabaseClient
       .from("custom_song_requests")
       .select("*")
@@ -59,8 +62,14 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .single();
 
+    logStep("Request query result", { 
+      found: !!customRequest, 
+      error: requestError?.message,
+      request_id 
+    });
+
     if (requestError || !customRequest) {
-      throw new Error("Custom song request not found or access denied");
+      throw new Error(`Custom song request not found or access denied. Request ID: ${request_id}, Error: ${requestError?.message || 'Not found'}`);
     }
 
     // Find the appropriate product based on tier
