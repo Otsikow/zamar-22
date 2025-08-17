@@ -123,7 +123,7 @@ const Donate = () => {
       
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
         body: {
-          amount: Number(amount),
+          amount: Number(amount), // Pass as number, not string
           campaign_id: selectedCampaign,
           campaign_name: selectedCampaignData?.title || "General Fund",
           user_id: user?.id || null,
@@ -132,20 +132,30 @@ const Donate = () => {
       });
 
       if (error) {
-        throw new Error(error.message ?? "Donation could not start. Please try again.");
+        // Surface the actual error message from the function
+        const errorMessage = error.message || error.error || "Function call failed";
+        throw new Error(errorMessage);
+      }
+
+      if (data?.error) {
+        // Handle errors returned in the response body
+        throw new Error(data.error);
       }
 
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error("Could not create checkout session.");
+        throw new Error("No checkout URL returned from payment processor");
       }
     } catch (error: any) {
       console.error("Donation checkout error:", error);
       setIsProcessing(false);
+      
+      // Surface the real error message in the toast
+      const errorMessage = error?.message || error?.error || "Payment failed. Please try again.";
       toast({
-        title: t('donate.error_title', 'Error'),
-        description: error?.message ?? t('donate.error_desc', 'Payment failed. Please try again.'),
+        title: t('donate.error_title', 'Donation Error'),
+        description: errorMessage,
         variant: 'destructive',
       });
     }

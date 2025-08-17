@@ -9,15 +9,16 @@ const cors = {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: cors })
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { status: 200, headers: cors })
 
   try {
-    const { amount, campaign_id, campaign_name, user_id, email } = await req.json().catch(() => ({}))
+    const bodyText = await req.text()
+    const payload = bodyText ? JSON.parse(bodyText) : {}
+    const rawAmount = payload.amount
 
-    // Basic input guard – default to £25 if not provided
-    const amountInPence = Number.isFinite(amount) ? Math.max(100, Math.round(Number(amount) * 100)) : 2500
+    // accept 5, "5", "£5", "5.00"
+    const parsed = String(rawAmount ?? '25').replace(/[^\d.]/g, '')
+    const amountInPence = Math.max(100, Math.round(Number(parsed) * 100))
 
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')
     const APP_URL = Deno.env.get('APP_BASE_URL') || Deno.env.get('SITE_URL') || 'https://www.zamarsongs.com'
@@ -25,29 +26,22 @@ Deno.serve(async (req) => {
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() })
 
-    // Create a one-off payment Checkout Session with dynamic amount
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'gbp',
-            product_data: {
-              name: campaign_name || 'Zamar Donation',
-              metadata: { campaign_id: String(campaign_id || ''), app: 'zamar' },
-            },
-            unit_amount: amountInPence, // e.g., 2500 = £25.00
-          },
-          quantity: 1,
+      line_items: [{
+        price_data: {
+          currency: 'gbp',
+          product_data: { name: payload.campaign_name || 'Zamar Donation' },
+          unit_amount: amountInPence,
         },
-      ],
+        quantity: 1,
+      }],
       metadata: {
-        campaign_id: String(campaign_id || ''),
-        campaign_name: campaign_name || 'General Fund',
-        user_id: String(user_id || ''),
+        campaign_id: String(payload.campaign_id ?? ''),
+        campaign_name: payload.campaign_name || 'General Fund',
+        user_id: String(payload.user_id ?? ''),
       },
-      customer_email: email || undefined,
+      customer_email: payload.email || undefined,
       success_url: `${APP_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/donate`,
     })
@@ -58,7 +52,7 @@ Deno.serve(async (req) => {
     })
   } catch (e) {
     console.error('create-donation-checkout error:', e)
-    return new Response(JSON.stringify({ error: (e as Error).message ?? 'Unknown error' }), {
+    return new Response(JSON.stringify({ error: String((e as Error).message || e) }), {
       status: 400,
       headers: { 'Content-Type': 'application/json', ...cors },
     })
