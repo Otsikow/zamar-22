@@ -497,6 +497,48 @@ export type Database = {
           },
         ]
       }
+      custom_song_orders: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          id: string
+          status: string
+          stripe_payment_intent: string | null
+          stripe_price_id: string
+          stripe_session_id: string | null
+          tier: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          status?: string
+          stripe_payment_intent?: string | null
+          stripe_price_id: string
+          stripe_session_id?: string | null
+          tier: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          status?: string
+          stripe_payment_intent?: string | null
+          stripe_price_id?: string
+          stripe_session_id?: string | null
+          tier?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       custom_song_requests: {
         Row: {
           assigned_admin: string | null
