@@ -11,10 +11,12 @@ import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/sections/Footer";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Donate = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState<string>("25");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [donationType, setDonationType] = useState<string>("one-time");
@@ -114,6 +116,16 @@ const Donate = () => {
       return;
     }
 
+    // Check if user is authenticated for donations
+    if (!user) {
+      toast({
+        title: t('donate.signin_required_title', 'Sign In Required'),
+        description: t('donate.signin_required_desc', 'Please sign in to make a donation. This helps us track your giving and provide proper receipts.'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
@@ -121,12 +133,13 @@ const Donate = () => {
       const payload = {
         amountGBP,
         campaign_id: selectedCampaign || "general",
-        donor_name: "", // Add user name if available
-        donor_email: "", // Add user email if available
+        donor_name: user.user_metadata?.first_name && user.user_metadata?.last_name 
+          ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` 
+          : "",
+        donor_email: user.email || "",
       };
 
       const { data, error } = await supabase.functions.invoke("create-donation-checkout", {
-        method: "POST",
         body: payload,
       });
 

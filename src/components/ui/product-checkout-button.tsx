@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProductCheckoutButtonProps {
   productId: string;
@@ -21,8 +22,17 @@ export function ProductCheckoutButton({
   disabled = false
 }: ProductCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const handleClick = async () => {
+    // Check if user is authenticated
+    if (!user) {
+      toast.error("Please sign in to make a purchase", {
+        description: "You need to be logged in to complete your purchase."
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       
