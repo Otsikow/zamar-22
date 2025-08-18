@@ -10,17 +10,27 @@ export const useReferralLink = (userId: string | null) => {
   const [isLinking, setIsLinking] = useState(false);
 
   const linkReferral = async () => {
-    if (!userId) return;
+    if (!userId) {
+      console.log('linkReferral called but no userId provided');
+      return;
+    }
 
+    console.log('linkReferral starting for userId:', userId);
     setIsLinking(true);
     try {
       await applyReferralAfterSignIn(userId);
+      console.log('Referral linking completed successfully');
       toast({
         title: "Referral linked! 🎉",
         description: "You've been successfully referred. Welcome to Zamar!",
       });
     } catch (error) {
       console.error('Failed to link referral:', error);
+      toast({
+        title: "Referral linking failed",
+        description: "There was an issue linking your referral. Please contact support.",
+        variant: "destructive"
+      });
     } finally {
       setIsLinking(false);
     }
