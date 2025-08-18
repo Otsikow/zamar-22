@@ -245,7 +245,21 @@ export const useReferralDashboard = () => {
     setLoading(true);
     try {
       console.log('Loading referral data for user:', user.id);
-      await ensureReferralCode(user.id);
+      
+      // Force fresh fetch of referral code
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching referral code:', error);
+      } else if (profile?.referral_code) {
+        console.log('Setting referral code from DB:', profile.referral_code);
+        setReferralCode(profile.referral_code);
+      }
+
       await Promise.all([
         fetchStats(user.id),
         fetchEarnings(user.id),
@@ -260,8 +274,9 @@ export const useReferralDashboard = () => {
     }
   };
 
-  // Load data on mount and when user changes
   useEffect(() => {
+    // Clear any cached referral data on mount
+    setReferralCode('');
     loadReferralData();
   }, [user?.id]);
 
