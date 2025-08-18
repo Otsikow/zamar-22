@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useReferralSignup } from '@/hooks/useReferralSignup';
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { processReferralAfterAuth } = useReferralSignup();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -32,13 +34,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Apply referral after sign in
+        // Process referral after sign in (both new signups and logins)
         if (event === 'SIGNED_IN' && session?.user) {
           setTimeout(() => {
-            import('@/lib/referral').then(({ applyReferralAfterSignIn }) => {
-              applyReferralAfterSignIn(session.user.id);
-            });
-          }, 0);
+            processReferralAfterAuth(session.user.id);
+          }, 1000); // Small delay to ensure profile is created
         }
       }
     );

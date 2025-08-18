@@ -1048,6 +1048,7 @@ export type Database = {
           preferred_language: string | null
           referral_code: string | null
           referred_by: string | null
+          referrer_id: string | null
           suspended_at: string | null
           updated_at: string
         }
@@ -1063,6 +1064,7 @@ export type Database = {
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          referrer_id?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
@@ -1078,6 +1080,7 @@ export type Database = {
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
+          referrer_id?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
@@ -1112,6 +1115,7 @@ export type Database = {
           currency: string | null
           id: string
           product_id: string | null
+          provider_id: string | null
           song_id: string | null
           status: string | null
           stripe_payment_id: string | null
@@ -1126,6 +1130,7 @@ export type Database = {
           currency?: string | null
           id?: string
           product_id?: string | null
+          provider_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
@@ -1140,6 +1145,7 @@ export type Database = {
           currency?: string | null
           id?: string
           product_id?: string | null
+          provider_id?: string | null
           song_id?: string | null
           status?: string | null
           stripe_payment_id?: string | null
@@ -1221,6 +1227,8 @@ export type Database = {
           generation: number
           id: string
           payment_id: string | null
+          purchase_id: string | null
+          referral_id: string | null
           referred_user_id: string
           status: string | null
           updated_at: string | null
@@ -1233,6 +1241,8 @@ export type Database = {
           generation: number
           id?: string
           payment_id?: string | null
+          purchase_id?: string | null
+          referral_id?: string | null
           referred_user_id: string
           status?: string | null
           updated_at?: string | null
@@ -1245,6 +1255,8 @@ export type Database = {
           generation?: number
           id?: string
           payment_id?: string | null
+          purchase_id?: string | null
+          referral_id?: string | null
           referred_user_id?: string
           status?: string | null
           updated_at?: string | null
