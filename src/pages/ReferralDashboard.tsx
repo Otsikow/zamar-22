@@ -63,7 +63,7 @@ export default function ReferralDashboard() {
           Referral Dashboard
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Share your unique link and earn 15% commission on every purchase made by people you refer
+          Share your unique link and earn commission: 15% on direct referrals (L1) and 10% on their referrals (L2)
         </p>
       </div>
 
@@ -122,6 +122,66 @@ export default function ReferralDashboard() {
         </Card>
       </div>
 
+      {/* Level-based earnings breakdown */}
+      <Card className="border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Earnings by Level
+          </CardTitle>
+          <CardDescription>
+            Breakdown of your commission earnings by referral level
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20 dark:border-green-800/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300">
+                  L1 Earnings (15% Direct Referrals)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Total:</span>
+                  <span className="font-bold text-green-600 text-lg">{formatCurrency(stats.l1Earnings)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Pending:</span>
+                  <span className="text-orange-600">{formatCurrency(stats.l1Pending)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Paid:</span>
+                  <span className="text-blue-600">{formatCurrency(stats.l1Paid)}</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  L2 Earnings (10% Indirect Referrals)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Total:</span>
+                  <span className="font-bold text-blue-600 text-lg">{formatCurrency(stats.l2Earnings)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Pending:</span>
+                  <span className="text-orange-600">{formatCurrency(stats.l2Pending)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Paid:</span>
+                  <span className="text-blue-600">{formatCurrency(stats.l2Paid)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Referral Link Section */}
       <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-primary-glow/5">
         <CardHeader>
@@ -130,7 +190,7 @@ export default function ReferralDashboard() {
             Your Referral Link
           </CardTitle>
           <CardDescription>
-            Share this link to earn 15% commission on purchases
+            Share this link to earn 15% (L1) and 10% (L2) commission on purchases
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -176,7 +236,7 @@ export default function ReferralDashboard() {
                     <TableHead>Date</TableHead>
                     <TableHead>Referred User</TableHead>
                     <TableHead>Amount</TableHead>
-                    <TableHead>Generation</TableHead>
+                    <TableHead>Level & Rate</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -189,8 +249,14 @@ export default function ReferralDashboard() {
                         {formatCurrency(earning.amount)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">
-                          {earning.generation === 1 ? '1st Gen' : '2nd Gen'} (15%)
+                        <Badge 
+                          variant={earning.level === 'L1' ? 'default' : 'secondary'}
+                          className={earning.level === 'L1' ? 
+                            'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                          }
+                        >
+                          {earning.level} ({earning.level === 'L1' ? '15%' : '10%'})
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -286,9 +352,9 @@ export default function ReferralDashboard() {
               <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
                 <DollarSign className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold">You Earn 15%</h3>
+              <h3 className="font-semibold">You Earn Commission</h3>
               <p className="text-sm text-muted-foreground">
-                Earn 15% commission on their purchase, paid out monthly
+                Earn 15% (L1) on direct referrals, 10% (L2) on their referrals, paid out monthly
               </p>
             </div>
           </div>

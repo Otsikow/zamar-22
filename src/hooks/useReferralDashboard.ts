@@ -9,6 +9,12 @@ interface ReferralStats {
   pendingEarnings: number;
   paidEarnings: number;
   activeReferrals: number;
+  l1Earnings: number;
+  l2Earnings: number;
+  l1Pending: number;
+  l2Pending: number;
+  l1Paid: number;
+  l2Paid: number;
 }
 
 interface ReferralEarning {
@@ -18,6 +24,7 @@ interface ReferralEarning {
   created_at: string;
   referred_user_id: string;
   generation: number;
+  level: string;
   referred_user_name?: string;
 }
 
@@ -39,7 +46,13 @@ export const useReferralDashboard = () => {
     totalEarned: 0,
     pendingEarnings: 0,
     paidEarnings: 0,
-    activeReferrals: 0
+    activeReferrals: 0,
+    l1Earnings: 0,
+    l2Earnings: 0,
+    l1Pending: 0,
+    l2Pending: 0,
+    l1Paid: 0,
+    l2Paid: 0
   });
   const [earnings, setEarnings] = useState<ReferralEarning[]>([]);
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
@@ -81,15 +94,23 @@ export const useReferralDashboard = () => {
         .select('*', { count: 'exact', head: true })
         .eq('referrer_id', userId);
 
-      // Get earnings statistics
+      // Get earnings statistics with level breakdown
       const { data: earningsData } = await supabase
         .from('referral_earnings')
-        .select('amount, status')
+        .select('amount, status, level')
         .eq('user_id', userId);
 
       const totalEarned = earningsData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
       const pendingEarnings = earningsData?.filter(e => e.status === 'pending').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
       const paidEarnings = earningsData?.filter(e => e.status === 'paid').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      
+      // Level-specific earnings
+      const l1Earnings = earningsData?.filter(e => e.level === 'L1').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      const l2Earnings = earningsData?.filter(e => e.level === 'L2').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      const l1Pending = earningsData?.filter(e => e.level === 'L1' && e.status === 'pending').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      const l2Pending = earningsData?.filter(e => e.level === 'L2' && e.status === 'pending').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      const l1Paid = earningsData?.filter(e => e.level === 'L1' && e.status === 'paid').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
+      const l2Paid = earningsData?.filter(e => e.level === 'L2' && e.status === 'paid').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
 
       // Count active referrals (those who have made purchases)
       const { count: activeReferrals } = await supabase
@@ -103,7 +124,13 @@ export const useReferralDashboard = () => {
         totalEarned,
         pendingEarnings,
         paidEarnings,
-        activeReferrals: activeReferrals || 0
+        activeReferrals: activeReferrals || 0,
+        l1Earnings,
+        l2Earnings,
+        l1Pending,
+        l2Pending,
+        l1Paid,
+        l2Paid
       });
 
     } catch (error) {
@@ -117,7 +144,7 @@ export const useReferralDashboard = () => {
     try {
       const { data: earningsData, error } = await supabase
         .from('referral_earnings')
-        .select('id, amount, status, created_at, referred_user_id, generation')
+        .select('id, amount, status, created_at, referred_user_id, generation, level')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 

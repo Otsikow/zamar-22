@@ -151,26 +151,23 @@ async function recordPaidTransaction(args: {
     status: "paid",
   });
 
-  // If no referrer, nothing else to do
-  if (!args.referrer_id || args.referrer_id === args.user_id) return;
-
-  const referral_id = await getOrCreateReferral(args.referrer_id, args.user_id);
-
-  const commission_rate = Number.isFinite(args.commission_rate!)
-    ? (args.commission_rate as number)
-    : DEFAULT_COMMISSION_RATE;
-
-  const earningAmount = Math.floor(args.amount_total * commission_rate);
-
-  await createOrUpsertEarning({
-    referrer_id: args.referrer_id,
-    referred_user_id: args.user_id,
-    purchase_id,
-    referral_id,
-    amount: earningAmount,
-    currency: args.currency,
-    status: "pending",
-  });
+  // Call the new L1/L2 referral processing function
+  console.log("Processing L1/L2 referral earnings for user:", args.user_id);
+  
+  try {
+    await supabase.rpc('record_referral_purchase_v2', {
+      p_buyer_user: args.user_id,
+      p_order_id: args.provider_id,
+      p_gross_amount_cents: args.amount_total,
+      p_currency: args.currency.toUpperCase(),
+      p_locked_days: 7
+    });
+    
+    console.log("Successfully processed L1/L2 referral earnings");
+  } catch (error) {
+    console.error("Error processing referral earnings:", error);
+    // Don't throw - payment was successful, earnings failure shouldn't break webhook
+  }
 }
 
 // --- Server -----------------------------------------------------------------

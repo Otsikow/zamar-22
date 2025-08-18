@@ -1198,6 +1198,21 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_commissions: {
+        Row: {
+          level: string
+          rate: number
+        }
+        Insert: {
+          level: string
+          rate: number
+        }
+        Update: {
+          level?: string
+          rate?: number
+        }
+        Relationships: []
+      }
       referral_config: {
         Row: {
           id: number
@@ -1226,6 +1241,9 @@ export type Database = {
           earned_at: string | null
           generation: number
           id: string
+          level: string | null
+          locked_until: string | null
+          paid_payout_id: string | null
           payment_id: string | null
           purchase_id: string | null
           referral_id: string | null
@@ -1240,6 +1258,9 @@ export type Database = {
           earned_at?: string | null
           generation: number
           id?: string
+          level?: string | null
+          locked_until?: string | null
+          paid_payout_id?: string | null
           payment_id?: string | null
           purchase_id?: string | null
           referral_id?: string | null
@@ -1254,6 +1275,9 @@ export type Database = {
           earned_at?: string | null
           generation?: number
           id?: string
+          level?: string | null
+          locked_until?: string | null
+          paid_payout_id?: string | null
           payment_id?: string | null
           purchase_id?: string | null
           referral_id?: string | null
@@ -1263,6 +1287,64 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referral_payouts: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          method: string | null
+          notes: string | null
+          paid_at: string | null
+          payee_id: string
+          status: string
+          total_cents: number
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payee_id: string
+          status?: string
+          total_cents: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          payee_id?: string
+          status?: string
+          total_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_payouts_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_payouts_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_payouts_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
+            referencedRelation: "v_referral_summary"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       referrals: {
         Row: {
@@ -1882,6 +1964,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_make_payout: {
+        Args: { p_currency?: string; p_notes?: string; p_payee: string }
+        Returns: string
+      }
       admin_soft_delete_user: {
         Args: { target_user_id: string }
         Returns: undefined
@@ -2066,6 +2152,16 @@ export type Database = {
       }
       process_referral_earnings: {
         Args: { new_user: string; payment_amount: number }
+        Returns: undefined
+      }
+      record_referral_purchase_v2: {
+        Args: {
+          p_buyer_user: string
+          p_currency?: string
+          p_gross_amount_cents: number
+          p_locked_days?: number
+          p_order_id: string
+        }
         Returns: undefined
       }
       reject_testimony: {
