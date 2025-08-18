@@ -31,14 +31,11 @@ export const handleReferralSignup = async (newUserId: string) => {
   
   if (referralCode) {
     try {
-      // Extract the referrer ID from the referral code (handle both formats)
-      const codeId = referralCode.replace('ZAMAR_', '').toLowerCase();
-      
-      // Find the referrer user by matching the end of their user ID with the code
+      // Find the referrer user by referral code
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id')
-        .ilike('id', `%${codeId}`);
+        .eq('referral_code', referralCode.toUpperCase());
 
       if (profiles && profiles.length > 0) {
         const referrerId = profiles[0].id;

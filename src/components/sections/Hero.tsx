@@ -9,13 +9,14 @@ import heroImage from "@/assets/hero-music.jpg";
 import LiveCounter from "./LiveCounter";
 import { useToast } from "@/hooks/use-toast";
 import { addWWWToReferralLink } from "@/lib/utils";
+import { useReferralDashboard } from "@/hooks/useReferralDashboard";
 
 const Hero = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [referralCode, setReferralCode] = useState('');
+  const { referralCode, copyReferralLink: copyDashboardLink } = useReferralDashboard();
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -44,21 +45,8 @@ const Hero = () => {
     checkAdminStatus();
   }, [user]);
 
-  useEffect(() => {
-    if (user) {
-      // Generate referral code from user ID
-      const code = user.id.slice(-8).toUpperCase();
-      setReferralCode(code);
-    }
-  }, [user]);
-
   const copyReferralLink = () => {
-    const referralLink = addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`);
-    navigator.clipboard.writeText(referralLink);
-    toast({
-      title: "Link copied!",
-      description: "Your referral link has been copied to clipboard"
-    });
+    copyDashboardLink();
   };
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16 sm:pt-20 pb-28 safe-bottom">
@@ -248,7 +236,7 @@ const Hero = () => {
                   <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border border-border/50">
                     <div className="flex items-center justify-between gap-3">
                       <code className="text-xs sm:text-sm font-mono text-foreground/80 truncate">
-                        www.zamarsongs.com/auth?ref={referralCode}
+                        www.zamarsongs.com/?ref={referralCode}
                       </code>
                       <Button onClick={copyReferralLink} size="sm" variant="outline" className="shrink-0 border-primary/30 text-primary hover:bg-primary/10">
                         <Copy className="w-4 h-4 text-primary" />
