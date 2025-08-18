@@ -59,13 +59,17 @@ export const useReferralDashboard = () => {
 
   // Generate or fetch referral code
   const ensureReferralCode = async (userId: string) => {
+    console.log('Fetching referral code for user:', userId);
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('referral_code')
       .eq('id', userId)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
 
     if (profile?.referral_code) {
       console.log('Found existing referral code:', profile.referral_code);
@@ -73,7 +77,7 @@ export const useReferralDashboard = () => {
       return profile.referral_code;
     }
 
-    // Generate new code
+    // Generate new code only if none exists
     const newCode = generateReferralCode();
     console.log('Generating new referral code:', newCode);
     const { error: updateError } = await supabase
@@ -81,7 +85,10 @@ export const useReferralDashboard = () => {
       .update({ referral_code: newCode })
       .eq('id', userId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('Error updating referral code:', updateError);
+      throw updateError;
+    }
     
     setReferralCode(newCode);
     return newCode;
@@ -271,8 +278,7 @@ export const useReferralDashboard = () => {
 
   // Copy referral link to clipboard
   const copyReferralLink = () => {
-    const baseUrl = window.location.origin;
-    const referralLink = `${baseUrl}/?ref=${referralCode}`;
+    const referralLink = `https://www.zamarsongs.com/?ref=${referralCode}`;
     
     navigator.clipboard.writeText(referralLink).then(() => {
       toast.success('Referral link copied to clipboard!');
