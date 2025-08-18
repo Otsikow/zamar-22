@@ -86,7 +86,7 @@ const More = () => {
                       className={`w-full justify-between h-auto p-4 rounded-none ${
                         isLogout 
                           ? 'text-destructive hover:text-destructive hover:bg-destructive/10' 
-                          : 'text-foreground hover:bg-primary/10'
+                          : 'text-foreground hover:bg-primary/10 hover:text-white'
                       }`}
                     >
                       <div className="flex items-center gap-3">
