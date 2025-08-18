@@ -68,12 +68,14 @@ export const useReferralDashboard = () => {
     if (error) throw error;
 
     if (profile?.referral_code) {
+      console.log('Found existing referral code:', profile.referral_code);
       setReferralCode(profile.referral_code);
       return profile.referral_code;
     }
 
     // Generate new code
     const newCode = generateReferralCode();
+    console.log('Generating new referral code:', newCode);
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ referral_code: newCode })
