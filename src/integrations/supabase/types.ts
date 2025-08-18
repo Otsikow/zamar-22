@@ -1043,9 +1043,11 @@ export type Database = {
           display_name: string | null
           email: string | null
           first_name: string | null
+          full_name: string | null
           id: string
           is_admin: boolean | null
           last_name: string | null
+          membership_tier: string | null
           pending_ref_code: string | null
           preferred_language: string | null
           referral_code: string | null
@@ -1061,9 +1063,11 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           first_name?: string | null
+          full_name?: string | null
           id: string
           is_admin?: boolean | null
           last_name?: string | null
+          membership_tier?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
@@ -1079,9 +1083,11 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           first_name?: string | null
+          full_name?: string | null
           id?: string
           is_admin?: boolean | null
           last_name?: string | null
+          membership_tier?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
           referral_code?: string | null
@@ -2187,6 +2193,10 @@ export type Database = {
       }
       process_referral_earnings: {
         Args: { new_user: string; payment_amount: number }
+        Returns: undefined
+      }
+      promote_to_supporter: {
+        Args: { uid: string }
         Returns: undefined
       }
       record_referral_purchase_v2: {
