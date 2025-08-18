@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Share2, Copy, Users, Network, PiggyBank, CalendarDays, Download } from "lucide-react";
-import { addWWWToReferralLink, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
@@ -65,10 +65,32 @@ export default function ReferralAnalytics() {
     canonical.href = href;
   }, []);
 
+  const fetchReferralCodeFromDB = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching referral code:', error);
+        return;
+      }
+
+      if (profile?.referral_code) {
+        setReferralCode(profile.referral_code);
+      }
+    } catch (error) {
+      console.error('Error fetching referral code:', error);
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
-    // Fallback code generation since profiles may not have referral_code column
-    setReferralCode(`ZAMAR_${user.id.slice(-8).toUpperCase()}`);
+    fetchReferralCodeFromDB();
   }, [user]);
 
   useEffect(() => {
@@ -147,7 +169,7 @@ export default function ReferralAnalytics() {
   }, [lines, period]);
 
   const copyReferral = () => {
-    const url = addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`);
+    const url = `https://www.zamarsongs.com/?ref=${referralCode}`;
     navigator.clipboard.writeText(url);
     toast({ title: "Referral link copied", description: url });
   };
@@ -212,7 +234,7 @@ export default function ReferralAnalytics() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="font-mono text-sm p-4 rounded-lg bg-muted/50 border border-border break-all">
-                https://www.zamarsongs.com/auth?ref={referralCode}
+                https://www.zamarsongs.com/?ref={referralCode}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Button 
@@ -231,7 +253,7 @@ export default function ReferralAnalytics() {
                   className="w-full"
                 >
                   <a 
-                    href={`https://wa.me/?text=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`} 
+                    href={`https://wa.me/?text=${encodeURIComponent(`https://www.zamarsongs.com/?ref=${referralCode}`)}`} 
                     target="_blank" 
                     rel="noreferrer"
                   >
@@ -244,7 +266,7 @@ export default function ReferralAnalytics() {
                   size="sm"
                   className="w-full"
                 >
-                  <a href={`mailto:?subject=Join%20Zamar&body=${encodeURIComponent(addWWWToReferralLink(`https://zamarsongs.com/auth?ref=${referralCode}`))}`}>
+                  <a href={`mailto:?subject=Join%20Zamar&body=${encodeURIComponent(`https://www.zamarsongs.com/?ref=${referralCode}`)}`}>
                     Email
                   </a>
                 </Button>
