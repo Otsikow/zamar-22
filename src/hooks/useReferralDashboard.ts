@@ -77,21 +77,10 @@ export const useReferralDashboard = () => {
       return profile.referral_code;
     }
 
-    // Generate new code only if none exists
-    const newCode = generateReferralCode();
-    console.log('Generating new referral code:', newCode);
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ referral_code: newCode })
-      .eq('id', userId);
-
-    if (updateError) {
-      console.error('Error updating referral code:', updateError);
-      throw updateError;
-    }
-    
-    setReferralCode(newCode);
-    return newCode;
+    // If no referral code exists, this should not happen as they are auto-generated
+    console.warn('No referral code found for user:', userId);
+    setReferralCode('');
+    return null;
   };
 
   // Fetch referral statistics
