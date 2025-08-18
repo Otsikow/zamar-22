@@ -292,12 +292,9 @@ export default function ComprehensiveReferralDashboard() {
   };
 
   const loadChartData = async () => {
-    // Build chart data based on current filters
-    const { whereClause } = buildFilterWhereClause();
-    
     let query = supabase
       .from('referral_earnings')
-      .select('created_at, amount, status');
+      .select('created_at, amount, status, level');
 
     // Apply same filters as commissions
     if (state.status_filter !== 'all') {
@@ -322,13 +319,14 @@ export default function ComprehensiveReferralDashboard() {
       }
     }
 
-    const { data } = await query;
+    const { data, error } = await query;
 
-    if (data) {
+    if (data && data.length > 0) {
       const dayMap = new Map<string, { pending: number; paid: number }>();
       
       data.forEach(earning => {
-        const day = format(new Date(earning.created_at), 'yyyy-MM-dd');
+        // Format date as "Aug 18" for better readability
+        const day = format(new Date(earning.created_at), 'MMM dd');
         const amount = Number(earning.amount);
         
         if (!dayMap.has(day)) {
@@ -352,6 +350,8 @@ export default function ComprehensiveReferralDashboard() {
         .sort((a, b) => a.date.localeCompare(b.date));
 
       setChartData(chartData);
+    } else {
+      setChartData([]);
     }
   };
 

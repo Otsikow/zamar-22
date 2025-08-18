@@ -93,22 +93,31 @@ export function EarningsChart({ data, period }: EarningsChartProps) {
                   type="monotone" 
                   dataKey="pending" 
                   stroke="hsl(var(--warning))" 
-                  strokeWidth={2}
+                  strokeWidth={3}
                   name="Pending"
-                  dot={{ fill: 'hsl(var(--warning))', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: 'hsl(var(--warning))', strokeWidth: 2 }}
+                  dot={{ fill: 'hsl(var(--warning))', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, stroke: 'hsl(var(--warning))', strokeWidth: 2 }}
+                  connectNulls={false}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="paid" 
                   stroke="hsl(var(--success))" 
-                  strokeWidth={2}
+                  strokeWidth={3}
                   name="Paid"
-                  dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: 'hsl(var(--success))', strokeWidth: 2 }}
+                  dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, stroke: 'hsl(var(--success))', strokeWidth: 2 }}
+                  connectNulls={false}
                 />
               </LineChart>
             </ResponsiveContainer>
+          </div>
+        )}
+        {data.length === 1 && (
+          <div className="mt-2 text-center">
+            <p className="text-xs text-muted-foreground">
+              Single data point • Pending: {formatGBP(data[0].pending * 100)} • Paid: {formatGBP(data[0].paid * 100)}
+            </p>
           </div>
         )}
       </CardContent>
