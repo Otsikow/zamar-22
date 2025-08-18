@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
     console.log("Creating Stripe instance...");
     const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
 
-    // Use the configured donation price ID
+    // Create dynamic pricing for flexible donation amounts
     console.log("Creating Stripe session...");
     const sessionData = {
       mode: "payment" as const,
@@ -92,8 +92,15 @@ Deno.serve(async (req) => {
       customer_email: donor_email || "guest@zamarsongs.com",
       line_items: [
         {
-          price: "price_1RwhfCPZvYhtttKceXN3txRB", // Fixed donation price ID
-          quantity: Math.round(Number(amountGBP) * 100), // Use quantity to represent pence
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: "Zamar Donation",
+              description: campaign_id ? `Campaign: ${campaign_id}` : "General Fund",
+            },
+            unit_amount: Math.round(Number(amountGBP) * 100), // Convert GBP to pence
+          },
+          quantity: 1,
         },
       ],
       success_url: `${APP_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
