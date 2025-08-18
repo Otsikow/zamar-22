@@ -248,12 +248,14 @@ export const useReferralDashboard = () => {
 
     setLoading(true);
     try {
+      console.log('Loading referral data for user:', user.id);
       await ensureReferralCode(user.id);
       await Promise.all([
         fetchStats(user.id),
         fetchEarnings(user.id),
         fetchReferredUsers(user.id)
       ]);
+      console.log('Referral data loaded successfully');
     } catch (error) {
       console.error('Error loading referral data:', error);
       toast.error('Failed to load referral dashboard');
