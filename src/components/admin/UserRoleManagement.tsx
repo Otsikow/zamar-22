@@ -154,13 +154,25 @@ const UserRoleManagement = () => {
   const handleSoftDelete = async (targetUserId: string) => {
     if (!confirm('Soft-delete this user? They will be marked as deleted.')) return;
     try {
-      const { error } = await supabase.rpc('admin_soft_delete_user', { target_user_id: targetUserId });
-      if (error) throw error;
+      console.log('Attempting to delete user:', targetUserId);
+      console.log('Current user ID:', user?.id);
+      
+      const { data, error } = await supabase.rpc('admin_soft_delete_user', { target_user_id: targetUserId });
+      
+      console.log('Delete RPC result:', { data, error });
+      
+      if (error) {
+        console.error('RPC error details:', error);
+        throw error;
+      }
+      
       toast({ title: 'User deleted', description: 'User marked as deleted' });
       await fetchAllUsersWithRoles();
     } catch (error) {
       console.error('Delete failed:', error);
-      toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' });
+      const errorMessage = (error as any)?.message || 'Failed to delete user';
+      console.error('Full error object:', error);
+      toast({ title: 'Error', description: `Failed to delete user: ${errorMessage}`, variant: 'destructive' });
     }
   };
 
