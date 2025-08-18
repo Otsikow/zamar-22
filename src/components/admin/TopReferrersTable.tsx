@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // Helper function for consistent GBP formatting
@@ -35,66 +34,57 @@ export function TopReferrersTable({ referrers, onReferrerClick }: TopReferrersTa
   return (
     <Card className="border-primary/20">
       <CardHeader>
-        <CardTitle>Top Referrers (Last 30 days)</CardTitle>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-foreground">Top Referrers</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Last 30 days</p>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border border-primary/20">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-primary/20">
-                <TableHead className="w-16">Rank</TableHead>
-                <TableHead>Referrer</TableHead>
-                <TableHead className="text-right">Gen-1 (£)</TableHead>
-                <TableHead className="text-right">Gen-2 (£)</TableHead>
-                <TableHead className="text-right">Total (£)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {referrers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No referrers found for the last 30 days
-                  </TableCell>
-                </TableRow>
-              ) : (
-                referrers.map((referrer, index) => (
-                  <TableRow 
-                    key={referrer.earner_user_id} 
-                    className="border-primary/20 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => onReferrerClick(referrer)}
-                  >
-                    <TableCell>
-                      <div className="flex items-center justify-center">
-                        <span className="font-bold text-primary">#{index + 1}</span>
+        {referrers.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="text-sm">No referrers found for the last 30 days</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {referrers.map((referrer, index) => (
+              <div 
+                key={referrer.earner_user_id} 
+                className="flex items-center justify-between p-3 rounded-lg border border-primary/20 bg-background/50 cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => onReferrerClick(referrer)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
+                    #{index + 1}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {getInitials(referrer.earner_name || 'UN')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium text-sm">
+                        {referrer.earner_name || 'Unknown'}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {getInitials(referrer.earner_name || 'UN')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">
-                          {referrer.earner_name || 'Unknown'}
-                        </span>
+                      <div className="text-xs text-muted-foreground">
+                        Gen-1: {formatGBP(referrer.gen1_earnings * 100)} | Gen-2: {formatGBP(referrer.gen2_earnings * 100)}
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {formatGBP(referrer.gen1_earnings * 100)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {formatGBP(referrer.gen2_earnings * 100)}
-                    </TableCell>
-                    <TableCell className="text-right font-mono font-bold text-primary">
-                      {formatGBP(referrer.total * 100)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className="font-bold text-primary">
+                    {formatGBP(referrer.total * 100)}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Total</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         
         {referrers.length > 0 && (
           <p className="text-xs text-muted-foreground mt-3 text-center">

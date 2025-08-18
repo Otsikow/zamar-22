@@ -38,9 +38,9 @@ export function EarningsChart({ data, period }: EarningsChartProps) {
 
   const getPeriodTitle = () => {
     switch (period) {
-      case 'last_7': return 'Last 7 Days';
-      case 'last_30': return 'Last 30 Days';
-      case 'last_90': return 'Last 90 Days';
+      case 'last_7': return 'Last 7 days';
+      case 'last_30': return 'Last 30 days';
+      case 'last_90': return 'Last 90 days';
       case 'custom': return 'Custom Period';
       default: return 'All Time';
     }
@@ -49,7 +49,18 @@ export function EarningsChart({ data, period }: EarningsChartProps) {
   return (
     <Card className="border-primary/20">
       <CardHeader>
-        <CardTitle>Earnings Over Time - {getPeriodTitle()}</CardTitle>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-xl font-bold text-foreground">Earnings Over Time</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Daily totals (reversed excluded)</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Period</span>
+            <div className="text-sm font-medium bg-muted/50 px-3 py-1 rounded-md border">
+              {getPeriodTitle()}
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
@@ -63,15 +74,17 @@ export function EarningsChart({ data, period }: EarningsChartProps) {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <CartesianGrid strokeDasharray="3 3" className="opacity-20" stroke="hsl(var(--border))" />
                 <XAxis 
                   dataKey="date" 
-                  tick={{ fontSize: 12 }}
-                  className="text-muted-foreground"
+                  tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 />
                 <YAxis 
-                  tick={{ fontSize: 12 }}
-                  className="text-muted-foreground"
+                  tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                   tickFormatter={(value) => `£${value.toFixed(0)}`}
                 />
                 <Tooltip content={<CustomTooltip />} />
