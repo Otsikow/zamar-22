@@ -1,38 +1,12 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-// Environment-based CORS configuration
-const getAllowedOrigins = () => {
-  const envOrigins = Deno.env.get("ALLOWED_ORIGINS");
-  if (envOrigins) {
-    return envOrigins.split(",").map(s => s.trim()).filter(Boolean);
-  }
-  
-  // Default fallback origins
-  return [
-    "https://www.zamarsongs.com",
-    "https://zamarsongs.com",
-    "http://localhost:3000"
-  ];
+// Simplified CORS configuration
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
-
-function corsHeaders(origin: string | null) {
-  const allowedOrigins = getAllowedOrigins();
-  
-  // For development, allow any lovable.dev subdomain
-  const isLovableDev = origin?.includes('lovable.dev');
-  const isConfiguredOrigin = allowedOrigins.includes(origin ?? "");
-  
-  const allowOrigin = (isLovableDev || isConfiguredOrigin) ? origin! : "https://www.zamarsongs.com";
-  
-  return {
-    "Access-Control-Allow-Origin": allowOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Max-Age": "86400",
-    "Vary": "Origin"
-  };
-}
 
 Deno.serve(async (req) => {
   console.log("=== Edge Function Started ===");
@@ -44,7 +18,7 @@ Deno.serve(async (req) => {
   
   if (req.method === "OPTIONS") {
     console.log("Handling CORS preflight");
-    return new Response("ok", { headers: corsHeaders(origin) });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -60,7 +34,7 @@ Deno.serve(async (req) => {
       console.log("Amount validation failed");
       return new Response(JSON.stringify({ error: "Minimum donation is £1" }), {
         status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -74,7 +48,7 @@ Deno.serve(async (req) => {
       console.log("Environment variables missing");
       return new Response(JSON.stringify({ error: "Server not configured (env)" }), {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -119,7 +93,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (e) {
     console.error("=== ERROR IN EDGE FUNCTION ===");
@@ -131,7 +105,7 @@ Deno.serve(async (req) => {
     // Always return JSON with 4xx/5xx so the client can show a helpful message
     return new Response(JSON.stringify({ error: e?.message ?? "Unknown server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 });
