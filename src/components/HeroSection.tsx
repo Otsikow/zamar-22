@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/contexts/TranslationContext";
+import { Sparkles, Lightbulb, Radio } from "lucide-react";
 
 export type HeroStat = { icon: string; text: string };
 
@@ -81,6 +82,7 @@ export default function HeroSection({
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Button asChild size="lg">
               <Link to={ctaHref}>
+                <Sparkles className="h-5 w-5 mr-2" />
                 {t('hero.create_song', ctaLabel)}
                 <span className="ml-2">→</span>
               </Link>
@@ -90,10 +92,14 @@ export default function HeroSection({
               size="lg"
               onClick={onSuggestClick}
             >
+              <Lightbulb className="h-5 w-5 mr-2" />
               {t('hero.suggest_song', 'Suggest a Song')}
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/radio">{t('hero.radio', 'Radio')}</Link>
+              <Link to="/radio">
+                <Radio className="h-5 w-5 mr-2" />
+                {t('hero.radio', 'Radio')}
+              </Link>
             </Button>
           </div>
 
