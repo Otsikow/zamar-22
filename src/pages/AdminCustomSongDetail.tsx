@@ -380,7 +380,8 @@ export default function AdminCustomSongDetail() {
   return (
     <div className="container max-w-7xl mx-auto px-4 space-y-6">
       <div className="pt-2">
-        <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
+        <h1 className="text-2xl font-bold text-foreground">Custom Song Request Details</h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage and track custom song production</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
