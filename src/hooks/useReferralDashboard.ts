@@ -86,17 +86,28 @@ export const useReferralDashboard = () => {
   // Fetch referral statistics
   const fetchStats = async (userId: string) => {
     try {
+      console.log('Fetching referral stats for user:', userId);
+      
       // Get total referrals
-      const { count: totalReferrals } = await supabase
+      const { count: totalReferrals, data: referralsDebug, error: referralsError } = await supabase
         .from('referrals')
-        .select('*', { count: 'exact', head: true })
+        .select('*', { count: 'exact' })
         .eq('referrer_id', userId);
+      
+      console.log('Referrals query result:', { 
+        totalReferrals, 
+        referralsDebug, 
+        referralsError,
+        userId 
+      });
 
       // Get earnings statistics with level breakdown
-      const { data: earningsData } = await supabase
+      const { data: earningsData, error: earningsError } = await supabase
         .from('referral_earnings')
         .select('amount, status, level')
         .eq('user_id', userId);
+      
+      console.log('Earnings query result:', { earningsData, earningsError });
 
       const totalEarned = earningsData?.reduce((sum, e) => sum + Number(e.amount), 0) || 0;
       const pendingEarnings = earningsData?.filter(e => e.status === 'pending').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
