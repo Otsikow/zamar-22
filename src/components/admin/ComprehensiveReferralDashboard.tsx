@@ -266,7 +266,7 @@ export default function ComprehensiveReferralDashboard() {
       const userIds = [...new Set([...data.map(d => d.user_id), ...data.map(d => d.referred_user_id)])];
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, full_name, email')
+        .select('id, first_name, last_name, email')
         .in('id', userIds);
 
       const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
@@ -456,7 +456,6 @@ export default function ComprehensiveReferralDashboard() {
 
   const getProfileName = (profile?: any) => {
     if (!profile) return 'Unknown';
-    if (profile.full_name) return profile.full_name;
     const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ');
     return fullName || profile.email || 'Unknown';
   };
@@ -473,12 +472,14 @@ export default function ComprehensiveReferralDashboard() {
     );
   }, [commissions, state.search_text]);
 
-  // RPC Actions using proper Supabase functions
+  // Direct database actions since RPC functions don't exist yet
   const markAsPaid = useCallback(async (commissionId: string) => {
     try {
-      const { error } = await supabase.rpc('mark_commission_paid', { 
-        commission_id: commissionId 
-      });
+      const { error } = await supabase
+        .from('referral_earnings')
+        .update({ status: 'paid', updated_at: new Date().toISOString() })
+        .eq('id', commissionId)
+        .eq('status', 'pending');
       
       if (error) throw error;
       
@@ -486,29 +487,17 @@ export default function ComprehensiveReferralDashboard() {
       loadDashboardData();
     } catch (error) {
       console.error('Error marking as paid:', error);
-      // Fallback to direct update if RPC doesn't exist
-      try {
-        const { error: updateError } = await supabase
-          .from('referral_earnings')
-          .update({ status: 'paid', updated_at: new Date().toISOString() })
-          .eq('id', commissionId)
-          .eq('status', 'pending');
-        
-        if (updateError) throw updateError;
-        toast({ title: 'Success', description: 'Commission marked as paid' });
-        loadDashboardData();
-      } catch (fallbackError) {
-        toast({ title: 'Error', description: 'Failed to mark commission as paid', variant: 'destructive' });
-      }
+      toast({ title: 'Error', description: 'Failed to mark commission as paid', variant: 'destructive' });
     }
   }, [toast]);
 
   const voidCommission = useCallback(async (commissionId: string, reason: string) => {
     try {
-      const { error } = await supabase.rpc('void_commission', { 
-        commission_id: commissionId,
-        reason: reason || 'Voided by admin'
-      });
+      const { error } = await supabase
+        .from('referral_earnings')
+        .update({ status: 'void', updated_at: new Date().toISOString() })
+        .eq('id', commissionId)
+        .eq('status', 'pending');
       
       if (error) throw error;
       
@@ -518,22 +507,7 @@ export default function ComprehensiveReferralDashboard() {
       loadDashboardData();
     } catch (error) {
       console.error('Error voiding commission:', error);
-      // Fallback to direct update if RPC doesn't exist
-      try {
-        const { error: updateError } = await supabase
-          .from('referral_earnings')
-          .update({ status: 'void', updated_at: new Date().toISOString() })
-          .eq('id', commissionId)
-          .eq('status', 'pending');
-        
-        if (updateError) throw updateError;
-        toast({ title: 'Success', description: 'Commission voided' });
-        setShowVoidDialog(false);
-        setVoidReason('');
-        loadDashboardData();
-      } catch (fallbackError) {
-        toast({ title: 'Error', description: 'Failed to void commission', variant: 'destructive' });
-      }
+      toast({ title: 'Error', description: 'Failed to void commission', variant: 'destructive' });
     }
   }, [toast]);
 

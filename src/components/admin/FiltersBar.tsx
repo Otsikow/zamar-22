@@ -8,16 +8,18 @@ import { Calendar as CalendarIcon, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
+interface FiltersState {
+  period: 'last_7' | 'last_30' | 'last_90' | 'all' | 'custom';
+  date_from: Date | null;
+  date_to: Date | null;
+  status_filter: string;
+  gen_filter: string;
+  search_text: string;
+}
+
 interface FiltersBarProps {
-  state: {
-    period: string;
-    date_from: Date | null;
-    date_to: Date | null;
-    status_filter: string;
-    gen_filter: string;
-    search_text: string;
-  };
-  onStateChange: (updates: Partial<typeof state>) => void;
+  state: FiltersState;
+  onStateChange: (updates: Partial<FiltersState>) => void;
   onExportCSV: () => void;
 }
 
@@ -70,7 +72,7 @@ export function FiltersBar({ state, onStateChange, onExportCSV }: FiltersBarProp
       {/* Period Filter */}
       <div className="min-w-[140px]">
         <Label className="text-sm text-muted-foreground">Period</Label>
-        <Select value={state.period} onValueChange={(value) => onStateChange({ period: value })}>
+        <Select value={state.period} onValueChange={(value) => onStateChange({ period: value as FiltersState['period'] })}>
           <SelectTrigger className="mt-1">
             <SelectValue />
           </SelectTrigger>
