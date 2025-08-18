@@ -114,61 +114,51 @@ export default function AdminReferralPayoutDashboard() {
 
   const fetchEarnings = async () => {
     try {
+      // Use the detailed view with resolved names
       let query = supabase
-        .from('referral_earnings')
-        .select(`
-          id,
-          user_id,
-          referred_user_id,
-          generation,
-          amount,
-          status,
-          earned_at
-        `)
-        .order('earned_at', { ascending: false });
+        .from('v_referral_earnings_detailed')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
       }
 
       if (generationFilter !== 'all') {
-        query = query.eq('generation', parseInt(generationFilter));
+        query = query.eq('level', generationFilter === '1' ? 'L1' : 'L2');
       }
 
       if (dateRange.from) {
-        query = query.gte('earned_at', dateRange.from.toISOString());
+        query = query.gte('created_at', dateRange.from.toISOString());
       }
 
       if (dateRange.to) {
-        query = query.lte('earned_at', dateRange.to.toISOString());
+        query = query.lte('created_at', dateRange.to.toISOString());
       }
 
-      const { data: earningsData, error } = await query;
-
+      const { data, error } = await query;
       if (error) throw error;
 
-      // Fetch profile data separately
-      const userIds = [...new Set([
-        ...(earningsData?.map(e => e.user_id) || []),
-        ...(earningsData?.map(e => e.referred_user_id) || [])
-      ])];
-
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .in('id', userIds);
-
-      const profileMap = new Map();
-      profilesData?.forEach(profile => {
-        profileMap.set(profile.id, profile);
-      });
-
-      const enrichedEarnings = earningsData?.map(earning => ({
-        ...earning,
-        status: earning.status as 'pending' | 'paid',
-        referrer_profile: profileMap.get(earning.user_id),
-        referred_profile: profileMap.get(earning.referred_user_id)
-      })) || [];
+      // Transform the data to match expected format
+      const enrichedEarnings = (data || []).map(row => ({
+        id: row.id,
+        user_id: row.referrer_id,
+        referred_user_id: row.referred_user_id,
+        generation: row.level === 'L1' ? 1 : 2,
+        amount: (row.commission_cents || 0) / 100,
+        status: row.status as 'pending' | 'paid',
+        earned_at: row.created_at,
+        referrer_profile: row.referrer_name !== 'Unknown' ? {
+          first_name: row.referrer_name.split(' ')[0] || '',
+          last_name: row.referrer_name.split(' ').slice(1).join(' ') || '',
+          email: row.referrer_name
+        } : undefined,
+        referred_profile: row.referred_name !== 'Unknown' ? {
+          first_name: row.referred_name.split(' ')[0] || '',
+          last_name: row.referred_name.split(' ').slice(1).join(' ') || '',
+          email: row.referred_name
+        } : undefined
+      }));
 
       setEarnings(enrichedEarnings);
     } catch (error) {
@@ -222,34 +212,19 @@ export default function AdminReferralPayoutDashboard() {
 
   const fetchStats = async () => {
     try {
-      const { data: earningsData, error: earningsError } = await supabase
-        .from('referral_earnings')
-        .select('amount, status, earned_at');
+      // Use the new overview view for stats
+      const { data: overview, error } = await supabase
+        .from('v_admin_referral_overview')
+        .select('*')
+        .single();
 
-      if (earningsError) throw earningsError;
-
-      const { data: payoutsData, error: payoutsError } = await supabase
-        .from('payouts')
-        .select('amount');
-
-      if (payoutsError) throw payoutsError;
-
-      const thisMonth = startOfMonth(new Date());
-      const nextMonth = endOfMonth(new Date());
-
-      const totalEarned = earningsData?.reduce((sum, earning) => sum + Number(earning.amount), 0) || 0;
-      const pendingPayouts = earningsData?.filter(e => e.status === 'pending').reduce((sum, earning) => sum + Number(earning.amount), 0) || 0;
-      const totalPaid = payoutsData?.reduce((sum, payout) => sum + Number(payout.amount), 0) || 0;
-      const thisMonthEarnings = earningsData?.filter(e => {
-        const earnedDate = new Date(e.earned_at);
-        return earnedDate >= thisMonth && earnedDate <= nextMonth;
-      }).reduce((sum, earning) => sum + Number(earning.amount), 0) || 0;
+      if (error) throw error;
 
       setStats({
-        totalEarned,
-        totalPaid,
-        pendingPayouts,
-        thisMonthEarnings
+        totalEarned: (overview?.total_earned_cents || 0) / 100,
+        totalPaid: (overview?.total_paid_cents || 0) / 100,
+        pendingPayouts: (overview?.total_pending_cents || 0) / 100,
+        thisMonthEarnings: (overview?.total_earned_cents || 0) / 100 // TODO: Add monthly view
       });
     } catch (error) {
       console.error('Error fetching stats:', error);

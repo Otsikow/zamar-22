@@ -73,24 +73,18 @@ function ReferralAnalyticsComp() {
 
   const loadSummary = async () => {
     try {
-      // Earnings totals
-      const { data: all, error: e1 } = await supabase
-        .from("referral_earnings")
-        .select("amount, status");
+      // Use the new overview view
+      const { data: overview, error: e1 } = await supabase
+        .from("v_admin_referral_overview")
+        .select("*")
+        .single();
+      
       if (e1) throw e1;
-      const total = (all || []).reduce((s, r) => s + Number(r.amount || 0), 0);
-      const paidAmt = (all || []).filter((r) => r.status === "paid").reduce((s, r) => s + Number(r.amount || 0), 0);
-      const pendingAmt = total - paidAmt;
-      setTotalEarned(total);
-      setPaid(paidAmt);
-      setPending(pendingAmt);
-
-      // Referral count
-      const { count, error: e2 } = await supabase
-        .from("referrals")
-        .select("id", { count: "exact", head: true });
-      if (e2) throw e2;
-      setTotalReferrals(count || 0);
+      
+      setTotalEarned((overview?.total_earned_cents || 0) / 100);
+      setPaid((overview?.total_paid_cents || 0) / 100);
+      setPending((overview?.total_pending_cents || 0) / 100);
+      setTotalReferrals(overview?.total_referrals || 0);
     } catch (err) {
       console.error("Summary load error", err);
       toast({ title: "Error", description: "Failed to load referral summary", variant: "destructive" });
@@ -108,51 +102,68 @@ function ReferralAnalyticsComp() {
   const loadEarnings = async () => {
     setLoading(true);
     try {
+      // Use the detailed view with resolved names
       let query = supabase
-        .from("referral_earnings")
-        .select("id,user_id,referred_user_id,generation,amount,status,earned_at")
-        .order("earned_at", { ascending: false });
+        .from("v_referral_earnings_detailed")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       const from = computeDateLowerBound();
-      if (from) query = query.gte("earned_at", from);
+      if (from) query = query.gte("created_at", from);
       if (statusFilter !== "all") query = query.eq("status", statusFilter);
-      if (generationFilter !== "all") query = query.eq("generation", Number(generationFilter));
+      if (generationFilter !== "all") query = query.eq("level", generationFilter === "1" ? "L1" : "L2");
 
       const { data, error } = await query;
       if (error) throw error;
-      const rows = (data || []) as unknown as EarningRow[];
+      
+      // Transform the data to match expected format
+      const rows = (data || []).map(row => ({
+        id: row.id,
+        user_id: row.referrer_id,
+        referred_user_id: row.referred_user_id,
+        generation: row.level === 'L1' ? 1 : 2,
+        amount: (row.commission_cents || 0) / 100,
+        status: row.status,
+        earned_at: row.created_at
+      })) as unknown as EarningRow[];
       setEarnings(rows);
 
-      // Build leaderboard aggregates
-      const agg = new Map<string, { total: number; count: number }>();
-      rows.forEach((r) => {
-        const entry = agg.get(r.user_id) || { total: 0, count: 0 };
-        entry.total += Number(r.amount || 0);
-        entry.count += 1;
-        agg.set(r.user_id, entry);
-      });
-      const lb = Array.from(agg.entries())
-        .map(([user_id, v]) => ({ user_id, total: v.total, count: v.count }))
-        .sort((a, b) => b.total - a.total)
-        .slice(0, 10);
-      setLeaderboard(lb);
-
-      // Fetch profiles for display
-      const ids = Array.from(new Set([...
-        rows.map((r) => r.user_id),
-        rows.map((r) => r.referred_user_id),
-        leaderboard.map((l) => l.user_id),
-      ]));
-
-      if (ids.length) {
-        const { data: profs } = await supabase
-          .from("profiles" as any)
-          .select("id, first_name, last_name, email")
-          .in("id", ids);
-        const map: Record<string, ProfileLite> = {};
-        (profs || []).forEach((p: any) => (map[p.id] = p));
-        setProfiles(map);
+      // Get leaderboard from dedicated view
+      const { data: leaderData, error: leaderError } = await supabase
+        .from("v_top_referrers_30d_named")
+        .select("*")
+        .limit(10);
+      
+      if (!leaderError && leaderData) {
+        const lb = leaderData.map(row => ({
+          user_id: row.referrer_id,
+          total: (row.total_cents || 0) / 100,
+          count: 1 // Not available in view, but not critical for display
+        }));
+        setLeaderboard(lb);
       }
+
+      // Build profiles map from the view data
+      const profileMap: Record<string, ProfileLite> = {};
+      (data || []).forEach(row => {
+        if (row.referrer_id && row.referrer_name !== 'Unknown') {
+          profileMap[row.referrer_id] = {
+            id: row.referrer_id,
+            first_name: row.referrer_name.split(' ')[0] || null,
+            last_name: row.referrer_name.split(' ').slice(1).join(' ') || null,
+            email: row.referrer_name
+          };
+        }
+        if (row.referred_user_id && row.referred_name !== 'Unknown') {
+          profileMap[row.referred_user_id] = {
+            id: row.referred_user_id,
+            first_name: row.referred_name.split(' ')[0] || null,
+            last_name: row.referred_name.split(' ').slice(1).join(' ') || null,
+            email: row.referred_name
+          };
+        }
+      });
+      setProfiles(profileMap);
     } catch (err) {
       console.error("Earnings load error", err);
       toast({ title: "Error", description: "Failed to load earnings", variant: "destructive" });

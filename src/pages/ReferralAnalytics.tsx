@@ -76,18 +76,36 @@ export default function ReferralAnalytics() {
       if (!user) return;
       setLoading(true);
       try {
-        // Summary
-        const { data: sumRows } = await supabase
-          .from("v_referral_summary")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (sumRows) setSummary(sumRows as unknown as SummaryRow);
+        // Summary - Calculate from referral_earnings directly
+        const { data: earningsData, error: earningsError } = await supabase
+          .from("referral_earnings")
+          .select("amount, status")
+          .eq("user_id", user.id);
+        
+        if (!earningsError && earningsData) {
+          const totalEarned = earningsData.reduce((sum, e) => sum + Number(e.amount), 0);
+          const paidEarnings = earningsData.filter(e => e.status === 'paid').reduce((sum, e) => sum + Number(e.amount), 0);
+          const pendingEarnings = totalEarned - paidEarnings;
+          
+          const { count: directReferrals } = await supabase
+            .from("referrals")
+            .select("*", { count: "exact", head: true })
+            .eq("referrer_id", user.id);
+          
+          setSummary({
+            user_id: user.id,
+            total_earned: totalEarned,
+            pending_earnings: pendingEarnings,
+            paid_earnings: paidEarnings,
+            direct_referrals: directReferrals || 0,
+            indirect_referrals: 0 // TODO: Calculate L2 referrals
+          });
+        }
 
-        // Earnings detailed
+        // Earnings detailed - Use referral_earnings table directly for user view
         let q = supabase
-          .from("v_referral_earnings_detailed")
-          .select("id, created_at, amount, status, generation, payment_amount, payment_currency")
+          .from("referral_earnings")
+          .select("id, created_at, amount, status, generation")
           .order("created_at", { ascending: false })
           .eq("user_id", user.id);
 
@@ -400,17 +418,41 @@ function Leaderboard({ selfId }: { selfId?: string }) {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase.from("v_top_referrers_last30").select("*");
-      const ids = Array.from(new Set((data || []).map((r: any) => r.earner_id)));
+      // Use the top referrers view we created for admins, fallback to simple query
+      const { data } = await supabase
+        .from("referral_earnings")
+        .select("user_id, amount")
+        .gte("created_at", new Date(Date.now() - 30 * 86400000).toISOString());
+      
+      if (!data) { setRows([]); return; }
+      
+      // Aggregate by user
+      const userTotals = new Map<string, number>();
+      data.forEach((r: any) => {
+        const current = userTotals.get(r.user_id) || 0;
+        userTotals.set(r.user_id, current + Number(r.amount));
+      });
+      
+      const ids = Array.from(userTotals.keys());
       if (ids.length === 0) { setRows([]); return; }
-      const { data: profiles } = await supabase.from("profiles").select("id, first_name, last_name").in("id", ids);
-      const map = new Map(profiles?.map((p: any) => [p.id, `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim()]))
-      const items = (data || []).map((r: any) => ({
-        earner_id: r.earner_id,
-        earned_30d: Number(r.earned_30d ?? r.earned_cents_30d ?? 0),
-        earning_events: Number(r.earning_events || 0),
-        display_name: map.get(r.earner_id) || undefined,
-      }));
+      
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, first_name, last_name")
+        .in("id", ids);
+      
+      const map = new Map(profiles?.map((p: any) => [p.id, `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim()]) || []);
+      
+      const items = Array.from(userTotals.entries())
+        .map(([user_id, earned_30d]) => ({
+          earner_id: user_id,
+          earned_30d,
+          earning_events: 1, // Simplified
+          display_name: map.get(user_id) || undefined,
+        }))
+        .sort((a, b) => b.earned_30d - a.earned_30d)
+        .slice(0, 10);
+      
       setRows(items);
     };
     load();

@@ -1040,9 +1040,11 @@ export type Database = {
           account_status: Database["public"]["Enums"]["account_status"]
           created_at: string
           deleted_at: string | null
+          display_name: string | null
           email: string | null
           first_name: string | null
           id: string
+          is_admin: boolean | null
           last_name: string | null
           pending_ref_code: string | null
           preferred_language: string | null
@@ -1056,9 +1058,11 @@ export type Database = {
           account_status?: Database["public"]["Enums"]["account_status"]
           created_at?: string
           deleted_at?: string | null
+          display_name?: string | null
           email?: string | null
           first_name?: string | null
           id: string
+          is_admin?: boolean | null
           last_name?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
@@ -1072,9 +1076,11 @@ export type Database = {
           account_status?: Database["public"]["Enums"]["account_status"]
           created_at?: string
           deleted_at?: string | null
+          display_name?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
+          is_admin?: boolean | null
           last_name?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
@@ -1893,6 +1899,24 @@ export type Database = {
         }
         Relationships: []
       }
+      v_admin_payout_queue: {
+        Row: {
+          currency: string | null
+          payable_cents: number | null
+          payee_id: string | null
+          payee_name: string | null
+        }
+        Relationships: []
+      }
+      v_admin_referral_overview: {
+        Row: {
+          total_earned_cents: number | null
+          total_paid_cents: number | null
+          total_pending_cents: number | null
+          total_referrals: number | null
+        }
+        Relationships: []
+      }
       v_my_referral_totals: {
         Row: {
           me: string | null
@@ -1905,18 +1929,21 @@ export type Database = {
       }
       v_referral_earnings_detailed: {
         Row: {
-          amount: number | null
+          commission_cents: number | null
           created_at: string | null
-          generation: number | null
+          currency: string | null
+          gross_amount_cents: number | null
           id: string | null
-          payment_amount: number | null
-          payment_created_at: string | null
-          payment_currency: string | null
-          payment_id: string | null
+          level: string | null
+          locked_until: string | null
+          paid_payout_id: string | null
+          rate: number | null
+          referral_id: string | null
+          referred_name: string | null
           referred_user_id: string | null
+          referrer_id: string | null
+          referrer_name: string | null
           status: string | null
-          updated_at: string | null
-          user_id: string | null
         }
         Relationships: []
       }
@@ -1928,6 +1955,14 @@ export type Database = {
           pending_earnings: number | null
           total_earned: number | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      v_top_referrers_30d_named: {
+        Row: {
+          referrer_id: string | null
+          referrer_name: string | null
+          total_cents: number | null
         }
         Relationships: []
       }
