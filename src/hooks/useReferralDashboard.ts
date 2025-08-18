@@ -113,11 +113,12 @@ export const useReferralDashboard = () => {
       const l2Paid = earningsData?.filter(e => e.level === 'L2' && e.status === 'paid').reduce((sum, e) => sum + Number(e.amount), 0) || 0;
 
       // Count active referrals (those who have made purchases)
-      const { count: activeReferrals } = await supabase
+      const { data: activeReferralsData } = await supabase
         .from('referral_earnings')
-        .select('referred_user_id', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .not('referred_user_id', 'is', null);
+        .select('referred_user_id')
+        .eq('user_id', userId);
+      
+      const activeReferrals = new Set(activeReferralsData?.map(r => r.referred_user_id) || []).size;
 
       setStats({
         totalReferrals: totalReferrals || 0,
