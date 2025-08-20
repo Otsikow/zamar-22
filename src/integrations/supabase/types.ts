@@ -1038,6 +1038,7 @@ export type Database = {
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
+          avatar_url: string | null
           created_at: string
           deleted_at: string | null
           display_name: string | null
@@ -1046,6 +1047,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_admin: boolean | null
+          is_suspended: boolean | null
           last_name: string | null
           membership_tier: string | null
           pending_ref_code: string | null
@@ -1053,11 +1055,14 @@ export type Database = {
           referral_code: string | null
           referred_by: string | null
           referrer_id: string | null
+          role: string | null
+          soft_deleted_at: string | null
           suspended_at: string | null
           updated_at: string
         }
         Insert: {
           account_status?: Database["public"]["Enums"]["account_status"]
+          avatar_url?: string | null
           created_at?: string
           deleted_at?: string | null
           display_name?: string | null
@@ -1066,6 +1071,7 @@ export type Database = {
           full_name?: string | null
           id: string
           is_admin?: boolean | null
+          is_suspended?: boolean | null
           last_name?: string | null
           membership_tier?: string | null
           pending_ref_code?: string | null
@@ -1073,11 +1079,14 @@ export type Database = {
           referral_code?: string | null
           referred_by?: string | null
           referrer_id?: string | null
+          role?: string | null
+          soft_deleted_at?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
         Update: {
           account_status?: Database["public"]["Enums"]["account_status"]
+          avatar_url?: string | null
           created_at?: string
           deleted_at?: string | null
           display_name?: string | null
@@ -1086,6 +1095,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_admin?: boolean | null
+          is_suspended?: boolean | null
           last_name?: string | null
           membership_tier?: string | null
           pending_ref_code?: string | null
@@ -1093,6 +1103,8 @@ export type Database = {
           referral_code?: string | null
           referred_by?: string | null
           referrer_id?: string | null
+          role?: string | null
+          soft_deleted_at?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
@@ -1848,6 +1860,40 @@ export type Database = {
       }
     }
     Views: {
+      admin_user_details: {
+        Row: {
+          account_status: Database["public"]["Enums"]["account_status"] | null
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          full_name: string | null
+          id: string | null
+          is_suspended: boolean | null
+          last_name: string | null
+          last_sign_in_at: string | null
+          role: string | null
+          soft_deleted_at: string | null
+        }
+        Relationships: []
+      }
+      admin_user_details_guarded: {
+        Row: {
+          account_status: Database["public"]["Enums"]["account_status"] | null
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          full_name: string | null
+          id: string | null
+          is_suspended: boolean | null
+          last_name: string | null
+          last_sign_in_at: string | null
+          role: string | null
+          soft_deleted_at: string | null
+        }
+        Relationships: []
+      }
       public_profiles: {
         Row: {
           created_at: string | null
@@ -2020,6 +2066,23 @@ export type Database = {
       admin_unsuspend_user: {
         Args: { target_user_id: string }
         Returns: undefined
+      }
+      admin_users_source: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          account_status: Database["public"]["Enums"]["account_status"]
+          avatar_url: string
+          created_at: string
+          email: string
+          first_name: string
+          full_name: string
+          id: string
+          is_suspended: boolean
+          last_name: string
+          last_sign_in_at: string
+          role: string
+          soft_deleted_at: string
+        }[]
       }
       apply_referral: {
         Args: { new_user: string; raw_ref: string }
