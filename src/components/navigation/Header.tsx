@@ -40,7 +40,11 @@ const Header = () => {
               <img src="/lovable-uploads/78355eae-a8bc-4167-9f39-fec08c253f60.png" alt="Zamar logo" className="w-7 h-7 sm:w-8 sm:h-8" />
               <span className="text-base sm:text-xl font-bold text-primary font-playfair">Zamar</span>
             </Link>
-            <div className="w-20 h-8 bg-muted animate-pulse rounded"></div>
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+              <div className="w-16 sm:w-20 h-7 sm:h-8 bg-muted animate-pulse rounded hidden xs:block"></div>
+              <div className="w-[60px] sm:w-[80px] md:w-[120px] h-7 sm:h-8 bg-muted animate-pulse rounded"></div>
+              <div className="w-16 sm:w-20 h-7 sm:h-8 bg-muted animate-pulse rounded"></div>
+            </div>
           </div>
         </div>
       </header>

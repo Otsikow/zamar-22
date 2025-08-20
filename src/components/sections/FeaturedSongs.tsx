@@ -84,21 +84,25 @@ const FeaturedSongs = () => {
 
   if (loading) {
     return (
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-background min-h-[600px]">
         <div className="container-responsive">
           <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
             {t('featured.title', 'Featured Songs')}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
             {[...Array(12)].map((_, i) => (
               <Card key={i} className="bg-card border-border animate-pulse">
                 <div className="aspect-square bg-muted rounded-t-lg" />
-                <CardContent className="p-4">
-                  <div className="h-4 bg-muted rounded mb-2" />
-                  <div className="h-3 bg-muted rounded w-3/4" />
+                <CardContent className="p-3">
+                  <div className="h-4 bg-muted rounded mb-1" />
+                  <div className="h-3 bg-muted rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-muted rounded w-1/2" />
                 </CardContent>
               </Card>
             ))}
+          </div>
+          <div className="text-center">
+            <div className="inline-block h-10 w-32 bg-muted rounded animate-pulse" />
           </div>
         </div>
       </section>
@@ -106,14 +110,15 @@ const FeaturedSongs = () => {
   }
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-16 bg-background min-h-[600px]">
       <div className="container-responsive">
         <h2 className="text-3xl font-playfair font-bold text-center text-foreground mb-12">
           {t('featured.title', 'Featured Songs')}
         </h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {songs.map((song) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+          {songs.length > 0 ? (
+            songs.map((song) => (
             <Card key={song.id} className="group bg-card border-border hover:shadow-elegant transition-all duration-300 hover:scale-105 cursor-pointer"
                   onClick={() => handlePlaySong(song)}>
               <div className="relative aspect-square rounded-t-lg overflow-hidden bg-[hsl(var(--thumbnail-bg))]">
@@ -121,6 +126,8 @@ const FeaturedSongs = () => {
                   src={zamarLogo}
                   alt={song.title}
                   className="w-full h-full object-contain p-4 bg-transparent"
+                  width="160"
+                  height="160"
                 />
                 <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
                   <FavouriteButton songId={song.id} />
@@ -179,10 +186,25 @@ const FeaturedSongs = () => {
                 )}
               </CardContent>
             </Card>
-          ))}
+          ))
+        ) : (
+          // Show empty state with same grid structure to maintain layout
+          [...Array(12)].map((_, i) => (
+            <Card key={`empty-${i}`} className="bg-card border-border opacity-50">
+              <div className="aspect-square bg-muted/20 rounded-t-lg flex items-center justify-center">
+                <Music className="h-8 w-8 text-muted-foreground/50" />
+              </div>
+              <CardContent className="p-3">
+                <div className="h-4 bg-muted/30 rounded mb-1" />
+                <div className="h-3 bg-muted/30 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-muted/30 rounded w-1/2" />
+              </CardContent>
+            </Card>
+          ))
+        )}
         </div>
 
-        <div className="text-center mt-8">
+        <div className="text-center">
           <Button variant="outline" size="lg" asChild>
             <a href="/songs">{t('featured.view_all', 'View All Songs')}</a>
           </Button>
