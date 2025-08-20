@@ -300,6 +300,13 @@ export type Database = {
             foreignKeyName: "chat_messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -346,6 +353,13 @@ export type Database = {
             foreignKeyName: "chat_rooms_admin_id_fkey"
             columns: ["admin_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -362,6 +376,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_referral_summary"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chat_rooms_user_id_fkey"
@@ -763,6 +784,13 @@ export type Database = {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1113,6 +1141,13 @@ export type Database = {
             foreignKeyName: "profiles_referred_by_fkey"
             columns: ["referred_by"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1351,6 +1386,13 @@ export type Database = {
             foreignKeyName: "referral_payouts_payee_id_fkey"
             columns: ["payee_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_payouts_payee_id_fkey"
+            columns: ["payee_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1550,6 +1592,13 @@ export type Database = {
             foreignKeyName: "song_suggestions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "song_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1616,6 +1665,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "songs_suggested_by_fkey"
+            columns: ["suggested_by"]
+            isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "songs_suggested_by_fkey"
             columns: ["suggested_by"]
@@ -1839,6 +1895,13 @@ export type Database = {
             foreignKeyName: "user_favourites_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "admin_user_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favourites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1875,22 +1938,33 @@ export type Database = {
           role: string | null
           soft_deleted_at: string | null
         }
-        Relationships: []
-      }
-      admin_user_details_guarded: {
-        Row: {
-          account_status: Database["public"]["Enums"]["account_status"] | null
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          first_name: string | null
-          full_name: string | null
-          id: string | null
-          is_suspended: boolean | null
-          last_name: string | null
-          last_sign_in_at: string | null
-          role: string | null
-          soft_deleted_at: string | null
+        Insert: {
+          account_status?: Database["public"]["Enums"]["account_status"] | null
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          full_name?: never
+          id?: string | null
+          is_suspended?: never
+          last_name?: string | null
+          last_sign_in_at?: string | null
+          role?: never
+          soft_deleted_at?: string | null
+        }
+        Update: {
+          account_status?: Database["public"]["Enums"]["account_status"] | null
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          full_name?: never
+          id?: string | null
+          is_suspended?: never
+          last_name?: string | null
+          last_sign_in_at?: string | null
+          role?: never
+          soft_deleted_at?: string | null
         }
         Relationships: []
       }

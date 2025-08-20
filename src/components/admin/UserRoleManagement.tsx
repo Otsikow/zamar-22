@@ -18,31 +18,22 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface ProfileRow {
+interface UserWithRole {
   id: string;
-  email: string;
-  first_name?: string | null;
-  last_name?: string | null;
-  account_status?: 'active' | 'suspended' | 'deleted' | null;
-  suspended_at?: string | null;
-  deleted_at?: string | null;
-}
-
-interface AdminRow {
-  id: string;
-  user_id: string;
+  email?: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
   role: Role;
-  created_at: string;
+  account_status?: 'active' | 'suspended' | 'deleted';
+  is_suspended?: boolean;
+  soft_deleted_at?: string;
+  created_at?: string;
+  last_sign_in_at?: string;
 }
 
 const VALID_ROLES = ['listener', 'supporter', 'admin'] as const;
 type Role = typeof VALID_ROLES[number];
-
-interface UserWithRole {
-  profile: ProfileRow;
-  role: Role;
-  admin_user_id?: string; // present when a row exists in admin_users
-}
 
 const UserRoleManagement = () => {
   const { user } = useAuth();
@@ -60,26 +51,25 @@ const UserRoleManagement = () => {
   const fetchAllUsersWithRoles = async () => {
     try {
       setLoading(true);
-      const [{ data: profiles, error: pErr }, { data: adminRows, error: aErr }] = await Promise.all([
-        supabase.from('profiles').select('id, email, first_name, last_name, account_status, suspended_at, deleted_at').order('created_at', { ascending: false }),
-        supabase.from('admin_users').select('id, user_id, role, created_at')
-      ]);
-      if (pErr) throw pErr;
-      if (aErr) throw aErr;
+      
+      // Use the new admin_user_details view that properly includes email and names
+      const { data: usersData, error } = await supabase
+        .from('admin_user_details')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      const roleMap = new Map<string, AdminRow>();
-      (adminRows as AdminRow[] | null)?.forEach(r => roleMap.set(r.user_id, r));
+      if (error) {
+        console.error('Error fetching user details:', error);
+        throw error;
+      }
 
-      const combined: UserWithRole[] = (profiles as ProfileRow[] | null)?.map(pr => {
-        const r = roleMap.get(pr.id);
-        return {
-          profile: pr,
-          role: (r?.role as Role) || 'listener',
-          admin_user_id: r?.id,
-        };
-      }) || [];
+      // Type the data properly
+      const typedUsers: UserWithRole[] = (usersData || []).map(user => ({
+        ...user,
+        role: (user.role as Role) || 'listener'
+      }));
 
-      setUsers(combined);
+      setUsers(typedUsers);
     } catch (error) {
       console.error('Error fetching users/roles:', error);
       toast({ title: 'Error', description: 'Failed to fetch users', variant: 'destructive' });
@@ -94,24 +84,16 @@ const UserRoleManagement = () => {
       return;
     }
 
-    const userId = target.profile.id;
+    const userId = target.id;
     setUpdatingRoles(prev => new Set(prev).add(userId));
 
     try {
-      if (target.admin_user_id) {
-        // Update existing record
-        const { error } = await supabase
-          .from('admin_users')
-          .update({ role: newRole })
-          .eq('id', target.admin_user_id);
-        if (error) throw error;
-      } else {
-        // Create role record for this user
-        const { error } = await supabase
-          .from('admin_users')
-          .insert({ user_id: userId, role: newRole });
-        if (error) throw error;
-      }
+      // Update or insert into admin_users table
+      const { error } = await supabase
+        .from('admin_users')
+        .upsert({ user_id: userId, role: newRole }, { onConflict: 'user_id' });
+      
+      if (error) throw error;
 
       toast({ title: 'Success', description: 'User role saved' });
       await fetchAllUsersWithRoles();
@@ -220,10 +202,10 @@ const UserRoleManagement = () => {
   };
 
   const filteredUsers = users.filter(u => {
-    const email = u.profile.email || '';
-    const firstName = u.profile.first_name || '';
-    const lastName = u.profile.last_name || '';
-    const fullName = `${firstName} ${lastName}`.trim();
+    const email = u.email || '';
+    const firstName = u.first_name || '';
+    const lastName = u.last_name || '';
+    const fullName = u.full_name || `${firstName} ${lastName}`.trim();
 
     const matchesSearch =
       email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -364,7 +346,7 @@ const UserRoleManagement = () => {
               </Card>
             ) : (
               filteredUsers.map((u) => {
-                const userId = u.profile.id;
+                const userId = u.id;
                 const isCurrentUser = user?.id === userId;
                 const isUpdating = updatingRoles.has(userId);
                 
@@ -376,9 +358,9 @@ const UserRoleManagement = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-medium truncate">
-                              {u.profile.first_name && u.profile.last_name
-                                ? `${u.profile.first_name} ${u.profile.last_name}`
-                                : 'No name set'}
+                              {u.full_name || (u.first_name && u.last_name 
+                                ? `${u.first_name} ${u.last_name}`
+                                : u.first_name || u.last_name || 'No name set')}
                             </h3>
                             {isCurrentUser && (
                               <Badge variant="outline" className="text-xs flex-shrink-0">
@@ -387,16 +369,16 @@ const UserRoleManagement = () => {
                             )}
                           </div>
                           <p className="text-sm text-muted-foreground truncate">
-                            {u.profile.email || 'No email'}
+                            {u.email || 'No email'}
                           </p>
                         </div>
                         
                         {/* Status Badges */}
                         <div className="flex flex-col gap-1">
-                          {u.profile.account_status === 'suspended' && (
+                          {u.account_status === 'suspended' && (
                             <Badge variant="secondary" className="text-xs">Suspended</Badge>
                           )}
-                          {u.profile.account_status === 'deleted' && (
+                          {u.account_status === 'deleted' && (
                             <Badge variant="destructive" className="text-xs">Deleted</Badge>
                           )}
                         </div>
@@ -457,12 +439,12 @@ const UserRoleManagement = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleSuspendToggle(userId, u.profile.account_status === 'suspended')}
+                            onClick={() => handleSuspendToggle(userId, u.account_status === 'suspended')}
                             disabled={isCurrentUser}
                             className="justify-start"
                           >
                             <Ban className="h-4 w-4 mr-1" />
-                            {u.profile.account_status === 'suspended' ? 'Unsuspend' : 'Suspend'}
+                            {u.account_status === 'suspended' ? 'Unsuspend' : 'Suspend'}
                           </Button>
                           
                           <Button
