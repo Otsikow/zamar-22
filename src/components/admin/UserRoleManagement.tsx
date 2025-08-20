@@ -360,9 +360,9 @@ const UserRoleManagement = () => {
                             <h3 className="font-medium truncate">
                               {u.full_name && u.full_name !== u.email 
                                 ? u.full_name 
-                                : (u.first_name && u.last_name 
-                                  ? `${u.first_name} ${u.last_name}`
-                                  : u.first_name || u.last_name || (u.email ? u.email.split('@')[0] : 'Unknown User'))}
+                                : (u.first_name || u.last_name 
+                                  ? `${u.first_name || ''} ${u.last_name || ''}`.trim()
+                                  : u.email?.split('@')[0] || 'Unknown User')}
                             </h3>
                             {isCurrentUser && (
                               <Badge variant="outline" className="text-xs flex-shrink-0">
@@ -371,7 +371,7 @@ const UserRoleManagement = () => {
                             )}
                           </div>
                           <p className="text-sm text-muted-foreground truncate">
-                            {u.email || 'No email'}
+                            {u.email || 'No email available'}
                           </p>
                         </div>
                         
