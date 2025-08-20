@@ -152,21 +152,38 @@ const UserRoleManagement = () => {
   };
 
   const handleSoftDelete = async (targetUserId: string) => {
-    if (!confirm('Soft-delete this user? They will be marked as deleted.')) return;
+    if (!confirm('Delete this user? This will permanently remove them from the system.')) return;
+    
     try {
       console.log('Attempting to delete user:', targetUserId);
       console.log('Current user ID:', user?.id);
       
-      const { data, error } = await supabase.rpc('admin_soft_delete_user', { target_user_id: targetUserId });
+      // Get the current session for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('No valid session found');
+      }
+
+      // Call the edge function with proper authorization
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId: targetUserId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
       
-      console.log('Delete RPC result:', { data, error });
+      console.log('Delete function result:', { data, error });
       
       if (error) {
-        console.error('RPC error details:', error);
+        console.error('Function error details:', error);
         throw error;
       }
       
-      toast({ title: 'User deleted', description: 'User marked as deleted' });
+      if (!data?.ok) {
+        throw new Error(data?.error || 'Delete operation failed');
+      }
+      
+      toast({ title: 'User deleted', description: 'User has been permanently deleted' });
       await fetchAllUsersWithRoles();
     } catch (error) {
       console.error('Delete failed:', error);
