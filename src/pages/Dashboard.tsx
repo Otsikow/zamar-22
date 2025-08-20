@@ -235,46 +235,52 @@ const [stats, setStats] = useState<DashboardStats>({
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">My Songs</CardTitle>
-              <Music className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                {loading ? "..." : stats.mySongs}
-              </div>
-              <p className="text-xs text-muted-foreground">Custom songs created</p>
-            </CardContent>
-          </Card>
+          <Link to="/library">
+            <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">My Songs</CardTitle>
+                <Music className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                  {loading ? "..." : stats.mySongs}
+                </div>
+                <p className="text-xs text-muted-foreground">Custom songs created</p>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Plays</CardTitle>
-              <PlayCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                {loading ? "..." : stats.totalPlays.toLocaleString()}
-              </div>
-              <p className="text-xs text-muted-foreground">Across all your songs</p>
-            </CardContent>
-          </Card>
+          <Link to="/analytics">
+            <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Plays</CardTitle>
+                <PlayCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                  {loading ? "..." : stats.totalPlays.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">Across all your songs</p>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                {loading ? "..." : stats.pendingRequests}
-              </div>
-              <p className="text-xs text-muted-foreground">Awaiting completion</p>
-            </CardContent>
-          </Card>
+          <Link to="/request-song">
+            <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                  {loading ? "..." : stats.pendingRequests}
+                </div>
+                <p className="text-xs text-muted-foreground">Awaiting completion</p>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card>
+          <Card className="opacity-50 cursor-not-allowed">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Followers</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
