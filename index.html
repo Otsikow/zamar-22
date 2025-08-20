@@ -42,6 +42,38 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Non-blocking CSS loading optimization - run after main.tsx loads
+      document.addEventListener('DOMContentLoaded', function() {
+        var checkCSS = function() {
+          var links = document.querySelectorAll('link[rel="stylesheet"]');
+          var found = false;
+          links.forEach(function(link) {
+            if (link.href && link.href.includes('/assets/index-') && link.media !== 'print') {
+              found = true;
+              var media = link.media || 'all';
+              link.media = 'print';
+              link.onload = function() {
+                this.media = media;
+                this.onload = null;
+              };
+              // Fallback for older browsers
+              setTimeout(function() {
+                if (link.media === 'print') {
+                  link.media = media;
+                }
+              }, 100);
+            }
+          });
+          
+          // If CSS not found yet, try again
+          if (!found) {
+            setTimeout(checkCSS, 10);
+          }
+        };
+        checkCSS();
+      });
+    </script>
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           let refreshing = false;
