@@ -358,9 +358,11 @@ const UserRoleManagement = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-medium truncate">
-                              {u.full_name || (u.first_name && u.last_name 
-                                ? `${u.first_name} ${u.last_name}`
-                                : u.first_name || u.last_name || 'No name set')}
+                              {u.full_name && u.full_name !== u.email 
+                                ? u.full_name 
+                                : (u.first_name && u.last_name 
+                                  ? `${u.first_name} ${u.last_name}`
+                                  : u.first_name || u.last_name || (u.email ? u.email.split('@')[0] : 'Unknown User'))}
                             </h3>
                             {isCurrentUser && (
                               <Badge variant="outline" className="text-xs flex-shrink-0">
