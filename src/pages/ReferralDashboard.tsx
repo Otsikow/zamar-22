@@ -5,6 +5,7 @@ import { Copy, Users, DollarSign, TrendingUp, Eye, Share2, Calendar, RefreshCw }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useReferralDashboard } from '@/hooks/useReferralDashboard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReferralCard } from '@/components/referrals/ReferralCard';
 
 export default function ReferralDashboard() {
   const { 
@@ -182,39 +183,8 @@ export default function ReferralDashboard() {
         </CardContent>
       </Card>
 
-      {/* Referral Link Section */}
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-primary-glow/5">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5" />
-            Your Referral Link
-          </CardTitle>
-          <CardDescription>
-            Share this link to earn 15% (L1) and 10% (L2) commission on purchases
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex-1 p-3 bg-muted rounded-md border font-mono text-sm break-all">
-              {referralLink}
-            </div>
-            <Button onClick={copyReferralLink} variant="outline" className="shrink-0">
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Link
-            </Button>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Your referral code: <span className="font-mono font-semibold">{referralCode}</span>
-            </div>
-            <Button onClick={refreshData} variant="ghost" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Unified Referral Link Card */}
+      <ReferralCard />
 
       {/* Recent Earnings */}
       {earnings.length > 0 && (

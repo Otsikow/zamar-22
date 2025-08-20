@@ -24,11 +24,11 @@ export const useReferralCapture = () => {
 
       try {
         console.log('Looking up referrer by code or ID:', refParam);
-        // Try to find user by referral code or ID
+        // Try to find user by new ref_code or legacy referral_code
         const { data: referrer, error } = await supabase
           .from('profiles')
-          .select('id, referral_code, first_name, last_name')
-          .or(`referral_code.eq.${refParam},id.eq.${refParam}`)
+          .select('id, ref_code, referral_code, first_name, last_name')
+          .or(`ref_code.eq.${refParam},referral_code.eq.${refParam},id.eq.${refParam}`)
           .single();
 
         console.log('Referrer lookup result:', { referrer, error });
@@ -43,19 +43,16 @@ export const useReferralCapture = () => {
         }
 
         console.log('Valid referrer found, storing data:', referrer);
-        // Store referrer info safely
+        // Store referral code for signup conversion (new system)
+        const finalRefCode = referrer.ref_code || referrer.referral_code || '';
+        
+        // Use single cookie for signup conversion
+        document.cookie = `zamar_ref=${finalRefCode}; Max-Age=2592000; Path=/; SameSite=Lax; Secure`;
+        localStorage.setItem('zamar_ref', finalRefCode);
+        
+        // Legacy storage for backward compatibility
         localStorage.setItem('referrer_id', referrer.id);
-        localStorage.setItem('referral_code', referrer.referral_code || '');
-        
-        // Also store in cookie for persistence
-        document.cookie = `referrer_id=${referrer.id};path=/;max-age=${60*60*24*90}`;
-        document.cookie = `referral_code=${referrer.referral_code || ''};path=/;max-age=${60*60*24*90}`;
-        
-        // Also store in cookie for backup (90 days)
-        const expires = new Date();
-        expires.setDate(expires.getDate() + 90);
-        document.cookie = `referrer_id=${referrer.id};path=/;expires=${expires.toUTCString()};SameSite=Lax`;
-        document.cookie = `referral_code=${referrer.referral_code || ''};path=/;expires=${expires.toUTCString()};SameSite=Lax`;
+        localStorage.setItem('referral_code', finalRefCode);
 
         // Show success message with referrer name
         const referrerName = [referrer.first_name, referrer.last_name]
@@ -82,7 +79,15 @@ export const useReferralCapture = () => {
  * Helper functions to get and clear stored referral data
  */
 export const getStoredReferralData = () => {
-  // Try localStorage first, then cookies
+  // New system: try zamar_ref first
+  const newRefMatch = document.cookie.match(/zamar_ref=([^;]+)/);
+  const newRef = newRefMatch ? newRefMatch[1] : localStorage.getItem('zamar_ref');
+  
+  if (newRef) {
+    return { referrerId: null, referralCode: newRef };
+  }
+  
+  // Legacy system fallback
   let referrerId = localStorage.getItem('referrer_id');
   let referralCode = localStorage.getItem('referral_code');
 
@@ -100,10 +105,13 @@ export const getStoredReferralData = () => {
 };
 
 export const clearStoredReferralData = () => {
+  // Clear new system
+  document.cookie = 'zamar_ref=; Max-Age=0; Path=/';
+  localStorage.removeItem('zamar_ref');
+  
+  // Clear legacy system
   localStorage.removeItem('referrer_id');
   localStorage.removeItem('referral_code');
-  
-  // Clear cookies
   document.cookie = 'referrer_id=; Max-Age=0; path=/';
   document.cookie = 'referral_code=; Max-Age=0; path=/';
 };
