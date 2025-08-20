@@ -1080,6 +1080,8 @@ export type Database = {
           membership_tier: string | null
           pending_ref_code: string | null
           preferred_language: string | null
+          ref_code: string | null
+          ref_code_rotated_at: string | null
           referral_code: string | null
           referred_by: string | null
           referrer_id: string | null
@@ -1104,6 +1106,8 @@ export type Database = {
           membership_tier?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
+          ref_code?: string | null
+          ref_code_rotated_at?: string | null
           referral_code?: string | null
           referred_by?: string | null
           referrer_id?: string | null
@@ -1128,6 +1132,8 @@ export type Database = {
           membership_tier?: string | null
           pending_ref_code?: string | null
           preferred_language?: string | null
+          ref_code?: string | null
+          ref_code_rotated_at?: string | null
           referral_code?: string | null
           referred_by?: string | null
           referrer_id?: string | null
@@ -2353,6 +2359,10 @@ export type Database = {
       reverse_referral_earnings_for_payment: {
         Args: { p_payment_id: string }
         Returns: undefined
+      }
+      rotate_ref_code: {
+        Args: { uid: string }
+        Returns: string
       }
     }
     Enums: {
