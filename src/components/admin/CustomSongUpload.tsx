@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Music } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Upload, Music, AlertTriangle, Lock } from 'lucide-react';
 import UserSearchSelect from '@/components/admin/UserSearchSelect';
 interface CustomSongRequest {
   id: string;
@@ -29,8 +31,8 @@ interface CustomSongRequest {
 
 const CustomSongUpload = () => {
   const { toast } = useToast();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
   const [recentSongs, setRecentSongs] = useState<any[]>([]);
-  
   const [loading, setLoading] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     userId: '',
@@ -66,23 +68,38 @@ const CustomSongUpload = () => {
   const handleFileUpload = async (file: File, bucket: string): Promise<string | null> => {
     if (!file) return null;
 
+    console.log(`Attempting to upload ${file.name} to bucket: ${bucket}`);
+    
     const fileName = `${Date.now()}_${file.name}`;
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file);
 
-    if (error) throw error;
+    if (error) {
+      console.error(`Storage upload error for ${bucket}:`, error);
+      throw new Error(`Storage upload failed: ${error.message}`);
+    }
 
     const { data: { publicUrl } } = supabase.storage
       .from(bucket)
       .getPublicUrl(fileName);
 
+    console.log(`Successfully uploaded to: ${publicUrl}`);
     return publicUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!isAdmin) {
+      toast({
+        title: "Error",
+        description: "Admin access required to upload songs",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!uploadForm.userId || !uploadForm.songTitle || !uploadForm.audioFile) {
       toast({
         title: "Error",
@@ -95,6 +112,8 @@ const CustomSongUpload = () => {
     setLoading(true);
 
     try {
+      console.log('Starting upload process...');
+      
       // Upload files
       const audioUrl = await handleFileUpload(uploadForm.audioFile, 'songs');
       const lyricsUrl = uploadForm.lyricsFile ? await handleFileUpload(uploadForm.lyricsFile, 'lyrics') : null;
@@ -131,9 +150,22 @@ const CustomSongUpload = () => {
 
     } catch (error: any) {
       console.error('Error uploading custom song:', error);
+      
+      let errorMessage = "Failed to upload custom song";
+      if (error.message) {
+        errorMessage += ": " + error.message;
+      }
+      
+      // Provide specific guidance for common errors
+      if (error.message && error.message.includes('new row violates row-level security policy')) {
+        errorMessage = "Upload failed: Admin permissions required. Please ensure you're logged in as an admin user.";
+      } else if (error.message && error.message.includes('bucket')) {
+        errorMessage = "Upload failed: Storage bucket access denied. Contact system administrator.";
+      }
+
       toast({
-        title: "Error",
-        description: "Failed to upload custom song: " + error.message,
+        title: "Upload Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -151,6 +183,38 @@ const CustomSongUpload = () => {
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
+
+  if (adminLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <p className="text-muted-foreground">Checking admin permissions...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <Alert>
+              <Lock className="h-4 w-4" />
+              <AlertDescription>
+                Admin access required to upload custom songs. Please contact an administrator for access.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -226,7 +290,7 @@ const CustomSongUpload = () => {
               />
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button type="submit" disabled={loading || !isAdmin} className="w-full">
               {loading ? (
                 <>
                   <Upload className="w-4 h-4 mr-2 animate-spin" />

@@ -373,12 +373,16 @@ const [activeTab, setActiveTab] = useState(initialTab);
     
     try {
       // Upload audio file to storage
+      console.log('Starting song upload...');
       const audioFileName = `${Date.now()}_${songForm.audioFile.name}`;
         const { data: audioData, error: audioError } = await supabase.storage
           .from('songs')
           .upload(audioFileName, songForm.audioFile);
 
-        if (audioError) throw audioError;
+        if (audioError) {
+          console.error('Storage upload error:', audioError);
+          throw new Error(`Storage upload failed: ${audioError.message}`);
+        }
 
         // Get public URL for the audio file
         const { data: { publicUrl: audioUrl } } = supabase.storage
@@ -432,9 +436,22 @@ const [activeTab, setActiveTab] = useState(initialTab);
       });
     } catch (error) {
       console.error("Error uploading song:", error);
+      
+      let errorMessage = "Failed to upload song";
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Provide specific guidance for common errors
+      if (error.message && error.message.includes('new row violates row-level security policy')) {
+        errorMessage = "Upload failed: Admin permissions required. Please ensure you're logged in as an admin user.";
+      } else if (error.message && error.message.includes('bucket')) {
+        errorMessage = "Upload failed: Storage bucket access denied. Contact system administrator.";
+      }
+
       toast({
-        title: "Error",
-        description: "Failed to upload song",
+        title: "Upload Error",
+        description: errorMessage,
         variant: "destructive",
       });
     }
