@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { Sparkles, Lightbulb, Radio } from "lucide-react";
+import { useCountriesReached } from "@/hooks/useCountriesReached";
 
 export type HeroStat = { icon: string; text: string };
 
@@ -33,12 +34,13 @@ export default function HeroSection({
   onSuggestClick,
 }: Props) {
   const { t } = useTranslation();
+  const { count: countriesCount, loading: countriesLoading } = useCountriesReached();
 
   // Default stats with translations
   const defaultStats = [
     { icon: "⭐", text: t('hero.stat1', '500+ Happy Clients') },
     { icon: "⏱️", text: t('hero.stat2', '24–48hr Delivery') },
-    { icon: "🙏", text: t('hero.stat3', 'Faith‑Based Platform') },
+    { icon: "🌍", text: countriesLoading ? 'Loading...' : `${countriesCount} Countries Reached` },
   ];
 
   const heroStats = stats || defaultStats;
