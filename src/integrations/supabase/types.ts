@@ -96,15 +96,7 @@ export type Database = {
           success?: boolean
           user_agent?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_creation_attempts_attempted_by_fkey"
-            columns: ["attempted_by"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       admin_users: {
         Row: {
@@ -128,15 +120,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_users_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       ads: {
         Row: {
@@ -435,13 +419,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "custom_song_assets_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "custom_song_assets_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -480,13 +457,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "custom_song_deliveries_delivered_by_fkey"
-            columns: ["delivered_by"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "custom_song_deliveries_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
@@ -523,13 +493,6 @@ export type Database = {
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "custom_song_requests"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "custom_song_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
             referencedColumns: ["id"]
           },
         ]
@@ -652,22 +615,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "custom_song_requests_assigned_admin_fkey"
-            columns: ["assigned_admin"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "custom_song_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       custom_songs: {
         Row: {
@@ -697,15 +645,7 @@ export type Database = {
           status?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "custom_songs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       donations: {
         Row: {
@@ -741,15 +681,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "donations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       lyrics: {
         Row: {
@@ -890,15 +822,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "payments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       payouts: {
         Row: {
@@ -931,15 +855,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "payouts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       playlist_comments: {
         Row: {
@@ -974,13 +890,6 @@ export type Database = {
             referencedRelation: "playlists"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "playlist_comments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
         ]
       }
       playlist_likes: {
@@ -1008,13 +917,6 @@ export type Database = {
             columns: ["playlist_id"]
             isOneToOne: false
             referencedRelation: "playlists"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "playlist_likes_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
             referencedColumns: ["id"]
           },
         ]
@@ -1214,13 +1116,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "profiles_referred_by_fkey"
             columns: ["referred_by"]
             isOneToOne: false
@@ -1304,13 +1199,6 @@ export type Database = {
             referencedRelation: "songs"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "purchases_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
         ]
       }
       referral_clicks: {
@@ -1338,15 +1226,7 @@ export type Database = {
           referrer_id?: string | null
           ua?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_clicks_referrer_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       referral_commissions: {
         Row: {
@@ -1436,22 +1316,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_earnings_referred_user_id_fkey"
-            columns: ["referred_user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "referral_earnings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       referral_payouts: {
         Row: {
@@ -1548,22 +1413,7 @@ export type Database = {
           status?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referrals_referred_user_id_fkey"
-            columns: ["referred_user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "referrals_referrer_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       role_change_logs: {
         Row: {
@@ -1620,15 +1470,7 @@ export type Database = {
           user_agent?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "security_audit_log_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       song_plays: {
         Row: {
@@ -1875,15 +1717,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "testimonials_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       testimonies: {
         Row: {
@@ -1937,22 +1771,7 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "testimonies_approved_by_fkey"
-            columns: ["approved_by"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "testimonies_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_custom_library: {
         Row: {
@@ -1991,13 +1810,6 @@ export type Database = {
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "custom_song_requests"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_custom_library_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
             referencedColumns: ["id"]
           },
         ]
@@ -2054,23 +1866,6 @@ export type Database = {
       }
     }
     Views: {
-      admin_user_details: {
-        Row: {
-          account_status: Database["public"]["Enums"]["account_status"] | null
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          first_name: string | null
-          full_name: string | null
-          id: string | null
-          is_suspended: boolean | null
-          last_name: string | null
-          last_sign_in_at: string | null
-          role: string | null
-          soft_deleted_at: string | null
-        }
-        Relationships: []
-      }
       public_profiles: {
         Row: {
           created_at: string | null
@@ -2090,15 +1885,7 @@ export type Database = {
           id?: string | null
           preferred_language?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       public_testimonies: {
         Row: {
@@ -2143,15 +1930,7 @@ export type Database = {
           payee_id: string | null
           payee_name: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_earnings_user_id_fkey"
-            columns: ["payee_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       v_admin_referral_overview: {
         Row: {
@@ -2190,22 +1969,7 @@ export type Database = {
           referrer_name: string | null
           status: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_earnings_referred_user_id_fkey"
-            columns: ["referred_user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "referral_earnings_user_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       v_referral_summary: {
         Row: {
@@ -2216,15 +1980,7 @@ export type Database = {
           total_earned: number | null
           user_id: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       v_top_referrers_30d_named: {
         Row: {
@@ -2232,15 +1988,7 @@ export type Database = {
           referrer_name: string | null
           total_cents: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_earnings_user_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       v_top_referrers_last30: {
         Row: {
@@ -2248,15 +1996,7 @@ export type Database = {
           earner_id: string | null
           earning_events: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "referral_earnings_user_id_fkey"
-            columns: ["earner_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_details"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
@@ -2347,6 +2087,23 @@ export type Database = {
       get_active_session_count: {
         Args: { minutes_threshold?: number }
         Returns: number
+      }
+      get_admin_user_details: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          account_status: Database["public"]["Enums"]["account_status"]
+          avatar_url: string
+          created_at: string
+          email: string
+          first_name: string
+          full_name: string
+          id: string
+          is_suspended: boolean
+          last_name: string
+          last_sign_in_at: string
+          role: string
+          soft_deleted_at: string
+        }[]
       }
       get_all_referral_rewards: {
         Args: Record<PropertyKey, never>

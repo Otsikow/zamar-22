@@ -52,11 +52,9 @@ const UserRoleManagement = () => {
     try {
       setLoading(true);
       
-      // Use the new admin_user_details view that properly includes email and names
+      // Use the secure RPC function instead of the problematic view
       const { data: usersData, error } = await supabase
-        .from('admin_user_details')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .rpc('get_admin_user_details');
 
       if (error) {
         console.error('Error fetching user details:', error);
