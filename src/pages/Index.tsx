@@ -11,7 +11,7 @@ import WelcomeBanner from "@/components/auth/WelcomeBanner";
 import AdGrid from "@/components/ads/AdGrid";
 import { SuggestSongModal } from "@/components/modals/SuggestSongModal";
 import { AuthRequiredSheet } from "@/components/modals/AuthRequiredSheet";
-import GrantAdminOnce from "@/components/admin/GrantAdminOnce";
+
 
 const Index = () => {
   const { user } = useAuth();
@@ -32,7 +32,7 @@ const Index = () => {
     <>
       <div className="min-h-screen bg-background">
         <main className="pb-20">
-          {user && <GrantAdminOnce />}
+          
           <HeroSection
             bgImageUrl={heroImage}
             onSuggestClick={handleSuggestClick}
