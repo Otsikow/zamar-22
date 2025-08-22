@@ -58,7 +58,22 @@ const UserRoleManagement = () => {
 
       if (error) {
         console.error('Error fetching user details:', error);
-        throw error;
+        
+        // Provide specific error messages
+        if (error.message.includes('Access denied')) {
+          toast({ 
+            title: 'Access Denied', 
+            description: 'You must be logged in as an admin to view user management. Please sign in with an admin account.', 
+            variant: 'destructive' 
+          });
+        } else {
+          toast({ 
+            title: 'Error', 
+            description: `Failed to fetch users: ${error.message}`, 
+            variant: 'destructive' 
+          });
+        }
+        return;
       }
 
       // Type the data properly
@@ -70,7 +85,11 @@ const UserRoleManagement = () => {
       setUsers(typedUsers);
     } catch (error) {
       console.error('Error fetching users/roles:', error);
-      toast({ title: 'Error', description: 'Failed to fetch users', variant: 'destructive' });
+      toast({ 
+        title: 'Authentication Required', 
+        description: 'Please log in as an admin to access user management features.', 
+        variant: 'destructive' 
+      });
     } finally {
       setLoading(false);
     }
