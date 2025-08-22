@@ -15,13 +15,22 @@ serve(async (req) => {
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-  const supabaseAuth = createClient(supabaseUrl, anonKey);
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const token = authHeader.replace("Bearer ", "");
+  
+  // Create client with user's auth context
+  const supabaseWithAuth = createClient(supabaseUrl, anonKey, {
+    global: {
+      headers: {
+        Authorization: authHeader,
+      },
+    },
+  });
+  
   const supabaseService = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
 
   try {
-    const authHeader = req.headers.get("Authorization") ?? "";
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userRes, error: userErr } = await supabaseAuth.auth.getUser(token);
+    const { data: userRes, error: userErr } = await supabaseWithAuth.auth.getUser(token);
 
     if (userErr || !userRes?.user) {
       // Log failed attempt
@@ -32,10 +41,8 @@ serve(async (req) => {
       });
     }
 
-    // Use atomic transaction to prevent race conditions
-    const { data: result, error: transactionError } = await supabaseService.rpc('atomic_grant_first_admin', {
-      candidate_user_id: userRes.user.id
-    });
+    // Use atomic transaction with user auth context - no parameters needed
+    const { data: result, error: transactionError } = await supabaseWithAuth.rpc('atomic_grant_first_admin');
 
     // Log the attempt
     await logAdminAttempt(supabaseService, userRes.user.id, !transactionError && result?.success, req);
