@@ -2089,7 +2089,7 @@ export type Database = {
         Returns: string
       }
       get_active_session_count: {
-        Args: { minutes_threshold?: number }
+        Args: Record<PropertyKey, never> | { minutes_threshold?: number }
         Returns: number
       }
       get_admin_user_details: {
