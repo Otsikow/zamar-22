@@ -12,16 +12,49 @@ export default function GrantAdminOnce() {
   const handleGrant = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke('grant-admin-once');
-      if (error) throw error;
+      
+      // Get the current session for authorization
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.access_token) {
+        toast({ 
+          title: 'Error', 
+          description: 'You must be logged in to grant admin privileges', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('grant-admin-once', {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
+      
+      if (error) {
+        console.error('Function invoke error:', error);
+        throw error;
+      }
+      
       if (data?.success) {
-        toast({ title: 'Success', description: 'You are now an admin. Please reload.' });
-        setTimeout(() => window.location.reload(), 1200);
+        toast({ 
+          title: 'Success', 
+          description: 'Admin privileges granted! The page will reload.' 
+        });
+        setTimeout(() => window.location.reload(), 1500);
       } else {
-        toast({ title: 'Info', description: data?.error || 'Already initialized', variant: 'destructive' });
+        toast({ 
+          title: 'Notice', 
+          description: data?.error || 'Admin already exists or operation failed', 
+          variant: 'destructive' 
+        });
       }
     } catch (e: any) {
-      toast({ title: 'Error', description: e?.message || 'Failed to grant admin', variant: 'destructive' });
+      console.error('Grant admin error:', e);
+      toast({ 
+        title: 'Error', 
+        description: e?.message || 'Failed to grant admin privileges', 
+        variant: 'destructive' 
+      });
     } finally {
       setLoading(false);
     }
