@@ -58,7 +58,13 @@ const TestimonialsCarousel = () => {
         before_time: new Date().toISOString()
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('TESTIMONIES RPC ERROR:', JSON.stringify(error, null, 2));
+        console.error(`Load failed: ${error.message}`);
+        return;
+      }
+
+      console.log('Testimonials loaded successfully:', data?.length || 0, 'items');
       setTestimonials(data || []);
     } catch (error: any) {
       console.error("Error fetching testimonials:", error);
