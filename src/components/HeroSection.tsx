@@ -105,18 +105,6 @@ export default function HeroSection({
             </Button>
           </div>
 
-          {/* Badges */}
-          <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {heroStats.map((s, i) => (
-              <li
-                key={i}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card/70 backdrop-blur px-4 py-3 shadow-sm"
-              >
-                <span className="text-xl">{s.icon}</span>
-                <span className="text-sm font-medium text-foreground">{s.text}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>
