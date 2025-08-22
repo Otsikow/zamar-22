@@ -24,35 +24,53 @@ export default function GrantAdminOnce() {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('grant-admin-once', {
+      // Make raw fetch call to handle non-200 status codes properly
+      const supabaseUrl = "https://wtnebvhrjnpygkftjreo.supabase.co";
+      const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0bmVidmhyam5weWdrZnRqcmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMTgyMTEsImV4cCI6MjA2OTg5NDIxMX0.wvJKP1_ElkexhVY84VPYT_FjTEx_f-kYYJIW_y5XReg";
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/grant-admin-once`, {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.session.access_token}`,
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
         },
+        body: JSON.stringify({}),
       });
+
+      const responseData = await response.json();
       
-      if (error) {
-        console.error('Function invoke error:', error);
-        throw error;
-      }
-      
-      if (data?.success) {
+      if (response.ok && responseData?.success) {
         toast({ 
           title: 'Success', 
           description: 'Admin privileges granted! The page will reload.' 
         });
         setTimeout(() => window.location.reload(), 1500);
+      } else if (response.status === 403) {
+        // Admin already exists - this is expected behavior
+        toast({ 
+          title: 'Information', 
+          description: 'An admin user already exists. Only the first user can claim admin privileges.',
+          variant: 'default'
+        });
+      } else if (response.status === 401) {
+        toast({ 
+          title: 'Authentication Error', 
+          description: 'Please log in first to claim admin privileges.',
+          variant: 'destructive' 
+        });
       } else {
         toast({ 
-          title: 'Notice', 
-          description: data?.error || 'Admin already exists or operation failed', 
+          title: 'Error', 
+          description: responseData?.error || `Server returned status ${response.status}`,
           variant: 'destructive' 
         });
       }
     } catch (e: any) {
       console.error('Grant admin error:', e);
       toast({ 
-        title: 'Error', 
-        description: e?.message || 'Failed to grant admin privileges', 
+        title: 'Network Error', 
+        description: e?.message || 'Failed to connect to server', 
         variant: 'destructive' 
       });
     } finally {
