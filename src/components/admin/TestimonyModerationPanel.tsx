@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Heart, Volume2 } from "lucide-react";
 import { useTranslation, getLocaleForLanguage } from '@/contexts/TranslationContext';
+import { supabase } from "@/integrations/supabase/client";
 
 interface Testimony {
   id: string;
@@ -20,6 +21,25 @@ interface TestimonyModerationPanelProps {
 }
 
 const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: TestimonyModerationPanelProps) => {
+  const handleApprove = async (id: string) => {
+    try {
+      const { error } = await supabase.rpc('approve_testimony', { t_id: id });
+      if (error) throw error;
+      await onTestimonialAction(id, 'approved');
+    } catch (error) {
+      console.error('Error approving testimony:', error);
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      const { error } = await supabase.rpc('reject_testimony', { t_id: id });
+      if (error) throw error;
+      await onTestimonialAction(id, 'rejected');
+    } catch (error) {
+      console.error('Error rejecting testimony:', error);
+    }
+  };
   // Pull current language from context for locale aware date formatting
   const { currentLanguage } = useTranslation();
   const locale = getLocaleForLanguage(currentLanguage);
@@ -104,7 +124,7 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
                   {testimony.status === 'pending' && (
                     <div className="flex flex-col gap-2 lg:flex-row">
                       <Button
-                        onClick={() => onTestimonialAction(testimony.id, 'approved')}
+                        onClick={() => handleApprove(testimony.id)}
                         size="sm"
                         className="bg-green-600 hover:bg-green-700 text-white"
                       >
@@ -112,7 +132,7 @@ const TestimonyModerationPanel = ({ testimonials, onTestimonialAction }: Testimo
                         Approve
                       </Button>
                       <Button
-                        onClick={() => onTestimonialAction(testimony.id, 'rejected')}
+                        onClick={() => handleReject(testimony.id)}
                         size="sm"
                         variant="destructive"
                       >
