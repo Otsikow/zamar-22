@@ -20,7 +20,6 @@ interface Testimonial {
   media_url: string | null;
   media_type: string;
   created_at: string;
-  published_at: string;
   country?: string;
 }
 
@@ -31,11 +30,16 @@ const TestimonialsCarousel = () => {
   useEffect(() => {
     fetchTestimonials();
     
-    // Set up realtime subscription
+    // Set up realtime subscription for approved testimonials
     const channel = supabase
       .channel('testimonials-carousel')
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'testimonies' },
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'testimonies',
+          filter: 'status=eq.approved'
+        },
         () => {
           fetchTestimonials();
         }
@@ -49,11 +53,10 @@ const TestimonialsCarousel = () => {
 
   const fetchTestimonials = async () => {
     try {
-      const { data, error } = await supabase
-        .from("public_testimonies")
-        .select("*")
-        .order("published_at", { ascending: false })
-        .limit(6);
+      const { data, error } = await supabase.rpc('testimonies_feed', {
+        limit_rows: 6,
+        before_time: new Date().toISOString()
+      });
 
       if (error) throw error;
       setTestimonials(data || []);
@@ -154,7 +157,7 @@ const TestimonialsCarousel = () => {
                             </h4>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Calendar className="w-3 h-3" />
-                              <span>{formatDate(testimonial.published_at || testimonial.created_at)}</span>
+                              <span>{formatDate(testimonial.created_at)}</span>
                             </div>
                           </div>
                         </div>

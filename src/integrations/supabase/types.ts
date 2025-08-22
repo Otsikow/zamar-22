@@ -2069,7 +2069,7 @@ export type Database = {
         Returns: undefined
       }
       approve_testimony: {
-        Args: { p_admin: string; p_testimony_id: string }
+        Args: { p_admin: string; p_testimony_id: string } | { t_id: string }
         Returns: undefined
       }
       atomic_grant_first_admin: {
@@ -2266,7 +2266,9 @@ export type Database = {
         Returns: undefined
       }
       reject_testimony: {
-        Args: { p_admin: string; p_reason: string; p_testimony_id: string }
+        Args:
+          | { p_admin: string; p_reason: string; p_testimony_id: string }
+          | { t_id: string }
         Returns: undefined
       }
       reverse_referral_earnings_for_payment: {
@@ -2276,6 +2278,18 @@ export type Database = {
       rotate_ref_code: {
         Args: { uid: string }
         Returns: string
+      }
+      testimonies_feed: {
+        Args: { before_time?: string; limit_rows?: number }
+        Returns: {
+          country: string
+          created_at: string
+          display_name: string
+          id: string
+          media_type: string
+          media_url: string
+          message: string
+        }[]
       }
     }
     Enums: {

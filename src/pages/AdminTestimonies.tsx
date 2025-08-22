@@ -86,8 +86,7 @@ const AdminTestimonies = () => {
     
     try {
       const { error } = await supabase.rpc('approve_testimony', {
-        p_testimony_id: id,
-        p_admin: user.id
+        t_id: id
       });
 
       if (error) throw error;
@@ -113,9 +112,7 @@ const AdminTestimonies = () => {
     
     try {
       const { error } = await supabase.rpc('reject_testimony', {
-        p_testimony_id: id,
-        p_admin: user.id,
-        p_reason: reason
+        t_id: id
       });
 
       if (error) throw error;
