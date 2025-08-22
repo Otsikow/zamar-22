@@ -2010,6 +2010,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       admin_list_orders: {
         Args: { p_q?: string; p_status?: string }
         Returns: {

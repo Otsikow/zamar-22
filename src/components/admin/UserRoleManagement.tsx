@@ -9,14 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Search, Users, Crown, Heart, MessageCircle, Ban, Trash2 } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
 interface UserWithRole {
   id: string;
@@ -38,11 +30,20 @@ type Role = typeof VALID_ROLES[number];
 const UserRoleManagement = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [updatingRoles, setUpdatingRoles] = useState<Set<string>>(new Set());
+
+  // Calculate role counts using the new admin_counts function
+  const [roleCounts, setRoleCounts] = useState({
+    total: 0,
+    admins: 0,
+    supporters: 0,
+    listeners: 0,
+  });
 
   useEffect(() => {
     fetchAllUsersWithRoles();
@@ -52,15 +53,28 @@ const UserRoleManagement = () => {
     try {
       setLoading(true);
       
-      // Use the secure RPC function instead of the problematic view
+      // Use the profiles table directly (much simpler!)
       const { data: usersData, error } = await supabase
-        .rpc('get_admin_user_details');
+        .from('profiles')
+        .select(`
+          id,
+          email,
+          full_name,
+          first_name,
+          last_name,
+          role,
+          account_status,
+          is_suspended,
+          soft_deleted_at,
+          created_at
+        `)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching user details:', error);
         
         // Provide specific error messages
-        if (error.message.includes('Access denied')) {
+        if (error.message.includes('access')) {
           toast({ 
             title: 'Access Denied', 
             description: 'You must be logged in as an admin to view user management. Please sign in with an admin account.', 
@@ -83,6 +97,9 @@ const UserRoleManagement = () => {
       }));
 
       setUsers(typedUsers);
+      
+      // Fetch role counts using the new function
+      await fetchRoleCounts();
     } catch (error) {
       console.error('Error fetching users/roles:', error);
       toast({ 
@@ -92,6 +109,33 @@ const UserRoleManagement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRoleCounts = async () => {
+    try {
+      const { data, error } = await supabase.rpc('admin_counts');
+      if (error) throw error;
+      
+      // Parse the JSON response properly
+      const counts = typeof data === 'string' ? JSON.parse(data) : data;
+      setRoleCounts({
+        total: counts.total || 0,
+        admins: counts.admins || 0,
+        supporters: counts.supporters || 0,
+        listeners: counts.listeners || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching role counts:', error);
+      // Fall back to calculating from current users list
+      const counts = users.reduce((acc, u) => {
+        acc.total += 1;
+        if (u.role === 'admin') acc.admins += 1;
+        else if (u.role === 'supporter') acc.supporters += 1;
+        else acc.listeners += 1;
+        return acc;
+      }, { total: 0, admins: 0, supporters: 0, listeners: 0 });
+      setRoleCounts(counts);
     }
   };
 
@@ -105,18 +149,19 @@ const UserRoleManagement = () => {
     setUpdatingRoles(prev => new Set(prev).add(userId));
 
     try {
-      // Update or insert into admin_users table
+      // Update role directly in the profiles table (much simpler!)
       const { error } = await supabase
-        .from('admin_users')
-        .upsert({ user_id: userId, role: newRole }, { onConflict: 'user_id' });
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
       
       if (error) throw error;
 
-      toast({ title: 'Success', description: 'User role saved' });
+      toast({ title: 'Success', description: 'User role updated successfully' });
       await fetchAllUsersWithRoles();
     } catch (error) {
-      console.error('Error saving user role:', error);
-      toast({ title: 'Error', description: 'Failed to save role', variant: 'destructive' });
+      console.error('Error updating user role:', error);
+      toast({ title: 'Error', description: 'Failed to update role', variant: 'destructive' });
     } finally {
       setUpdatingRoles(prev => {
         const next = new Set(prev);
@@ -125,8 +170,6 @@ const UserRoleManagement = () => {
       });
     }
   };
-
-  const navigate = useNavigate();
 
   const handleChat = (targetUserId: string) => {
     navigate(`/admin?tab=chat&chatUserId=${targetUserId}`);
@@ -154,9 +197,6 @@ const UserRoleManagement = () => {
     if (!confirm('Delete this user? This will permanently remove them from the system.')) return;
     
     try {
-      console.log('Attempting to delete user:', targetUserId);
-      console.log('Current user ID:', user?.id);
-      
       // Get the current session for authorization
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -170,8 +210,6 @@ const UserRoleManagement = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
-      
-      console.log('Delete function result:', { data, error });
       
       if (error) {
         console.error('Function error details:', error);
@@ -187,7 +225,6 @@ const UserRoleManagement = () => {
     } catch (error) {
       console.error('Delete failed:', error);
       const errorMessage = (error as any)?.message || 'Failed to delete user';
-      console.error('Full error object:', error);
       toast({ title: 'Error', description: `Failed to delete user: ${errorMessage}`, variant: 'destructive' });
     }
   };
@@ -233,11 +270,6 @@ const UserRoleManagement = () => {
     return matchesSearch && matchesRole;
   });
 
-  const roleCounts = users.reduce((acc, u) => {
-    acc[u.role] = (acc[u.role] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
   if (loading) {
     return (
       <Card>
@@ -264,7 +296,7 @@ const UserRoleManagement = () => {
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Total Users</p>
-                <p className="text-2xl font-bold">{users.length}</p>
+                <p className="text-2xl font-bold">{roleCounts.total}</p>
               </div>
             </div>
           </CardContent>
@@ -277,7 +309,7 @@ const UserRoleManagement = () => {
               <Crown className="h-5 w-5 text-destructive" />
               <div>
                 <p className="text-sm font-medium">Admins</p>
-                <p className="text-2xl font-bold">{roleCounts.admin || 0}</p>
+                <p className="text-2xl font-bold">{roleCounts.admins}</p>
               </div>
             </div>
           </CardContent>
@@ -290,7 +322,7 @@ const UserRoleManagement = () => {
               <Heart className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">Supporters</p>
-                <p className="text-2xl font-bold">{roleCounts.supporter || 0}</p>
+                <p className="text-2xl font-bold">{roleCounts.supporters}</p>
               </div>
             </div>
           </CardContent>
@@ -303,7 +335,7 @@ const UserRoleManagement = () => {
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Listeners</p>
-                <p className="text-2xl font-bold">{roleCounts.listener || 0}</p>
+                <p className="text-2xl font-bold">{roleCounts.listeners}</p>
               </div>
             </div>
           </CardContent>
