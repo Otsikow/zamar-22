@@ -2210,7 +2210,7 @@ export type Database = {
         Returns: undefined
       }
       is_admin: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { uid: string }
         Returns: boolean
       }
       link_referral: {

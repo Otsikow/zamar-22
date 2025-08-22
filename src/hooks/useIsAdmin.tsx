@@ -16,26 +16,18 @@ export const useIsAdmin = () => {
       }
 
       try {
-        // Primary check: simple boolean function using auth.uid()
-        const { data: isAdminFlag, error: isAdminErr } = await supabase.rpc('is_admin');
-        if (isAdminErr) {
-          console.error('Error checking admin status (is_admin):', isAdminErr);
-        }
+        // Direct profile check - no recursion issues
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
 
-        if (isAdminFlag === true) {
-          setIsAdmin(true);
-          return;
-        }
-
-        // Fallback: role-based function that accepts explicit user_id
-        if (user?.id) {
-          const { data: role, error: roleErr } = await supabase.rpc('get_user_role', { user_id: user.id });
-          if (roleErr) {
-            console.error('Error checking admin status (get_user_role):', roleErr);
-          }
-          setIsAdmin(role === 'admin');
-        } else {
+        if (error) {
+          console.error('Error checking admin status:', error);
           setIsAdmin(false);
+        } else {
+          setIsAdmin(profile?.role === 'admin');
         }
       } catch (error) {
         console.error('Unexpected error checking admin status:', error);
