@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import FeaturedSongs from "@/components/sections/FeaturedSongs";
 import CommunityTestimonies from "@/components/sections/CommunityTestimonies";
 import LiveCounter from "@/components/sections/LiveCounter";
+import LiveStatsCards from "@/components/sections/LiveStatsCards";
 import Footer from "@/components/sections/Footer";
 import VideoShowcase from "@/components/sections/VideoShowcase";
 import heroImage from "@/assets/hero-music.jpg";
@@ -38,6 +39,7 @@ const Index = () => {
             onSuggestClick={handleSuggestClick}
           />
           <WelcomeBanner />
+          <LiveStatsCards />
           <AdGrid placement="home_hero" limit={8} className="container mx-auto my-6" title="Sponsored Spotlights" />
           <FeaturedSongs />
           <CommunityTestimonies />
