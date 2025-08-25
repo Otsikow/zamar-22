@@ -69,6 +69,8 @@ import TestimonyDetail from "./pages/TestimonyDetail";
 import SuggestSong from "./pages/SuggestSong";
 import AdminSuggestions from "./pages/AdminSuggestions";
 import LibrarySuggestions from "./pages/LibrarySuggestions";
+import Security from "./pages/Security";
+import UpdatePassword from "./pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -100,9 +102,10 @@ const App = () => (
                   <GlobalBack />
                   <ReferralCaptureWrapper>
                     <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/terms" element={<Terms />} />
+                     <Route path="/" element={<Index />} />
+                     <Route path="/auth" element={<Auth />} />
+                     <Route path="/auth/update-password" element={<UpdatePassword />} />
+                     <Route path="/terms" element={<Terms />} />
                      <Route path="/legal" element={<LegalCompliance />} />
                      <Route path="/legal/gdpr" element={<GDPRPolicy />} />
                      <Route path="/about" element={<AboutUs />} />
@@ -132,9 +135,10 @@ const App = () => (
                      <Route path="/songs-library" element={<ProtectedRoute><SongsLibrary /></ProtectedRoute>} />
                      <Route path="/create-playlist" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
                     <Route path="/playlist/create" element={<ProtectedRoute><CreatePlaylist /></ProtectedRoute>} />
-                    <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
-                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                    <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
+                     <Route path="/manage-playlists" element={<ProtectedRoute><ManagePlaylists /></ProtectedRoute>} />
+                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                     <Route path="/security" element={<ProtectedRoute><Security /></ProtectedRoute>} />
+                     <Route path="/more" element={<ProtectedRoute><More /></ProtectedRoute>} />
                     <Route path="/donate" element={<ProtectedRoute><Donate /></ProtectedRoute>} />
                     <Route path="/thank-you" element={<ProtectedRoute><ThankYou /></ProtectedRoute>} />
                     

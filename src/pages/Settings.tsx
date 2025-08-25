@@ -268,6 +268,13 @@ const Settings = () => {
               </Button>
               <Button
                 variant="outline"
+                onClick={() => navigate('/security')}
+                className="w-full justify-start border-primary/30 hover:bg-primary/10"
+              >
+                {t('settings.security.manage', 'Manage Password & Security')}
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => navigate('/terms-of-service')}
                 className="w-full justify-start border-primary/30 hover:bg-primary/10"
               >

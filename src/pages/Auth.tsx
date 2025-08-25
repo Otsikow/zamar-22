@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/contexts/TranslationContext";
 import Footer from "@/components/sections/Footer";
 import { ReferralTracker, handleReferralSignup } from '@/components/referrals/ReferralTracker';
+import { ForgotPasswordDialog } from "@/components/auth/ForgotPasswordDialog";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -265,6 +266,11 @@ const Auth = () => {
                     >
                       {loading ? t('auth.signing_in', 'Signing in...') : t('auth.signin', 'Sign In')}
                     </Button>
+                    
+                    {/* Forgot Password Link */}
+                    <div className="text-center">
+                      <ForgotPasswordDialog />
+                    </div>
                   </form>
                 </TabsContent>
 
